@@ -1,0 +1,79 @@
+Package: sceExplorer
+Type: Package
+Title: Single-cell data analysis exploration
+Version: 0.1.0
+Author: Tapan Baral
+Maintainer: Tapan Baral <tapan.kumar.baral@ki.se>
+Description: This is an integrated softeware platform for single-cell data analysis.
+License: GPL-3
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+LazyData: true
+Depends: 
+    tidyverse (>= 2.0.0)
+Imports: 
+    BASiCS (>= 2.10.5),
+    bluster (>= 1.8.0),
+    bs4Dash (>= 2.3.0),
+    bslib (>= 0.5.0),
+    celldex (>= 1.8.0),
+    CellMixS (>= 1.14.0),
+    clusterProfiler (>= 4.6.2),
+    cowplot (>= 1.1.1),
+    CytoTRACE (>= 0.3.3),
+    DDRTree (>= 0.1.5),
+    DEsingle (>= 1.18.1),
+    destiny (>= 3.12.0),
+    DropletUtils (>= 1.18.1),
+    DT (>= 0.28),
+    dynamicTreeCut (>= 1.63.1),
+    enrichplot (>= 1.18.4),
+    factoextra (>= 1.0.7),
+    fresh (>= 0.2.0),
+    ggfortify (>= 0.4.16),
+    ggrepel (>= 0.9.3),
+    gprofiler2 (>= 0.2.2),
+    grid (>= 4.2.2),
+    harmony (>= 0.1.1),
+    HGNChelper (>= 0.8.1),
+    kBET (>= 0.99.6),
+    liger (>= 2.0.1),
+    Linnorm (>= 2.22.2),
+    monocle3 (>= 1.3.1),
+    openxlsx (>= 4.2.5.2),
+    org.Hs.eg.db (>= 3.16.0),
+    org.Mm.eg.db (>= 3.16.0),
+    patchwork (>= 1.1.2),
+    PCAtools (>= 2.10.0),
+    pheatmap (>= 1.0.12),
+    princurve (>= 2.1.6),
+    purrr (>= 1.0.1),
+    readxl (>= 1.4.2),
+    reticulate (>= 1.30),
+    rrvgo (>= 1.10.0),
+    RUVSeq (>= 1.32.0),
+    sass (>= 0.4.6),
+    scater (>= 1.26.1),
+    SCnorm (>= 1.20.0),
+    scran (>= 1.26.2),
+    scuttle (>= 1.8.4),
+    Seurat (>= 4.3.0.1),
+    shiny (>= 1.7.4),
+    shiny.blueprint (>= 0.2.0),
+    shinyalert (>= 3.0.0),
+    shinyBS (>= 0.61.1),
+    shinycssloaders (>= 1.0.0),
+    shinyFeedback (>= 0.4.0),
+    shinyFiles (>= 0.9.3),
+    shinyjs (>= 2.1.0),
+    shinythemes (>= 1.2.0),
+    shinyWidgets (>= 0.7.6),
+    SingleCellExperiment (>= 1.20.1),
+    singleCellTK (>= 2.8.0),
+    SingleR (>= 2.0.0),
+    slingshot (>= 2.6.0),
+    spsComps (>= 0.3.2.1),
+    thematic (>= 0.1.2.1),
+    viridis (>= 0.6.3),
+    waiter (>= 0.2.5)
