@@ -11,7 +11,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 LazyData: true
 Depends: 
-    tidyverse (>= 2.0.0)
+    tidyverse
 Imports: 
     BASiCS (>= 2.10.5),
     bluster (>= 1.8.0),
