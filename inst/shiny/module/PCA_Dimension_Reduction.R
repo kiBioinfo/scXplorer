@@ -144,7 +144,7 @@ dim_reduction_UI<-function(id) {
                                      selectInput(ns("algo"),label = "Choose the Algorithm:",
                                                  choices = c("walktrap", "louvain", "infomap", 'fast_greedy', "label_prop", 'leading_eigen'), selected = "fast_greedy"),ns = NS(id) ),
                                    uiOutput(ns('color_non_linear')),
-                                   actionBttn(ns("go"),"submit", block = TRUE, style = "unite",color = "royal"),
+                                   shinyjs::hidden(actionBttn(ns("go"),label="EXEC",style = "jelly",color = "success",icon = icon("sliders"))),
                                    style = " background-color: #CEECF5; border: 3px solid #CEECF5;"
                                    ),
                                   tags$br(),
@@ -155,7 +155,7 @@ dim_reduction_UI<-function(id) {
                                                             actionBttn(ns("skip_corcn_tab"),label= "Skip Batch Correction ", block = TRUE,
                                                                                                                style = "unite",color = "royal", icon = icon("angles-right",class="fa-duotone fa-angles-right")),
                                                             tags$br(),
-                                                            downloadBttn(ns('dim_reduction_data'), '.rds dim rdxn data'),
+                                                            downloadBttn(ns('dim_reduction_data'), '.rds dim rdxn data', block = TRUE,style = "unite",color = "royal" ),
                                                             style = " background-color: #CEECF5; border: 3px solid #CEECF5;"
                                   ))
 
@@ -176,28 +176,28 @@ dim_reduction_Server <- function(id,normalization_data) {
       ns <- session$ns
       vals=reactiveValues()
       scdata<-reactive({
-        return(normalization_data())
-
+        req(normalization_data())
+        obj <- normalization_data()
+        return(obj)
       })
-      # top_hvgs<-reactive({
-      #   normalization_data$scdata()[[4]]
-      # })
-
 
 
 
       #PCA
     sc_data<- reactive({
+      req(scdata())
       scater::runPCA(scdata(), exprs_values=  "VGcounts", altexp= "VGcounts")
     })
       #colour_input
      output$colPC<-renderUI({
+       req(scdata())
         ns <- session$ns
         selectInput(ns("colour_by"),
                     label = "Colour By:",
                     choices = colnames(scdata()@colData)[!colnames(scdata()@colData) %in% names], selected = colnames(scdata()@colData)[1])
       })
       output$col_PC<-renderUI({
+        req(scdata())
         ns <- session$ns
         selectInput(ns("colourP"),
                     label = "Colour By:",
@@ -223,29 +223,33 @@ dim_reduction_Server <- function(id,normalization_data) {
         # Hence if input$npc is NULL, the computation
         # will be stopped here.
         req(input$npc)
+        req(sc_data())
         p<-dim_lodingsViz(sc_data(),ndims = input$npc)
         p
       })
 
       #PCA Plot
       pca_plot<- reactive({
-
+      req(sc_data())
         p=singleCellTK::plotPCA(sc_data(),pcX=paste0("PC",input$xpc),pcY = paste0("PC",input$ypc), reducedDimName = "PCA",colorBy = input$colour_by) + theme_cowplot()
         p
       })
 
       #Heatmap
       heatmap_plot<- reactive({
+        req(sc_data())
         p=dim_heatmap(sc_data(), ndims=input$dms,nfeatures=input$ngenes)
         p
       })
       #Parwise PCA
       pairwise_pca_plot <- reactive({
+        req(sc_data())
         p=scater::plotReducedDim(sc_data(),dimred="PCA", ncomponents=input$n_pc,colour_by=input$colourP)
         p
       })
       #Elbow
       elbow_plt <- reactive({
+        req(sc_data())
         p= ElbowPlot(sc_data(),ndims = input$elb)
         p
       })
@@ -286,6 +290,7 @@ dim_reduction_Server <- function(id,normalization_data) {
       #Non Linear
 
       cs_data<- reactive({
+        req(sc_data())
         if(input$dimM=="tSNE")
         {
           CS.data = DimReduction_tsne(sc_data(),  PCNum = input$np, perplexity = input$perp)
@@ -298,16 +303,22 @@ dim_reduction_Server <- function(id,normalization_data) {
         }
       })
 
+      # Cluster find data
       cluster_find_data<- reactive({
+        req(sc_data())
+
 
         CS.data = ClusterFind(cs_data(),method = input$C_M,runWith = input$dimM,k = input$K, ClusterNum = input$K_cln,PCNum= input$np,cluster.fun = input$algo)
         if(any(c("sizeFactor") %in% colnames(colData(CS.data)))){
           CS.data@colData <- subset(CS.data@colData, select = -c(All, sizeFactor))
         }
-        return(CS.data)
 
-      })# Cluster find data
+          shinyjs::show("go")
+          return(CS.data)
+      })
+
       output$color_non_linear<-renderUI({
+        req(cluster_find_data())
         ns <- session$ns
         selectInput(ns("colourby"),
                     label = "Colour By:",
@@ -315,6 +326,14 @@ dim_reduction_Server <- function(id,normalization_data) {
       })
 
       non_linear_plot<-reactive({
+        req(cluster_find_data())
+        validate(
+          need(inherits(cluster_find_data(),"SingleCellExperiment"), "Please select a data set")
+        )
+        if(class(cluster_find_data())!= 'SingleCellExperiment'){
+          shinyjs::hide("go")
+
+        }
         obj= cluster_find_data()
         obj@colData$cluster <- as.factor(obj@colData$cluster)
         obj@colData$cluster=factor(obj@colData$cluster, levels = levels( obj@colData$cluster) %>% str_sort(numeric = TRUE))

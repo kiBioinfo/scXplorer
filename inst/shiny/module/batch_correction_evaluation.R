@@ -44,12 +44,14 @@ batchCorrct_evalutn_Server <- function(id, batch_corrct) {
     function(input, output, session) {
 
       scdata<-reactive({
+        req(batch_corrct())
         batch_corrct()
       })
 
 
 
       batch_evaluation<-reactive({
+        req(scdata())
         req(input$batch_evaluation)
 
 

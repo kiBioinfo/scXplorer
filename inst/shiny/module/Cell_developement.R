@@ -59,22 +59,27 @@ cell_developement_analysis_Server <-function(id,cell_type) {
       ns <- session$ns
       vals=reactiveValues()
       scdata<-reactive({
-        cell_type()
+        req(cell_type())
+        obj <- cell_type()
+        return(obj)
       })
 
       output$colour <- renderUI({
+        req(scdata())
         selectInput(ns("colour_by"),
                     label = "Colour by:",
                     choices = colnames(colData(scdata())), selected = rev(colnames(colData(scdata())))[1])
       })
 
       output$reduce_dim<-renderUI({
+        req(scdata())
         ns <- session$ns
         selectInput(ns("reduction"),
                     label = "select the dim reduction to plot:",
                     choices = reducedDimNames(scdata()), selected = rev(reducedDimNames(scdata()))[1])
       })
       output$seedby <- renderUI({
+        req(scdata())
         if(!("cellType" %in% colnames(colData(scdata())))){
           selectizeInput(ns("cell_type"), label= "Choose the cell types:", choices=unique((scdata()@colData$label)), selected=unique((scdata()@colData$label))[1], multiple=T)
         }
@@ -84,7 +89,10 @@ cell_developement_analysis_Server <-function(id,cell_type) {
       })
 
       Cell_develpment<-reactive({
-        req(input$method)
+        req(scdata())
+        # req(input$method)
+        # req(input$reduction)
+        # req(input$cell_type)
         if(input$method=="Princurve_fit"){
           shinyjs::showElement("curve")
         }
@@ -104,12 +112,14 @@ cell_developement_analysis_Server <-function(id,cell_type) {
           #shinyjs::enable("cell_development_curve")
 
           output$cell_development <-renderPlot({
+            req(plot_cell_development())
 
             plot_cell_development()
 
           }, res = 96)
 
           output$cell_development_curve <-renderPlot({
+
             plot_cell_development_curve()
 
           }, res = 96)
@@ -120,18 +130,15 @@ cell_developement_analysis_Server <-function(id,cell_type) {
       #plot cell development
 
       plot_cell_development <- reactive({
+        req(Cell_develpment())
         Plot_Development(CS.data = Cell_develpment() ,runWith = input$reduction, colorBy = input$colour_by )
       })
 
       plot_cell_development_curve <-reactive({
+        req(Cell_develpment())
 
         Plot_Development_Princurve(CS.data =Cell_develpment(), runWith = input$reduction, colorBy = input$colour_by )
       })
-
-
-
-
-
 
 
       #Download plot

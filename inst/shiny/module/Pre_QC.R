@@ -39,9 +39,9 @@ preQCUI<-  function(id) {
                           column(width = 12,
                                  plotOutput(ns('beforeQC_totalCount_vs_totalGene'),   width = '100%')%>% withSpinner(color="#0dc5c1",type = 5,size=0.5),maximizable = T)),
 
-                      box(title="SingleCellExperiment Object",solidHeader=TRUE,status='primary',closable=T,
+                      box(title="Summary",solidHeader=TRUE,status='primary',closable=T,
                           column(width = 12,
-                                 verbatimTextOutput(ns('sce_obj')),   maximizable = T))
+                                 tableOutput(ns('sce_obj')),   maximizable = T))
 
                       )),
 
@@ -70,7 +70,7 @@ preQCUI<-  function(id) {
                            uiOutput(ns("ribo_perc")),
                            uiOutput(ns("beforeQC_selectFeatureVector")),
 
-                            actionBttn(ns("beforeQC_submit_sidebarPanel"),label="Apply",style = "jelly",color = "success",icon = icon("sliders"))),
+                            actionBttn(ns("beforeQC_submit_sidebarPanel"),label="EXEC",style = "jelly",color = "success",icon = icon("sliders"))),
 
                            box(width = 12, status = "primary", collapsible = TRUE, solidHeader = TRUE, id=ns("download_box"),title = "Download",
                            numericInput(ns("w"), label = "Figure Width", value = 14),
@@ -132,7 +132,10 @@ preQCServer <- function(id,raw_data) {
 
 
       scdata<-reactive({
+        errors <- c()
+        req(raw_data())
 
+        # try to read in file
         tryCatch(
           {
             obj <- raw_data()
@@ -142,6 +145,14 @@ preQCServer <- function(id,raw_data) {
             return(errors)
           }
         )
+
+        # Validate obj is a SingleCellExperiment object
+        if (!inherits(obj, "SingleCellExperiment")){
+          errors <- c(errors, "File is not a SingleCellExperiment object")
+          return(errors)
+        }
+
+        return(obj)
       })
 
       output$min_gene_per_cell <- renderUI({
@@ -194,7 +205,7 @@ preQCServer <- function(id,raw_data) {
         req(input$QC_TotalCount_Up)
         req(input$QC_MT)
         req(input$QC_ribo)
-        
+
 
               data=filter_raw_data(sce = scdata(), min_genes_per_cell = input$QC_TotalGene_Down, max_genes_per_cell = input$QC_TotalGene_Up, min_count_cell = input$QC_TotalCount_Down,
                              max_count_cell =input$QC_TotalCount_Up, mt_percnt = input$QC_MT, ribsoml_percnt = input$QC_ribo)
@@ -270,11 +281,14 @@ preQCServer <- function(id,raw_data) {
 
 
 
-        output$sce_obj <- renderPrint({
+        output$sce_obj <- renderTable({
+          req(scdata_filt())
+          table= c(ncol(scdata_filt()), nrow(scdata_filt())) %>% as.data.frame()
+          colnames(table)  <- c("Summary")
+          row.names(table) <- c("Total Cells", "Total Genes")
+          table
 
-          scdata_filt()
-
-        })
+        }, rownames = T, bordered=TRUE, align='c')
 
         output$pdf <- downloadHandler(
           filename="PreQC.pdf",

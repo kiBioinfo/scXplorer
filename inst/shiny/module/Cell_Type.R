@@ -8,12 +8,7 @@ cell_type_analysis_UI<-function(id) {
                       wellPanel(
                       plotOutput(ns('cell_type'), height = "800px")%>% withSpinner(color="#0dc5c1",type = 6,size=0.9), style = "height: auto; border: 3px solid #CEECF5; text-align: end;",
                       download_plot_UI(ns("Cell_type_p"))
-                      ),
-
-
-
-                      tags$br(),
-                      verbatimTextOutput(ns('stat'))%>% withSpinner(color="#0dc5c1",type = 5,size=0.5)
+                      )
                       ),
 
 
@@ -31,7 +26,7 @@ cell_type_analysis_UI<-function(id) {
                             uiOutput(ns("scType")),ns = NS(id)
                         ),
                         uiOutput(ns("clust")),
-                        actionBttn(ns("cell_bttn"),label = "Run Analysus"),
+                        actionBttn(ns("cell_bttn"),label="EXEC",style = "jelly",color = "success",icon = icon("sliders")),
                         style = " background-color: #CEECF5; border: 3px solid #CEECF5;"
                         ) ),
 
@@ -52,10 +47,13 @@ cell_type_analysis_Server <-function(id,DGE) {
 
       ns <- session$ns
       vals=reactiveValues()
-      scdata<-reactive({
-        DGE()
+      scdata <-reactive({
+        req(DGE())
+        obj <- DGE()
+        return(obj)
       })
       output$clust<-renderUI({
+        req(scdata())
         ns <- session$ns
         selectInput(ns("reduction"),
                     label = "select the dim reduction to plot",
@@ -67,25 +65,20 @@ cell_type_analysis_Server <-function(id,DGE) {
       })
 
       Cell_type<-reactive({
-
+        req(scdata())
         data= Cell_Type_Annotation(data= scdata(), dataset= input$singleR , TissueType= input$SCtype, method=input$method )
-       data
+        data
       })
 
 
       observeEvent(input$cell_bttn,{
          output$cell_type <-renderPlot({
-
+           req(Cell_type())
            plotReducedDim(Cell_type(),dimred = input$reduction, colour_by = "cellType", text_by = "cellType")
          }, res = 96)
 
       })
 
-      output$stat <- renderPrint({
-
-        Cell_type()
-
-      })
 
       download_plot_Server("Cell_type_p", input_data = Cell_type , name ="Cell_type_plot")
 

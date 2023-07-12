@@ -142,7 +142,7 @@ batch_dim_reduction_UI<-function(id) {
                                                     selectInput(ns("algo"),label = "Choose the Algorithm:",
                                                                 choices = c("walktrap", "louvain", "infomap", 'fast_greedy', "label_prop", 'leading_eigen'), selected = "fast_greedy"),ns = NS(id) ),
                                                   uiOutput(ns('color_non_linear')),
-                                                  actionBttn(ns("go"),"submit", block = TRUE, style = "unite",color = "royal"),
+                                                  actionBttn(ns("go"),label="EXEC",style = "jelly",color = "success",icon = icon("sliders")),
                                                   tags$br(),
                                                   shinyjs::hidden(actionBttn(ns("DGE_analsis_tab"), label="Continue to DE Analysis",
                                                              block = TRUE,style = "unite",color = "royal", icon = icon("angles-right",class="fa-duotone fa-angles-right"))),
@@ -171,6 +171,7 @@ batch_dim_reduction_Server <- function(id,batch_corrct) {
       ns <- session$ns
       vals=reactiveValues()
       scdata<-reactive({
+        req(batch_corrct())
         return(batch_corrct())
 
       })
@@ -187,12 +188,14 @@ batch_dim_reduction_Server <- function(id,batch_corrct) {
       #colour_input
       output$colPC<-renderUI({
         ns <- session$ns
+        req(scdata())
         selectInput(ns("colour_by"),
                     label = "Colour By:",
                     choices =  colnames(scdata()@colData)[!colnames(scdata()@colData) %in% names],selected =  rev(names(scdata()@colData))[1])
       })
       output$col_PC<-renderUI({
         ns <- session$ns
+        req(scdata())
         selectInput(ns("colourP"),
                     label = "Colour By:",
                     choices =  colnames(scdata()@colData)[!colnames(scdata()@colData) %in% names],selected =  rev(names(scdata()@colData))[1])
@@ -217,29 +220,33 @@ batch_dim_reduction_Server <- function(id,batch_corrct) {
         # Hence if input$npc is NULL, the computation
         # will be stopped here.
         req(input$npc)
+        req(scdata())
         p<-dim_lodingsViz(scdata(),ndims = input$npc)
         p
       })
 
       #PCA Plot
       pca_plot<- reactive({
-
+        req(scdata())
         p=singleCellTK::plotPCA(scdata(),pcX=paste0("PC",input$xpc),pcY = paste0("PC",input$ypc), reducedDimName = "BEPCA",colorBy = input$colour_by) + theme_cowplot()
         p
       })
 
       #Heatmap
       heatmap_plot<- reactive({
+        req(scdata())
         p=dim_heatmap(scdata(), ndims=input$dms,nfeatures=input$ngenes)
         p
       })
       #Parwise PCA
       pairwise_pca_plot <- reactive({
+        req(scdata())
         p=scater::plotReducedDim(scdata(),dimred="BEPCA", ncomponents=input$n_pc,colour_by=input$colourP)
         p
       })
       #Elbow
       elbow_plt <- reactive({
+        req(scdata())
         p= ElbowPlot(scdata(),ndims = input$elb)
         p
       })
@@ -281,6 +288,7 @@ batch_dim_reduction_Server <- function(id,batch_corrct) {
       #Non Linear
 
       cs_data<- reactive({
+        req(scdata())
         if(input$dimM=="tSNE")
         {
           CS.data = scater::runTSNE(scdata(),dimred= "BEPCA", n_dimred=input$np, perplexity = input$perp, name= "tSNE")
@@ -294,6 +302,7 @@ batch_dim_reduction_Server <- function(id,batch_corrct) {
       })
 
       cluster_find_data<- reactive({
+        req(cs_data())
         CS.data = ClusterFind(cs_data(),method = input$C_M,runWith = input$dimM,k = input$K, ClusterNum = input$K_cln,PCNum= input$np,cluster.fun=input$algo)
         if(any(c("All", "sizeFactor") %in% colnames(colData(CS.data)))){
           CS.data@colData <- subset(CS.data@colData, select = -c(All, sizeFactor))
@@ -304,12 +313,14 @@ batch_dim_reduction_Server <- function(id,batch_corrct) {
       })# Cluster find data
       output$color_non_linear<-renderUI({
         ns <- session$ns
+        req(cluster_find_data())
         selectInput(ns("colourby"),
                     label = "Colour By:",
                     choices =  colnames(cluster_find_data()@colData)[!colnames(cluster_find_data()@colData) %in% names],  selected = rev(names(cluster_find_data()@colData))[1])
       })
 
       non_linear_plot<-reactive({
+        req(cluster_find_data())
         obj= cluster_find_data()
         obj@colData$cluster <- as.factor(obj@colData$cluster)
         obj@colData$cluster=factor(obj@colData$cluster, levels = levels( obj@colData$cluster) %>% str_sort(numeric = TRUE))

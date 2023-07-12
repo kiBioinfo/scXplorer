@@ -19,6 +19,7 @@ Imports:
     bslib (>= 0.5.0),
     celldex (>= 1.8.0),
     CellMixS (>= 1.14.0),
+    class,
     clusterProfiler (>= 4.6.2),
     cowplot (>= 1.1.1),
     CytoTRACE (>= 0.3.3),
@@ -37,7 +38,8 @@ Imports:
     grid (>= 4.2.2),
     harmony (>= 0.1.1),
     HGNChelper (>= 0.8.1),
-    kBET (>= 0.99.6),
+    kBET,
+    lazyeval,
     liger (>= 2.0.1),
     Linnorm (>= 2.22.2),
     monocle3 (>= 1.3.1),
@@ -77,3 +79,5 @@ Imports:
     thematic (>= 0.1.2.1),
     viridis (>= 0.6.3),
     waiter (>= 0.2.5)
+Suggests: 
+    sf

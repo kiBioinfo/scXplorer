@@ -1924,7 +1924,7 @@ Plot_HeatmapDEG = function(CS.data, used = 'counts', by = NULL, group1 = NULL, g
                            #annotation_row = annotationForRow,
                            #annotation_colors = anno_col,
                            color = colors, breaks = bk,
-                           border_color = NA,
+                           border_color = 'black',
                            nan_col = "gray",
                            #cellwidth = 8,
                            #cellheight = 8,

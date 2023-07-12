@@ -3,6 +3,26 @@
     "Version": "4.2.2",
     "Repositories": [
       {
+        "Name": "BioCsoft",
+        "URL": "https://bioconductor.org/packages/3.16/bioc"
+      },
+      {
+        "Name": "BioCann",
+        "URL": "https://bioconductor.org/packages/3.16/data/annotation"
+      },
+      {
+        "Name": "BioCexp",
+        "URL": "https://bioconductor.org/packages/3.16/data/experiment"
+      },
+      {
+        "Name": "BioCworkflows",
+        "URL": "https://bioconductor.org/packages/3.16/workflows"
+      },
+      {
+        "Name": "BioCbooks",
+        "URL": "https://bioconductor.org/packages/3.16/books"
+      },
+      {
         "Name": "CRAN",
         "URL": "https://cran.rstudio.com"
       }
@@ -392,7 +412,7 @@
       "Version": "0.3.3",
       "Source": "Local",
       "RemoteType": "local",
-      "RemoteUrl": "D:\\Tapan\\sceExplorer\\inst\\shiny\\CytoTRACE_0.3.3.tar.gz",
+      "RemoteUrl": "./CytoTRACE_0.3.3.tar.gz",
       "Requirements": [
         "HiClimR",
         "R",
@@ -408,7 +428,7 @@
         "reticulate",
         "sva"
       ],
-      "Hash": "2d40aef5961fe4a59af2a745216ab4ea"
+      "Hash": "4725f2379fb113764f9d46b5f433a598"
     },
     "DBI": {
       "Package": "DBI",
@@ -2849,7 +2869,7 @@
     },
     "class": {
       "Package": "class",
-      "Version": "7.3-20",
+      "Version": "7.3-22",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -2858,7 +2878,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "da09d82223e669d270e47ed24ac8686e"
+      "Hash": "f91f6b29f38b8c280f2b9477787d4bb2"
     },
     "classInt": {
       "Package": "classInt",

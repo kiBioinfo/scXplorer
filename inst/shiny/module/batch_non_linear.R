@@ -48,7 +48,8 @@ batch_non_linear_UI<-  function(id) {
                                    selectInput(ns("algo"),label = "Choose the Algorithm:",
                                                choices = c("walktrap", "louvain", "infomap", 'fast_greedy', "label_prop", 'leading_eigen'), selected = "fast_greedy"),ns = NS(id) ),
                                  uiOutput(ns('color_non_linear')),
-                                 actionBttn(ns("go"),"submit", block = TRUE, style = "unite",color = "royal"),
+                                 actionBttn(ns("go"),label="EXEC",style = "jelly",color = "success",icon = icon("sliders")),
+                                 tags$br(),
                                  tags$br(),
                                  shinyjs::hidden(actionBttn(ns("DGE_analsis_tab"), label="Continue to DE Analysis",
                                                             block = TRUE,style = "unite",color = "royal", icon = icon("angles-right",class="fa-duotone fa-angles-right"))),
@@ -73,10 +74,12 @@ batch_non_linear_Server <- function(id,batch_corrct) {
 
       vals=reactiveValues()
       scdata<-reactive({
+        req(batch_corrct())
         batch_corrct()
       })
 
       cs_data<- reactive({
+        req(scdata())
         if(input$dimM=="tSNE")
         {
           CS.data = scater::runTSNE(scdata(),dimred= "BEPCA", n_dimred=input$np, perplexity = input$perp, name= "tSNE")
@@ -91,6 +94,7 @@ batch_non_linear_Server <- function(id,batch_corrct) {
       })
 
       cluster_find_data<- reactive({
+        req(cs_data())
         CS.data = ClusterFind(cs_data(),method = input$C_M,runWith = input$dimM,k = input$K, ClusterNum = input$K_cln,PCNum= input$np, cluster.fun=input$algo)
         if(any(c("All", "sizeFactor") %in% colnames(colData(CS.data)))){
           CS.data@colData <- subset(CS.data@colData, select = -c(All, sizeFactor))
@@ -100,12 +104,14 @@ batch_non_linear_Server <- function(id,batch_corrct) {
       })# Cluster find data
       output$color_non_linear<-renderUI({
         ns <- session$ns
+        req(cluster_find_data())
         selectInput(ns("colourby"),
                     label = "Colour By:",
                     choices = colnames(cluster_find_data()@colData)[!colnames(cluster_find_data()@colData) %in% names],  selected = rev(names(cluster_find_data()@colData))[1])
       })
 
       non_linear_plot<-reactive({
+        req(cluster_find_data())
         obj= cluster_find_data()
         obj@colData$cluster <- as.factor(obj@colData$cluster)
         obj@colData$cluster=factor(obj@colData$cluster, levels = levels( obj@colData$cluster) %>% str_sort(numeric = TRUE))

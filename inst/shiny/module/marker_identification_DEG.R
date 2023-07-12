@@ -153,12 +153,14 @@ de_analysis_Server <-function(id,dim_reduction_data , dim_reduction_batch_correc
 
      # Get the dim reduction(batch corrected/not corrected) data
       scdata<-reactive({
-        req(dim_reduction_data())
+        # req(input$use_batch_corrected_data)
+        # #req(dim_reduction_data())
       if(input$use_batch_corrected_data){
-
+        req(dim_reduction_batch_correction())
         data = dim_reduction_batch_correction()
         }
       else{
+        req(dim_reduction_data())
           data= dim_reduction_data()
       }
         if(!'batch' %in% colnames(data@colData)){
@@ -215,6 +217,7 @@ de_analysis_Server <-function(id,dim_reduction_data , dim_reduction_batch_correc
 
 
       output$group_by <- renderUI({
+        req(scdata())
         selectInput(ns("group_By"),
                     label = "Group By:",
                     choices = c(colnames(scdata()@colData)), selected = rev(names(scdata()@colData))[1], multiple = T)
@@ -235,6 +238,7 @@ de_analysis_Server <-function(id,dim_reduction_data , dim_reduction_batch_correc
       # pairwise DEG analysis
       DEG_P<-reactive({
         req(scdata())
+        req(input$comparision_vector)
         validate(
           need(inherits(scdata(),"SingleCellExperiment"), "Please select a data set")
         )
@@ -356,9 +360,8 @@ de_analysis_Server <-function(id,dim_reduction_data , dim_reduction_batch_correc
         download_plot_Server("deg_heatmap", input_data = heatmap_P , name ="DEG_heatmap_plot")
 
       output$DEG_stats <- DT::renderDataTable({
-
-
-          datatable(as.data.frame( DEG_select_table()))
+        req(DEG_select_table())
+        datatable(as.data.frame( DEG_select_table()))
 
       })
 
@@ -378,6 +381,8 @@ de_analysis_Server <-function(id,dim_reduction_data , dim_reduction_batch_correc
 
 
        }, rownames = TRUE, bordered=TRUE, align='c')
+
+
        return(scdata)
 
 
