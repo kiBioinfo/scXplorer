@@ -7,4 +7,5 @@ if (!requireNamespace('BiocManager', quietly = TRUE)) {
 BiocManager::install(c("BASiCS", "celldex", "CellMixS", "clusterProfiler",
                       "DEsingle", "destiny", "DropletUtils", "enrichplot",
                       "kBET", "Linnorm", "monocle3", "org.Hs.eg.db", "org.Mm.eg.db",
-                      "PCAtools", "rrvgo", "RUVSeq", "scater", "SCnorm", "singleCellTK", "SingleR", "slingshot"))
+                      "PCAtools", "rrvgo", "RUVSeq", "scater", "SCnorm", "singleCellTK", "SingleR", "slingshot"), ask = FALSE)
+"
