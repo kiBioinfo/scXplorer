@@ -1,4 +1,4 @@
-#' Plot highly variable genes
+#' A function to plot highly variable genes
 #'
 #' This function takes an object of SingleCellExperiment class
 #'
@@ -8,20 +8,20 @@
 #' @param batch true or false
 #' @return a list containg a ggplot, a highly variable gene information table and the SingleCellExperiment object
 #' @examples
-#' sce <- VariableGene_hvg_plot(CS.data, used = 'counts', ngene = 1000, batch = F)
+#' sce <- VariableGene_hvg_plot(sce, used = 'counts', ngene = 1000, batch = F)
 #' the plot can be visualize sce[[1]]
 #' the table can be shown sce[[2]]
 #' the SingleCellExperiment object can be accessed sce[[3]]
 #'
 #'
- VariableGene_hvg_plot = function(CS.data, used = 'counts', ngene = 1000, batch = F) {
+ VariableGene_hvg_plot = function(sce, used = 'counts', ngene = 1000, batch = F) {
   # use assay of interest to find top HVG
 
-    edata = assay(CS.data, used) %>% as.data.frame()
+    edata = assay(sce, used) %>% as.data.frame()
     #edata = log2(edata+1)
 
   if(batch) {
-    batch = CS.data@colData$batch
+    batch = sce@colData$batch
 
     var = as.data.frame(scran::modelGeneVar(edata, block = batch))
     var=var %>% drop_na()
@@ -44,22 +44,22 @@
     edata.od = edata[top.hvgs2,]
 
   }
-  altExp(CS.data, 'VGcounts') = SingleCellExperiment(assay = list(VGcounts = edata.od))
-  if(any(c("nCount_RNA","nFeature_RNA", "Mito_gene_percent", "Hemoglobin_gene_percent", "Ribosomal_gene_percent") == colnames(colData(CS.data)))){
-    CS.data@colData = subset(CS.data@colData, select = -c(nCount_RNA,nFeature_RNA, Mito_gene_percent, Hemoglobin_gene_percent, Ribosomal_gene_percent))
+  altExp(sce, 'VGcounts') = SingleCellExperiment(assay = list(VGcounts = edata.od))
+  if(any(c("nCount_RNA","nFeature_RNA", "Mito_gene_percent", "Hemoglobin_gene_percent", "Ribosomal_gene_percent") == colnames(colData(sce)))){
+    sce@colData = subset(sce@colData, select = -c(nCount_RNA,nFeature_RNA, Mito_gene_percent, Hemoglobin_gene_percent, Ribosomal_gene_percent))
   }
   # top hvg count matrix saved in altExp
   # if(used == 'counts') {
-  # altExp(CS.data, 'VGcounts') = SingleCellExperiment(assay = list(VGcounts = edata.od))
+  # altExp(sce, 'VGcounts') = SingleCellExperiment(assay = list(VGcounts = edata.od))
   # }
   # if(used == 'BENMcounts') {
-  #   SingleCellExperiment::altExp(CS.data, 'BENMVGcounts') = SingleCellExperiment::SingleCellExperiment(assays = list(BENMVGcounts = edata.od))
+  #   SingleCellExperiment::altExp(sce, 'BENMVGcounts') = SingleCellExperiment::SingleCellExperiment(assays = list(BENMVGcounts = edata.od))
   # }
   # if(used == 'NMcounts') {
-  #   altExp(CS.data, 'NMVGcounts') = SingleCellExperiment(assay = list(NMVGcounts = edata.od))
+  #   altExp(sce, 'NMVGcounts') = SingleCellExperiment(assay = list(NMVGcounts = edata.od))
   # }
   # if(used == 'BEcounts') {
-  #   altExp(CS.data, 'BEVGcounts') = SingleCellExperiment(assay = list(BEVGcounts = edata.od))
+  #   altExp(sce, 'BEVGcounts') = SingleCellExperiment(assay = list(BEVGcounts = edata.od))
   # }
   #
 
@@ -71,11 +71,22 @@
     geom_point(data = top20, mapping = aes(label = rownames(top20)), color = "purple") + cowplot::theme_cowplot()+
     labs(x="Average Expression",y="Standardized Variance")
 
-  return(list(p,selected_genes,CS.data))
+  return(list(p,selected_genes,sce))
 }
-
+#' A function Visualize Dimensional Reduction genes
+#'
+#'
+#'
+#' @param sce a SingleCellExperiment object as input
+#' @param ndims number of PCs to visualize
+#' @inputs sce a SingleCellExperiment object as input
+#' @return a ggplot
+#' @examples
+#'
+#' dim_lodingsViz(sce, ndims = 2)
+#'
 #Dimension loadings plot (PCA)
-dim_lodingsViz<-function(CS.data,ndims, ngenes=2){
+dim_lodingsViz<-function(sce,ndims, ngenes){
 
   #condition to select ngenes to plot
   if(ndims<=6) ngenes = 20
@@ -86,7 +97,8 @@ dim_lodingsViz<-function(CS.data,ndims, ngenes=2){
   plots <- lapply(
     1:ndims,
     FUN=function(i) {
-      for(j in reducedDimNames(CS.data)){
+      #check and select PCA name
+      for(j in reducedDimNames(sce)){
         if(j=="BEPCA"){
           rdim_name= "BEPCA"
         }
@@ -94,7 +106,7 @@ dim_lodingsViz<-function(CS.data,ndims, ngenes=2){
           rdim_name= "PCA"
         }
       }
-      loading<-reducedDim(CS.data,rdim_name)
+      loading<-reducedDim(sce,rdim_name)
       loading<-attr(loading,"rotation")
       loading<-as.data.frame(loading)
 
@@ -118,12 +130,23 @@ dim_lodingsViz<-function(CS.data,ndims, ngenes=2){
   return(plots)
 }
 
+#' A function Visualize Dimensional reduction heatmap
+#'
+#' @param sce a SingleCellExperiment object as input
+#' @param ndims number of PCs to visualize
+#' @param nfeatures number of genes to plot
+#' @inputs sce a SingleCellExperiment object as input
+#' @return a a ggplot
+#' @examples
+#'
+#' dim_heatmap(sce, ndims = 2, nfeatures =10)
+#'
 #Dim Heatmap
-dim_heatmap=function(CS.data,ndims,nfeatures){
+dim_heatmap=function(sce,ndims,nfeatures){
   plots <- lapply(
     1:ndims,
     FUN=function(i) {
-      for(j in SingleCellExperiment::reducedDimNames(CS.data)){
+      for(j in SingleCellExperiment::reducedDimNames(sce)){
         if(j=="BEPCA"){
           rdim_name= "BEPCA"
         }
@@ -132,22 +155,25 @@ dim_heatmap=function(CS.data,ndims,nfeatures){
         }
       }
 
-      loading<-reducedDim(CS.data,rdim_name)
+      loading<-reducedDim(sce,rdim_name)
       loading<-attr(loading,"rotation")
       loading<-as.data.frame(loading)
       data.plot=head(loading[order(abs(loading[,i]),decreasing=TRUE),],nfeatures)[i]
-      for(k in assayNames(CS.data)){
+      for(k in assayNames(sce)){
         if(k=="BEcounts"){
           count= "BEcounts"
         }
         else if (k == "BENMcounts") {
           count= "BENMcounts"
         }
-        else{
+        else if(k == 'NMcounts'){
           count = "NMcounts"
         }
+        else{
+          count = 'count'
+        }
       }
-      edata<-assay(CS.data, count)
+      edata<-assay(sce, count)
       ss=edata[row.names(edata) %in% rownames(data.plot),]
       df_num_scale = scale(ss)
       df_num_scale[is.na(df_num_scale)] = 0.1
@@ -163,8 +189,20 @@ dim_heatmap=function(CS.data,ndims,nfeatures){
   return(plots)
 }
 
-ElbowPlot <- function(CS.data, ndims = 20, reduction = 'PCA') {
-  for(j in SingleCellExperiment::reducedDimNames(CS.data)){
+
+#' A function Visualize Dimensions to pick the relevent Dimensions
+#'
+#' @param sce a SingleCellExperiment object as input
+#' @param ndims number of PCs to visualize
+#' @param reduction PCA
+#' @inputs sce a SingleCellExperiment object as input
+#' @return a a ggplot
+#' @examples
+#'
+#' ElbowPlot(sce, ndims = 2, reduction = 'PCA')
+#'
+ElbowPlot <- function(sce, ndims = 20, reduction = 'PCA') {
+  for(j in SingleCellExperiment::reducedDimNames(sce)){
     if(j=="BEPCA"){
       rdim_name= "BEPCA"
     }
@@ -173,10 +211,10 @@ ElbowPlot <- function(CS.data, ndims = 20, reduction = 'PCA') {
     }
   }
 
-  data.use<-reducedDim(CS.data,rdim_name)
+  data.use<-reducedDim(sce,rdim_name)
   data.use<-attr(data.use,"percentVar")
 
-  #data.use=reducedDim(CS.data, 'PCA')
+  #data.use=reducedDim(sce, 'PCA')
   if (length(x = data.use) == 0) {
     stop(paste("No standard deviation info stored for", reduction))
   }
@@ -194,20 +232,70 @@ ElbowPlot <- function(CS.data, ndims = 20, reduction = 'PCA') {
   return(plot)
 }
 
-PCA_run<-function(CS.data,topGenes)
+# A function to perform PCA using scater
+PCA_run<-function(sce,topGenes)
 {
-  data=scater::runPCA(CS.data,subset_row=topGenes)
+  data=scater::runPCA(sce,subset_row=topGenes)
   return(data)
 }
 
-volcano_plot<- function(CS.data, fc=2, pval= 0.005){
+#' A function to make a DEG table
+#'
+#' @param DEG a Differentilly expressed gene Dataframe
+#' @param fc Fold change cutoff
+#' @param reduction PCA
+#' @inputs pval p value cutoff
+#' @return a dataframe
+#' @examples
+#'
+#' DEG_table(DEG, fc=2, pval= 0.005)
+#'
+
+
+#DEG Table
+DEG_table<- function(DEG, fc=2, pval= 0.005){
   library(ggpubr)
   library(ggrepel)
-  d=CS.data
+  d=DEG
   names(d)[1]=c("log2FC")
   d$label= rownames(d)
 
 
+  d=d[!is.na(d[,2]),]
+  # col 2 fdr
+  d$class="none"
+  if(nrow(d[d[,2] <= pval & d[,1] >= fc,])!=0) d[d[,2] <= pval & d[,1] >= fc,]$class="UP"
+  if(nrow(d[d[,2] <= pval & d[,1] <= -fc,])!=0) d[d[,2] <= pval & d[,1] <= -fc,]$class="DOWN"
+  UP <- d[grepl("UP", d$class),]
+  DOWN <- d[grepl("DOWN", d$class),]
+  NONE <- d[grepl("none", d$class),]
+  up_num=nrow(d[d$class == "UP",])
+  down_num=nrow(d[d$class == "DOWN",])
+  nont_reg<- nrow(d[d$class == "none",])
+  table<- cbind(up_num,down_num, nont_reg ) %>% as.data.frame()
+  colnames(table) <- c("UP", "Down", "None")
+  rownames(table) <- "DEG"
+  return(table)
+}
+
+
+#' A function to make volcano plot from a DEG table
+#'
+#' @param deg_table a Differentilly expressed gene table (Dataframe)
+#' @param fc Fold change cutoff
+#' @param reduction PCA
+#' @param pval p value cutoff
+#' @return a a ggplot
+#' @examples
+#'
+#' volcano_plot(deg_table, fc=2, pval= 0.005)
+#'
+volcano_plot<- function(deg_table, fc=2, pval= 0.005){
+  library(ggpubr)
+  library(ggrepel)
+  d=deg_table
+  names(d)[1]=c("log2FC")
+  d$label= rownames(d)
   d=d[!is.na(d[,2]),]
   d$log10=-log10(d[,2])  # col 2 fdr
   d$class="none"
@@ -228,53 +316,39 @@ volcano_plot<- function(CS.data, fc=2, pval= 0.005){
     geom_point(data = d[d$class=="none",],aes(y=log10,color="none"))+
     geom_point(data = d[d$class=="DOWN",],aes(y=log10,color="DOWN"))+
     scale_color_manual(values = colors)+
-    ylab(paste0("-log10 ",names(d)[2]))+xlab("Log2FoldChange")+
-    theme_pubr(base_size = 12,border=TRUE)+geom_hline(yintercept=-log10(pval), linetype="dashed",
-                                                      color = "black", linewidth=0.5)+geom_vline(xintercept=c(-fc,fc), linetype="dashed",
-                                                                                            color = "black", linewidth=0.5)+geom_label_repel(data=top,
-
-                                                                                              fontface="bold",
-                                                                                              color="purple",
-                                                                                              box.padding=unit(1, "lines"),
-                                                                                              point.padding=unit(0.5, "lines"),
-                                                                                              segment.colour = "purple",segment.size = 0.5,segment.alpha = 0.5,max.overlaps = Inf)+
+    ylab(paste0("-log10 ",names(d)[2]))+
+    xlab("Log2FoldChange")+
+    theme_pubr(base_size = 12,border=TRUE)+
+    geom_hline(yintercept=-log10(pval), linetype="dashed",color = "black", linewidth=0.5)+
+    geom_vline(xintercept=c(-fc,fc), linetype="dashed",color = "black", linewidth=0.5)+
+    geom_label_repel(data=top,fontface="bold",color="purple",box.padding=unit(1, "lines"),
+    point.padding=unit(0.5, "lines"),segment.colour = "purple",segment.size = 0.5,segment.alpha = 0.5,max.overlaps = Inf)+
     annotate(geom = 'text', label = paste0('UP_Number: ', up_num), x = Inf, y = Inf, hjust = 1.1, vjust = 1.5)+
-    annotate(geom = 'text', label = paste0('DOWN_Number: ', down_num), x = -Inf, y = Inf, hjust = -0.1, vjust = 1.5)+labs(color = "class")
+    annotate(geom = 'text', label = paste0('DOWN_Number: ', down_num), x = -Inf, y = Inf, hjust = -0.1, vjust = 1.5)+
+    labs(color = "class")
 return(p)
 }
 
 
-#DEG Table
-DEG_table<- function(CS.data, fc=2, pval= 0.005){
-  library(ggpubr)
-  library(ggrepel)
-  d=CS.data
-  names(d)[1]=c("log2FC")
-  d$label= rownames(d)
+#' A function annotate Cell Type
+#'
+#' @param sce a SingleCellExperiment object
+#' @param method SingleR/sctype
+#' @param dataset for singleR method: celldex::BlueprintEncodeData()
+#' @param TissueType Tissue Type
+#' @param used count matrix raw or normalized
+#' @return a cell type annotated SingleCellExperiment object
+#' TissueType information is only required for sctype method
+#' @examples
+#'
+#' Cell_Type_Annotation(data=sce,method='SingleR',dataset="BlueprintEncodeData", TissueType, used='counts')
+#'
 
-
-  d=d[!is.na(d[,2]),]
-   # col 2 fdr
-  d$class="none"
-  if(nrow(d[d[,2] <= pval & d[,1] >= fc,])!=0) d[d[,2] <= pval & d[,1] >= fc,]$class="UP"
-  if(nrow(d[d[,2] <= pval & d[,1] <= -fc,])!=0) d[d[,2] <= pval & d[,1] <= -fc,]$class="DOWN"
-  UP <- d[grepl("UP", d$class),]
-  DOWN <- d[grepl("DOWN", d$class),]
-  NONE <- d[grepl("none", d$class),]
-  up_num=nrow(d[d$class == "UP",])
-  down_num=nrow(d[d$class == "DOWN",])
-  nont_reg<- nrow(d[d$class == "none",])
-  table<- cbind(up_num,down_num, nont_reg ) %>% as.data.frame()
-  colnames(table) <- c("UP", "Down", "None")
-  rownames(table) <- "DEG"
-  return(table)
- }
-
-
-Cell_Type_Annotation<- function(data=CS.data,method='SingleR', dataset="BlueprintEncodeData", TissueType=TissueType,  clusters='', used='counts')
+Cell_Type_Annotation<- function(data=sce,method='SingleR',
+                                dataset="BlueprintEncodeData", TissueType,  clusters, used='counts')
 {
   clusters=data@colData$cluster
-  # CS.data= SingleCellExperiment object
+  # sce= SingleCellExperiment object
   # dataset = for singleR method: celldex::
   # TissueType = input for sctype (Lung , liver ...)
   # method= SingleR/sctype
@@ -360,8 +434,16 @@ Cell_Type_Annotation<- function(data=CS.data,method='SingleR', dataset="Blueprin
   return(data)
 }
 
-
-#Plot_raw data
+#' A function Plot raw data
+#'
+#' @param sce a SingleCellExperiment object
+#' @param colour_by column name in colData
+#' @return a plots
+#' @examples
+#'
+#' Plot_raw_data(sce, colour_by="All")
+#'
+#Plot raw data
 Plot_raw_data<-function(sce, colour_by="All"){
 
   cowplot::plot_grid(plotColData(sce, y = "nFeature_RNA", x = colour_by, colour_by = colour_by),
@@ -397,6 +479,16 @@ Plot_raw_data<-function(sce, colour_by="All"){
 #   labs(x = "PBMC", title = "nCount_RNA", y=NULL)+
 #   theme(axis.text.x = element_blank(), plot.title = element_text(hjust = 0.5))
 #
+
+#' A function Plot filtered data
+#'
+#' @param sce a SingleCellExperiment object
+#' @param colour_by column name in colData
+#' @return  plots
+#' @examples
+#'
+#' plot_filterd_data(sce, colour_by="All")
+#'
 #Plot Filterd data
 plot_filterd_data<- function(scdata,  y=NULL, colour_by=NULL, x=NULL){
   edata=scdata%>% colData() %>% data.frame()
@@ -449,6 +541,17 @@ plot_filterd_data<- function(scdata,  y=NULL, colour_by=NULL, x=NULL){
 }
 
 
+#' A function to Plot marker genes of interest
+#'
+#' @param sce a SingleCellExperiment object
+#' @param method plot on expression value or on reduction
+#' @param colour_by column name in colData
+#' @param features gene symbols one or multiple
+#' @return  plots
+#' @examples
+#'
+#' plot_filterd_data(sce, colour_by="All")
+#'
 ### Plot Marker genes
 plot_Markers <- function(sce, method, colour_by, dimred = "PCA", features, by_exprs_values, x, text_by= 'cluster' ){
   plot = switch(EXPR = method,
