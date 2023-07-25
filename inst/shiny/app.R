@@ -12,16 +12,16 @@ lapply(all_packages, library, character.only=TRUE)
 
 #
 options(shiny.maxRequestSize=10000*1024^2)
-
+source("fun/cs.R",encoding = "utf-8")
 source("fun/visualization.R",encoding = "utf-8")
-source("fun/data_input_function.R",encoding = "utf-8")
+source("fun/Preprocessing.R",encoding = "utf-8")
 
 source("module/sidebar.R",encoding = "utf-8")
 source("module/data_input_new.R",encoding = "utf-8")
 source("module/Pre_QC.R",encoding = "utf-8")
 source("module/Normalization.R",encoding = "utf-8")
 source("module/PCA_Dimension_Reduction.R",encoding = "utf-8")
-source("fun/cs.R",encoding = "utf-8")
+
 source("module/marker_identification_DEG.R",encoding = "utf-8")
 source("module/Cell_Type.R",encoding = "utf-8")
 

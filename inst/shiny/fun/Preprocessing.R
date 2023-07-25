@@ -1,8 +1,17 @@
-# Read in file and perform validation.
+#' A function to read count matrix and convert to a SingleCellExperiment object
+#' and will add official gene symbol if not present
+#' Only support Human and mouse data
+#'
+#' @param path an absolute path to the file
+#' @inputs txt/csv || txt.gz/csv.gz || .rds file
+#' @return a SingleCellExperiment object with gene symbol
+#' @examples
+#'
+#' load_sce_obj("~/Desktop/files/counts.csv")
+#'
 library(xfun)
 load_sce_obj <- function(path){
   errors <- c()
-
 
   # try to read in file
 
@@ -29,33 +38,44 @@ load_sce_obj <- function(path){
         obj<- c(errors, "Invalid  file.")
       }
 
-  # Validate obj is a SingleCellExperiment object
-  if (inherits(obj, "character")){
-    errors <- c(errors)
-    return(errors)
-  }
-  else if(typeof(obj)=="S4")
-  {
-    if(!inherits(obj, "SingleCellExperiment"))
-    {
-      obj<-as.SingleCellExperiment(obj)
-
+    # Validate obj is a SingleCellExperiment object
+    if (inherits(obj, "character")){
+      errors <- c(errors)
+      return(errors)
     }
-    return(obj)
-  }
-  else{
-    obj = SingleCellExperiment(assay = list(counts = obj))
-    if( any(str_detect(rownames(obj), "ENSG")) | any(str_detect(rownames(obj), "ENSMU"))){
-      obj <- convert_to_Symbol(obj)
+    else if(typeof(obj)=="S4")
+    {
+      if(!inherits(obj, "SingleCellExperiment"))
+      {
+        obj<-as.SingleCellExperiment(obj)
+
+      }
+      return(obj)
     }
     else{
-      obj<- obj
+      obj = SingleCellExperiment(assay = list(counts = obj))
+      if( any(str_detect(rownames(obj), "ENSG")) | any(str_detect(rownames(obj), "ENSMU"))){
+        obj <- convert_to_Symbol(obj)
+      }
+      else{
+        obj<- obj
+      }
+      return(obj)
     }
-    return(obj)
-  }
 
 }
 
+#' A function to convert Ensemble gene symbol to HUGO gene symbol
+#'
+#' Only support Human and mouse data
+#'
+#' @param obj an S4 object or a dataframe containing row names Ensemble gene symbol
+#'
+#' @return annotated file
+#' @examples
+#'
+#' convert_to_Symbol(obj = obj)
+#'
 convert_to_Symbol <- function(obj){
   library(biomaRt)
   if( any(str_detect(rownames(obj), "ENSG")) & any(str_detect(rownames(obj), "ENSMU")))
@@ -110,7 +130,17 @@ convert_to_Symbol <- function(obj){
   return(obj)
 }
 
-
+#' A function to create an annotation dataframe
+#'
+#'
+#' @param current_data a dataframe containing annotation about the experiment
+#' if current_data==NULL then the function will use annotation_lab.txt file from www folder
+#'
+#' @return formatted dataframe
+#' @examples
+#'
+#' metadata_modal(current_data = dataframe) || metadata_modal(current_data==NULL)
+#'
 
 metadata_modal<- function(current_data){
   if(is.null(current_data)){
@@ -128,6 +158,7 @@ metadata_modal<- function(current_data){
     if(class(d)=="data.frame") anno$Cell<-rownames(d)
 
     d<-as.data.frame(anno)
+    #if no information is available then fill the dataframe with NA
     if(ncol(d)==1){
       d$Patients=NA
       d$Type=NA
@@ -138,12 +169,28 @@ metadata_modal<- function(current_data){
   return(d)
 }
 
+
+#' A function to add QC matrix to the SingleCellExperiment object
+#'
+#'
+#' @param sce & metadata  a SingleCellExperiment object and the path to the metadata.txt
+#' file containing annotation about the experiment
+#' if metadat file not available pass only the SingleCellExperiment object
+#'
+#'
+#' @return SingleCellExperiment object with qc matrix information
+#' @examples
+#'
+#' add_QC_matrix(sce, metadata= '~/Desktop/files/metadata.txt') || add_QC_matrix(sce, metadata=NULL)
+#'
+
 add_QC_matrix<- function(sce, metadata=NULL){
   if(is.null(metadata)){
     count<- assay(sce, "counts")
     sce<- SingleCellExperiment(assay = list(counts = count))
   }
   else{
+    #Read the metadata file which is in .txt format
     metadata<- read.table(metadata, header = TRUE, sep = "\t")
     colnames(metadata)[1]<-"Cell"
     if(ncol(metadata)==1){
@@ -160,12 +207,7 @@ add_QC_matrix<- function(sce, metadata=NULL){
     if(any(colnames(sce@colData)=='Batch')){
       colnames(colData(sce))[colnames(colData(sce))=='Batch'] = 'batch'
     }
-
-
-
-     }
-
-
+  }
 
   #calculate %MT genes
   mito_genes <- rownames(sce)[grep("(?i)^MT-", rownames(sce))]
@@ -189,13 +231,27 @@ add_QC_matrix<- function(sce, metadata=NULL){
 
   sce<- SingleCellExperiment(assay = list(counts = assay(sce,'counts')),
                              colData = colTable)
+  #Replace NA with 0
   sce@colData$Hemoglobin_gene_percent <- replace(sce@colData$Hemoglobin_gene_percent, is.na(sce@colData$Hemoglobin_gene_percent), 0)
   sce@colData$Mito_gene_percent <- replace(sce@colData$Mito_gene_percent, is.na(sce@colData$Mito_gene_percent), 0)
   sce@colData$Ribosomal_gene_percent <- replace(sce@colData$Ribosomal_gene_percent, is.na(sce@colData$Ribosomal_gene_percent), 0)
-return(sce)
+  return(sce)
 
 }
 
+
+#' A function to create a table of QC matrix from a SingleCellExperiment object
+#'
+#'
+#' @param sce  a SingleCellExperiment object
+#' object containing  QC matrix information
+#'
+#'
+#' @return a  table with qc matrix information
+#' @examples
+#'
+#' QC_Stats(sce)
+#'
 QC_Stats <- function(sce){
 
   min_UMI <- min(sce@colData$nCount_RNA)
@@ -232,6 +288,20 @@ QC_Stats <- function(sce){
 }
 
 #Filter raw data
+#' A function to Filter raw data from a SingleCellExperiment object
+#'
+#'
+#' @param sce  a SingleCellExperiment object as input and other parameters to filter raw data
+#'
+#'
+#' @return a QC filtered SingleCellExperiment object
+#' @examples
+#'
+#' filter_raw_data(sce,min_count_gene=3, max_count_gene=10000,min_genes_per_cell=100,
+#max_genes_per_cell=10000,min_count_cell=3,max_count_cell=100000,mt_percnt=0.5,ribsoml_percnt=0.5 #Ribosomal gene percentage
+#hemglbn_percnt=NULL #Hemoglobin gene percentage
+#)
+#'
 filter_raw_data <- function(
     sce, #SingleCellExperiment object
     min_count_gene=3, #min times a gene is expressed
