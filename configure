@@ -1,0 +1,10 @@
+#!/bin/sh
+Rscript -e "
+if (!requireNamespace('BiocManager', quietly = TRUE)) {
+  install.packages('BiocManager')
+}
+
+BiocManager::install(c("BASiCS", "celldex", "CellMixS", "clusterProfiler",
+                      "DEsingle", "destiny", "DropletUtils", "enrichplot",
+                      "kBET", "Linnorm", "monocle3", "org.Hs.eg.db", "org.Mm.eg.db",
+                      "PCAtools", "rrvgo", "RUVSeq", "scater", "SCnorm", "singleCellTK", "SingleR", "slingshot"))
