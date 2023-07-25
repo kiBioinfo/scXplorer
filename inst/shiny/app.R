@@ -10,8 +10,8 @@ lapply(all_packages, library, character.only=TRUE)
 # reticulate::use_python("/home/shiny/miniconda3/bin/python", required= TRUE)
 
 
-
-options(shiny.maxRequestSize=100000*1024^2)
+#
+options(shiny.maxRequestSize=10000*1024^2)
 
 source("fun/visualization.R",encoding = "utf-8")
 source("fun/data_input_function.R",encoding = "utf-8")
@@ -35,6 +35,7 @@ source("module/batch_correction_evaluation.R",encoding = "utf-8")
 source("module/Cell_developement.R",encoding = "utf-8")
 source("module/plot_download.R", encoding = "utf-8")
 source("module/plot_markers.R", encoding = "utf-8")
+source("module/Introduction.R")
 
 
 
@@ -76,7 +77,7 @@ sidebar=bs4DashSidebar(
 
   body=bs4DashBody(
 	useShinyjs(),
-	
+
 	# use_theme(create_theme(
 	#   theme = "default",
 	#   bs_vars_wells(
@@ -84,7 +85,7 @@ sidebar=bs4DashSidebar(
 	#     border = "#3f2d54"
 	#   )
 	# )),
-	
+  #include styling
 	tags$head( includeCSS("www/dark_mode.css")),
 	#tags$style("@import url(https://use.fontawesome.com/releases/v6.3.0/css/all.css);"),
 	#tags$style(includeCSS("~/Desktop/Tapan/fontawesome/fontawesome-free-6.4.0-web/css/all.css")),
@@ -92,7 +93,7 @@ sidebar=bs4DashSidebar(
 
 
 	bs4TabItems(
-
+	  bs4TabItem(tabName="intro",Intro_UI("intro")),
 	  bs4TabItem(tabName="dataInput",datainputUI("dataInput")),
 	  bs4TabItem(tabName="PreQC",preQCUI("preQC")),
 	  bs4TabItem(tabName="normalization",normalizationUI("normalization")),
@@ -137,7 +138,7 @@ server <- function(input, output, session) {
   useAutoColor()
 
   waiter_hide()
-  #venn module
+  Intro_Server('intro')
   sidebarServer("sidebar")
   raw_data <-datainputServer("dataInput")
   filtered_data<-preQCServer("preQC", raw_data)
@@ -158,9 +159,9 @@ server <- function(input, output, session) {
   DGE<-de_analysis_Server("de_analysis", dim_reduction_data , dim_reduction_batch_correction )
   Plot_Markers_Server("marker_plot", DGE)
   cell_type<-cell_type_analysis_Server("cell_type",DGE)
-  
+
   cell_developement_analysis_Server("Cell_develope", cell_type)
-  
+
 }
 
 shinyApp(ui, server)

@@ -36,6 +36,7 @@ cell_developement_analysis_UI<-function(id) {
                           uiOutput(ns("seedby")),ns = NS(id)
                         ),
                         uiOutput(ns("colour")),
+                        downloadBttn(ns('final_result'), 'Download Result', color= 'royal'),
 
                         style = " background-color: #CEECF5; border: 3px solid #CEECF5; "
 
@@ -80,12 +81,14 @@ cell_developement_analysis_Server <-function(id,cell_type) {
       })
       output$seedby <- renderUI({
         req(scdata())
-        if(!("cellType" %in% colnames(colData(scdata())))){
-          selectizeInput(ns("cell_type"), label= "Choose the cell types:", choices=unique((scdata()@colData$label)), selected=unique((scdata()@colData$label))[1], multiple=T)
-        }
-        else{
-          selectizeInput(ns("cell_type"), label= "Choose the cell types:", choices=unique((scdata()@colData$cellType)), selected=unique((scdata()@colData$cellType))[1], multiple=T)
-        }
+        # if(!("cellType" %in% colnames(colData(scdata())))){
+        #   selectizeInput(ns("seedBy"), label= "Choose the cell types:", choices=unique((scdata()@colData$label)), selected=unique((scdata()@colData$label))[1], multiple=T)
+        # }
+        # else{
+        #   selectizeInput(ns("seedBy"), label= "Choose the cell types:", choices=unique((scdata()@colData$cellType)), selected=unique((scdata()@colData$cellType))[1], multiple=T)
+        # }
+        selectizeInput(ns("seedBy"), label= "Choose the cell types:",
+                       choices=unique((scdata()@colData$cellType)), selected=unique((scdata()@colData$cellType))[1], multiple=T)
       })
 
       Cell_develpment<-reactive({
@@ -99,46 +102,61 @@ cell_developement_analysis_Server <-function(id,cell_type) {
         else{
           shinyjs::hideElement("curve")
         }
-       p=CellDevelopment(scdata(),method=input$method, runWith = input$reduction, seedBy = input$cell_type)
+        if(input$method =='Monocle'){
+          req(input$seedBy)
+          p=CellDevelopment(scdata(), seedBy = input$seedBy)
+        }
+        else{
+          p=CellDevelopment(scdata(),method=input$method, runWith = input$reduction, seedBy = input$seedBy)
+        }
+
        vals$p <- p
        p
 
       })
 
-
-
-
-
-          #shinyjs::enable("cell_development_curve")
-
-          output$cell_development <-renderPlot({
-            req(plot_cell_development())
-
-            plot_cell_development()
-
-          }, res = 96)
-
-          output$cell_development_curve <-renderPlot({
-
-            plot_cell_development_curve()
-
-          }, res = 96)
-
-
-
-
-      #plot cell development
+  #plot cell development
 
       plot_cell_development <- reactive({
+        withProgress(message = 'Building single-cell trajectories...', value = 0, {
         req(Cell_develpment())
         Plot_Development(CS.data = Cell_develpment() ,runWith = input$reduction, colorBy = input$colour_by )
-      })
+        })
+        })
 
       plot_cell_development_curve <-reactive({
         req(Cell_develpment())
 
         Plot_Development_Princurve(CS.data =Cell_develpment(), runWith = input$reduction, colorBy = input$colour_by )
       })
+
+
+
+      #shinyjs::enable("cell_development_curve")
+
+      output$cell_development <-renderPlot({
+        req(plot_cell_development())
+
+        plot_cell_development()
+
+      }, res = 96)
+
+      output$cell_development_curve <-renderPlot({
+
+        plot_cell_development_curve()
+
+      }, res = 96)
+
+
+      #Download data
+      output$final_result <- downloadHandler(
+        filename = function() {
+          paste0( "scRNA-Seq_analysis", "-", Sys.Date(), ".rds")
+        },
+        content = function(file) {
+          saveRDS(Cell_develpment(), file = file)
+        }
+      )
 
 
       #Download plot

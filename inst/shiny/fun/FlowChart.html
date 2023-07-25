@@ -1,0 +1,107 @@
+# sceExplorer a shiny app for exloratoration of scRNA-Seq data analysis
+
+## Overview
+
+A GUI which can be used scRNA-Seq analysis starting from various type of data inputs to trajectory analysis.
+
+
+## FlowChart
+Raw data:
+-   Input: Count matrix/ .f5 file/ 10X files/ .rds object and annotation
+    file
+
+-   Output: .rds object (SingleCellExperiment class)
+
+QC filter (SingleCellExperiment):
+
+-   Input: .rds object
+
+-   Output: filtered data
+
+Normalization:
+
+-   Input: QC-filtered data
+
+<!-- -->
+
+-   Output: Normalized counts
+
+Highly Variable Gene Selection:
+
+-   Input: Normalized counts
+
+-   Output: VGcounts
+
+Dimension Reduction:
+
+i.  Linear:
+
+-   Input: VGcounts
+
+-   Output: PCA
+
+ii. Non-Linear:
+
+-   Input: PCA
+
+-   Output: Umap/tSNE
+
+Clustering:
+
+-   Input: PCA/Umap/tSNE
+
+-   Output: Clusters
+
+Batch Correction:
+
+i.  Correction on Expression Matrix
+
+-   Input: VGcounts
+
+-   Output: BEVGcounts
+
+    -   Dimension Reduction:
+
+        -   Linear:
+
+            -   Input: BEVGcounts
+
+            -   Output: BEPCA
+
+ii. Correction on Dimension Reduction
+
+-   Input: counts
+
+-   Output: BEPCA
+
+Non-Linear:
+
+-   Input: BEPCA
+
+-   Output: Umap/tSNE
+
+Clustering:
+
+-   Input: BEPCA/Umap/tSNE
+
+-   Output: Clusters
+
+DEG Analysis:
+
+-   Input: Raw counts and comparison vector
+
+-   Output: DEG table
+
+Cell Type Annotation:
+
+-   Input: Count Matrix and clusters
+
+-   Output: Cell type
+
+Cell Development:
+
+-   Input: Cell Type
+
+-   Output: Cell Development
+
+

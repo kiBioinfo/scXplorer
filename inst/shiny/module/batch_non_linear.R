@@ -48,10 +48,10 @@ batch_non_linear_UI<-  function(id) {
                                    selectInput(ns("algo"),label = "Choose the Algorithm:",
                                                choices = c("walktrap", "louvain", "infomap", 'fast_greedy', "label_prop", 'leading_eigen'), selected = "fast_greedy"),ns = NS(id) ),
                                  uiOutput(ns('color_non_linear')),
-                                 actionBttn(ns("go"),label="EXEC",style = "jelly",color = "success",icon = icon("sliders")),
+                                 shinyjs::hidden(actionBttn(ns("go"),label="EXEC",style = "jelly",color = "success",icon = icon("sliders"))),
                                  tags$br(),
                                  tags$br(),
-                                 shinyjs::hidden(actionBttn(ns("DGE_analsis_tab"), label="Continue to DE Analysis",
+                                 shinyjs::hidden(actionBttn(ns("DGE_analsis_tab"), label="Next DE Analysis",
                                                             block = TRUE,style = "unite",color = "royal", icon = icon("angles-right",class="fa-duotone fa-angles-right"))),
                                  style = " background-color: #CEECF5; border: 3px solid #CEECF5;"
                        )
@@ -99,6 +99,7 @@ batch_non_linear_Server <- function(id,batch_corrct) {
         if(any(c("All", "sizeFactor") %in% colnames(colData(CS.data)))){
           CS.data@colData <- subset(CS.data@colData, select = -c(All, sizeFactor))
         }
+        shinyjs::show("go")
         CS.data
 
       })# Cluster find data

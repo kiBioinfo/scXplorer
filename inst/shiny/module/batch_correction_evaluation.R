@@ -45,6 +45,11 @@ batchCorrct_evalutn_Server <- function(id, batch_corrct) {
 
       scdata<-reactive({
         req(batch_corrct())
+        validate(
+          need(class(batch_corrct()) == "SingleCellExperiment" && any(reducedDimNames(batch_corrct())=='BEPCA'),
+               "Please use another approch for batch correction")
+
+        )
         batch_corrct()
       })
 
@@ -54,16 +59,23 @@ batchCorrct_evalutn_Server <- function(id, batch_corrct) {
         req(scdata())
         req(input$batch_evaluation)
 
-
+        withProgress(message = 'Batch evaluation in progress', value = 0, {
+          # for(i in 1:10) {
+          #   incProgress(1/10)
+          #   Sys.sleep(0.5)
+          # }
         d= BatchEva(CS.data = scdata(), method = input$batch_evaluation)
-        d
+
+        return(d)
+        })
       })
 
       output$batch_evaluation_plot <-renderPlot({
         batch_evaluation()
       })
 
-      download_plot_Server("batch_crrcn_evln_plot", input_data = batch_evaluation , name =paste0("batch_correction_evaluation_by_", input$batch_evaluation))
+      download_plot_Server("batch_crrcn_evln_plot", input_data = batch_evaluation ,
+                           name =paste0("batch_correction_evaluation_by_", input$batch_evaluation))
 
       }
   )

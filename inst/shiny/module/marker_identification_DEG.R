@@ -97,7 +97,10 @@ de_analysis_UI<-function(id) {
                                        column(width = 2  ,
                                               uiOutput(ns("group_by")),
                                               uiOutput(ns("top_genes")),
-                                              uiOutput(ns("used"))
+                                              uiOutput(ns("used")),
+                                              actionBttn(ns("toAnalyze"), "Next Plot Markers",
+                                                         style = "unite",color = "royal",
+                                                         icon = icon("angles-right",class="fa-duotone fa-angles-right"))
                                     ))),
 
 
@@ -192,7 +195,7 @@ de_analysis_Server <-function(id,dim_reduction_data , dim_reduction_batch_correc
         req(scdata())
         req(input$comparision_vector)
         g=colData(scdata())[,input$comparision_vector]
-        g=unique(sort(g))
+        g=unique(g) %>% str_sort(numeric = TRUE)
         g
       })
 
@@ -242,6 +245,8 @@ de_analysis_Server <-function(id,dim_reduction_data , dim_reduction_batch_correc
         validate(
           need(inherits(scdata(),"SingleCellExperiment"), "Please select a data set")
         )
+        withProgress(message = 'DEG identification in progress...',
+                     detail = 'This may take a while...', value = 0, {
         if(input$DE_Analysis== "pairwise"){
           deg<-DEG_Analyzer(scdata(),cmp = input$comparision_vector, method = input$method_DEGA, group1 = input$group1, group2 = input$group2)
         }
@@ -251,6 +256,7 @@ de_analysis_Server <-function(id,dim_reduction_data , dim_reduction_batch_correc
 
 
         return(deg)
+        })
       })
 
       #One Vs Rest
@@ -264,7 +270,7 @@ de_analysis_Server <-function(id,dim_reduction_data , dim_reduction_batch_correc
         else {
           selectInput(ns("deg_table"),
                       label = "Select DEG Table:",
-                      choices = c(names(DEG_P())), selected = names(DEG_P())[1])
+                      choices = c(names(DEG_P()) %>% str_sort(numeric = TRUE)), selected = names(DEG_P())[1])
         }
 
       })
@@ -382,6 +388,10 @@ de_analysis_Server <-function(id,dim_reduction_data , dim_reduction_batch_correc
 
        }, rownames = TRUE, bordered=TRUE, align='c')
 
+       observeEvent(input$toAnalyze,
+                    {
+                      shinyjs::runjs("$('a[data-value=\"plot_markers\"]').tab('show');")
+                    })
 
        return(scdata)
 

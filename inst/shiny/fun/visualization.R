@@ -1,4 +1,20 @@
-VariableGene_hvg_plot = function(CS.data, used = 'counts', ngene = 1000, batch = F) {
+#' Plot highly variable genes
+#'
+#' This function takes an object of SingleCellExperiment class
+#'
+#'
+#' @param used can be the raw count matrix or the normalized count matrix
+#' @param ngene number of genes of interest
+#' @param batch true or false
+#' @return a list containg a ggplot, a highly variable gene information table and the SingleCellExperiment object
+#' @examples
+#' sce <- VariableGene_hvg_plot(CS.data, used = 'counts', ngene = 1000, batch = F)
+#' the plot can be visualize sce[[1]]
+#' the table can be shown sce[[2]]
+#' the SingleCellExperiment object can be accessed sce[[3]]
+#'
+#'
+ VariableGene_hvg_plot = function(CS.data, used = 'counts', ngene = 1000, batch = F) {
   # use assay of interest to find top HVG
 
     edata = assay(CS.data, used) %>% as.data.frame()
@@ -47,17 +63,18 @@ VariableGene_hvg_plot = function(CS.data, used = 'counts', ngene = 1000, batch =
   # }
   #
 
-p<-    ggplot(var, aes(x = mean, y = bio)) +
-  geom_point(colour = ifelse(var$Status=="TRUE","red","black"), size = 1.5, alpha = 1.5) + ggrepel::geom_text_repel(data = top20, mapping = aes(label = rownames(top20),x = mean,  y = bio), box.padding=unit(1, "lines"),
-                                                                                                                    point.padding=unit(0.5, "lines"),
-                                                                                                                    segment.colour = "purple",segment.size = 0.5,segment.alpha = 0.5,max.overlaps = Inf) +
-  geom_point(data = top20, mapping = aes(label = rownames(top20)), color = "purple") + cowplot::theme_cowplot()+
-  labs(x="Average Expression",y="Standardized Variance")
+  p <-ggplot(var, aes(x = mean, y = bio)) +
+  geom_point(colour = ifelse(var$Status=="TRUE","red","black"), size = 1.5, alpha = 1.5) +
+    ggrepel::geom_text_repel(data = top20, mapping = aes(label = rownames(top20),x = mean,  y = bio), box.padding=unit(1, "lines"),
+                             point.padding=unit(0.5, "lines"),
+                             segment.colour = "purple",segment.size = 0.5,segment.alpha = 0.5,max.overlaps = Inf) +
+    geom_point(data = top20, mapping = aes(label = rownames(top20)), color = "purple") + cowplot::theme_cowplot()+
+    labs(x="Average Expression",y="Standardized Variance")
 
-return(list(p,selected_genes,CS.data,top.hvgs2))
+  return(list(p,selected_genes,CS.data))
 }
 
-#Dimensin loadings plot (PCA)
+#Dimension loadings plot (PCA)
 dim_lodingsViz<-function(CS.data,ndims, ngenes=2){
 
   #condition to select ngenes to plot
@@ -98,7 +115,7 @@ dim_lodingsViz<-function(CS.data,ndims, ngenes=2){
   if(ndims == 2) ncol = 2
   if(ndims >= 3) ncol = 3
   plots <- wrap_plots(plots, ncol = ncol)
-  plots
+  return(plots)
 }
 
 #Dim Heatmap
@@ -106,7 +123,7 @@ dim_heatmap=function(CS.data,ndims,nfeatures){
   plots <- lapply(
     1:ndims,
     FUN=function(i) {
-      for(j in reducedDimNames(CS.data)){
+      for(j in SingleCellExperiment::reducedDimNames(CS.data)){
         if(j=="BEPCA"){
           rdim_name= "BEPCA"
         }
@@ -134,10 +151,8 @@ dim_heatmap=function(CS.data,ndims,nfeatures){
       ss=edata[row.names(edata) %in% rownames(data.plot),]
       df_num_scale = scale(ss)
       df_num_scale[is.na(df_num_scale)] = 0.1
-      p=ggplotify::as.ggplot(pheatmap(df_num_scale[,1:100],main = paste0("PC",i),treeheight_row=0,treeheight_col=0,show_colnames=F))
-
-
-      return(p)
+      p=ggplotify::as.ggplot(pheatmap::pheatmap(df_num_scale[,1:100],main = paste0("PC",i),treeheight_row=0,treeheight_col=0,show_colnames=F))
+      p
     }
   )
   #condition to devide plot space
@@ -145,12 +160,11 @@ dim_heatmap=function(CS.data,ndims,nfeatures){
   if(ndims == 2) ncol = 2
   if(ndims >= 3) ncol = 3
   plots <- patchwork::wrap_plots(plots, ncol = ncol)
-  plots
+  return(plots)
 }
 
-
 ElbowPlot <- function(CS.data, ndims = 20, reduction = 'PCA') {
-  for(j in reducedDimNames(CS.data)){
+  for(j in SingleCellExperiment::reducedDimNames(CS.data)){
     if(j=="BEPCA"){
       rdim_name= "BEPCA"
     }
@@ -460,7 +474,7 @@ plot_Markers_reduction <- function(sce, dimred, colour_by, by_exprs_values, feat
   else{
     cowplot::plot_grid(ncol = 3, plotlist = plotlist)
   }
-  
+
 }
 
 

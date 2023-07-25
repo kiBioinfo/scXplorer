@@ -6,19 +6,23 @@ Plot_Markers_UI<- function(id) {
       fluidRow(style = "height: 78vh; overflow-y: auto;",
                column(width = 10,
                       wellPanel(
-                        plotOutput(ns('marker_gene'), height = "800px")%>% withSpinner(color="#0dc5c1",type = 6,size=0.9), style = "height: auto; border: 3px solid #CEECF5; text-align: end;",
-
-                        download_plot_UI(ns("marker_gene_p"))
+                        plotOutput(ns('marker_gene'), height = "800px")%>%
+                          withSpinner(color="#0dc5c1",type = 6,size=0.9),
+                          style = "height: auto; border: 3px solid #CEECF5; text-align: end;",
+                          download_plot_UI(ns("marker_gene_p"))
                       )
                ),
                column(width =2,
                        wellPanel(style = " background-color: #CEECF5; border: 3px solid #CEECF5;",
 
-                                 selectInput( ns("select_method"),
+                                 selectizeInput( ns("select_method"),
                                               label = "Plot Markers By:",
-                                              choices = NULL, multiple = F)
+                                              choices = c("Expression", "Reduction"), multiple = F,
+                                              selected = NULL,
+                                              options = list(placeholder = "Choose a value..."))
                                  ,
-                                 selectizeInput(ns("features"), choices =NULL, label = "Select Markers of Interest:", multiple =TRUE),
+                                 selectizeInput(ns("features"), choices =NULL,
+                                                label = "Select Markers of Interest:", multiple =TRUE),
                                  uiOutput(ns("genes")),
                                  conditionalPanel(
                                    condition  = "input.select_method == 'Expression' ",
@@ -31,9 +35,10 @@ Plot_Markers_UI<- function(id) {
                                    uiOutput(ns("dimred")),
 
                                    ns = NS(id)
-                                 )
-
-
+                                 ),
+                                 # tags$br(),
+                                 shinyjs::hidden(actionBttn(ns("toAnalyze"), "Next Cell Type",style = "unite",color = "royal",
+                                                            icon = icon("angles-right",class="fa-duotone fa-angles-right")))
                        )
                        )
       )
@@ -50,7 +55,9 @@ Plot_Markers_Server <-function(id, DGE) {
       ns <- session$ns
 
       scdata<-reactive({
-        DGE()
+        req(DGE())
+        data <- DGE()
+        return(data)
       })
 
 
@@ -63,25 +70,6 @@ Plot_Markers_Server <-function(id, DGE) {
      })
 
 
-  observe({
-
-
-    updateSelectInput(session , 'select_method',
-                      choices = c("Expression", "Reduction"), selected = 'Expression')
-
-
-    }
-    )
-
-
-
-      # output$shape <- renderUI({
-      #   req(scdata())
-      #
-      #   selectInput( ns("shape_by"),
-      #                label = "Shape By:",
-      #                choices = colnames(scdata()@colData), selected = rev(colnames(scdata()@colData))[1], selectize = F)
-      # })
       output$colour <- renderUI({
         req(scdata())
 
@@ -100,18 +88,25 @@ Plot_Markers_Server <-function(id, DGE) {
       })
 
 
+        output$marker_gene <- renderPlot({
+          req(scdata())
 
-      output$marker_gene <- renderPlot({
-        req(scdata())
-        req(input$select_method)
-        req(features_to_plot())
+          req(features_to_plot())
+          req(input$features)
+          req(input$colour_by)
+          req(input$dimred_by)
 
-        req(input$colour_by)
-        req(input$dimred_by)
-        p = plot_Markers(scdata(), method = input$select_method, colour_by = input$colour_by,
-                         dimred = input$dimred_by, features = input$features, by_exprs_values = rev(assayNames(scdata()))[1])
-        p
-      })
+          p=plot_Markers(scdata(), method = input$select_method, colour_by = input$colour_by,
+                           dimred = input$dimred_by, features = input$features,
+                           by_exprs_values = rev(assayNames(scdata()))[1])
+          shinyjs::show('toAnalyze')
+          p
+          }, res = 96)
+        observeEvent(input$toAnalyze,
+                     {
+                       shinyjs::runjs("$('a[data-value=\"Cell_type\"]').tab('show');")
+                     })
+
     }
   )
 }

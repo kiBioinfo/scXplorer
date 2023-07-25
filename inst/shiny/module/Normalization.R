@@ -35,7 +35,11 @@ normalizationUI<-  function(id) {
                                                          choices = c(
                                                            "Log normalization" ='LogNormalize',
                                                            "SCTransform"  ='sct',
-                                                           "DESeq2::vst"  ='vst', 'lib', 'scn', 'lim','ruvseq'), selected='LogNormalize')),
+                                                           "DESeq2::vst"  ='vst',
+                                                           "DESeq2::lib_size" = 'lib',
+                                                          "SCnorm" = 'scn',
+                                                          "Linnorm" = 'lim',
+                                                           'ruvseq'), selected='LogNormalize')),
                            column(width=12, numericInput(ns("range"), "Select No. Of Features :",2000, min=0, max=Inf)),
                            column(width=12,
                                   conditionalPanel(
@@ -43,8 +47,7 @@ normalizationUI<-  function(id) {
 
                                   selectInput( ns("INPUT_feature_selection_Method"),
                                                          label = "Select variable feature selection Method :",
-                                                         choices = c('mudan',
-                                                                  "modelGeneVar"  = 'mvg'), selected='mvg'),  ns = NS(id) )#Conditional panel1
+                                                         choices = c("modelGeneVar"  = 'mvg'), selected='mvg'),  ns = NS(id) )#Conditional panel1
                                   #
                                   # conditionalPanel(
                                   #   condition ="input.INPUT_Nrmlz_Method=='seu'",
@@ -61,8 +64,12 @@ normalizationUI<-  function(id) {
                            actionBttn(ns("QC_submit_sidebarPanel"),label="EXEC",style = "jelly",color = "success",icon = icon("sliders")),
                            tags$br(),
                            tags$br(),
-
-                           downloadBttn(ns('normalized_data'), '.rds normalized data', color= 'royal')
+                           shinyjs::hidden(wellPanel(id=ns("download_data"),
+                           downloadBttn(ns('normalized_data'), 'Normalized data', color= 'royal'),
+                           tags$br(),
+                           tags$br(),
+                           actionBttn(ns("toAnalyze"), "Next Dim reduction",
+                                      style = "unite",color = "royal", icon = icon("angles-right",class="fa-duotone fa-angles-right"))))
                           ))#
 
 
@@ -123,14 +130,14 @@ normalizationServer <- function(id,filtered_data) {
         #data@colData = subset(data@colData, select = -c(nCount_RNA,nFeature_RNA, Mito_gene_percent, Hemoglobin_gene_percent, Ribosomal_gene_percent, sizeFactor))
         data
       })#normalization reactive
-      #call variable feature plot function frim visualizatin.R, return three inputs(1:plot,2:variance and men,3:singlecell object)
+      #call variable feature plot function from visualizatin.R, return three inputs(1:plot,2:variance and men,3:singlecell object)
       plotlog<-reactive({
         req(normalize())
         showNotification(paste("Variable gene Selection started using", input$INPUT_feature_selection_Method), type= "message", duration = 3 )
 
         p=VariableGene_hvg_plot(normalize(),used = "NMcounts", ngene = input$range)
         vals$p =p
-        p
+
 
         # else if(input$INPUT_Nrmlz_Method=='seu')
         # {
@@ -142,6 +149,10 @@ normalizationServer <- function(id,filtered_data) {
         #   variable_genes_data=as.data.frame(rowData(object))
         #   return(list(p,variable_genes_data,object,hvgs))
         # }
+
+        shinyjs::show('download_data')
+
+        return(p)
 
       })#plot log
 
@@ -163,35 +174,42 @@ normalizationServer <- function(id,filtered_data) {
         })
 
 
-        #Download data and plot
-        output$normalized_data <- downloadHandler(
-          filename = function() {
-            paste0(input$INPUT_Nrmlz_Method, "_filtered_normalized", "-", Sys.Date(), ".rds")
-          },
-          content = function(file) {
-            saveRDS(plotlog()[[3]], file = file)
-          }
-        )
-
-        output$stats_download<-downloadHandler(
-          filename = "Highly_Variable_genes.txt",
-          content = function(file) {
-            write.table(plotlog()[[2]], file = file, row.names = FALSE, sep = "\t")
-          })
-
-        output$pdf <- downloadHandler(
-          filename="PreQC.pdf",
-          content = function(file){
-            pdf(file,width=input$w,height=input$h)
-
-            print(plotlog()[[1]])
-            dev.off()
-          }
-        )
 
        # download_plot_Server(ns("normalization_plot"), input=)
 
       }) #observe Actionbutton
+
+      #Download data and plot
+      output$normalized_data <- downloadHandler(
+        filename = function() {
+          paste0(input$INPUT_Nrmlz_Method, "_filtered_normalized", "-", Sys.Date(), ".rds")
+        },
+        content = function(file) {
+          saveRDS(plotlog()[[3]], file = file)
+        }
+      )
+
+      output$stats_download<-downloadHandler(
+        filename = "Highly_Variable_genes.txt",
+        content = function(file) {
+          write.table(plotlog()[[2]], file = file, row.names = FALSE, sep = "\t")
+        })
+
+      # output$pdf <- downloadHandler(
+      #   filename="PreQC.pdf",
+      #   content = function(file){
+      #     pdf(file,width=input$w,height=input$h)
+      #
+      #     print(plotlog()[[1]])
+      #     dev.off()
+      #   }
+      # )
+      normalizationPlot <- reactive({
+        plotlog()[[1]]
+      })
+
+      download_plot_Server("normalization_plot", input_data = normalizationPlot , name ="normalization_plot")
+
       scd<-  reactive({
         data=plotlog()[[3]]
         if(any(c("nCount_RNA","nFeature_RNA", "Mito_gene_percent", "Hemoglobin_gene_percent", "Ribosomal_gene_percent") %in% colnames(colData(data)))){
@@ -200,6 +218,11 @@ normalizationServer <- function(id,filtered_data) {
 
         return(data)
         })
+
+      observeEvent(input$toAnalyze,
+                   {
+                     shinyjs::runjs("$('a[data-value=\"dim_reduction\"]').tab('show');")
+                   })
       return(scd)
 
     }#function session

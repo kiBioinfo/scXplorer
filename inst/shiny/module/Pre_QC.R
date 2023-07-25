@@ -114,10 +114,13 @@ preQCUI<-  function(id) {
                              status="success"
                            ),
                            tags$br(),
-                           downloadBttn(ns('filterd_data'), '.rds qc filtered data', color = "royal")
-
-
-                       )
+                           downloadBttn(ns('filterd_data'), 'QC filtered data', color = "royal"),
+                           tags$br(),
+                           tags$br(),
+                           actionBttn(ns("toAnalyze"), "Next Normalize",
+                                      style = "unite",color = "royal",
+                                      icon = icon("angles-right",class="fa-duotone fa-angles-right"))
+                           )
                        )#parameter column
               )
             )
@@ -132,25 +135,27 @@ preQCServer <- function(id,raw_data) {
 
 
       scdata<-reactive({
-        errors <- c()
-        req(raw_data())
+        # errors <- c()
+         req(raw_data())
+         obj <- raw_data()
+        #
+        # # try to read in file
+        # tryCatch(
+        #   {
+        #     obj <- raw_data()
+        #   },
+        #   error = function(e) {
+        #     errors <- c(errors, "Invalid rds file.")
+        #     return(errors)
+        #   }
+        # )
+        #
+        # # Validate obj is a SingleCellExperiment object
+        # if (!inherits(obj, "SingleCellExperiment")){
+        #   errors <- c(errors, "File is not a SingleCellExperiment object")
+        #   return(errors)
+        # }
 
-        # try to read in file
-        tryCatch(
-          {
-            obj <- raw_data()
-          },
-          error = function(e) {
-            errors <- c(errors, "Invalid rds file.")
-            return(errors)
-          }
-        )
-
-        # Validate obj is a SingleCellExperiment object
-        if (!inherits(obj, "SingleCellExperiment")){
-          errors <- c(errors, "File is not a SingleCellExperiment object")
-          return(errors)
-        }
 
         return(obj)
       })
@@ -199,6 +204,7 @@ preQCServer <- function(id,raw_data) {
       vals=reactiveValues()
       scdata_filt<-reactive({
         req(scdata())
+
         req(input$QC_TotalGene_Down)
         req(input$QC_TotalGene_Up)
         req(input$QC_TotalCount_Down)
@@ -250,10 +256,19 @@ preQCServer <- function(id,raw_data) {
       shinyjs::hide("download_box")
 
       observeEvent(input$beforeQC_submit_sidebarPanel,{
+        req(scdata_filt())
+        if(class(scdata_filt())!='SingleCellExperiment'){
+          shinyjs::hide("download_box")
+        }
 
-        withProgress(message = "Creating plot  ...",{
+        #withProgress(message = "Creating plot  ...",{
 
          # waiter_show(html = spin_ball())
+        withProgress(message = 'Calculation in progress', value = 0, {
+          for(i in 1:10) {
+            incProgress(1/10)
+            Sys.sleep(0.5)
+          }
 
           output$beforeQC_totalGene <- renderPlot({
             plot_gene()
@@ -276,9 +291,6 @@ preQCServer <- function(id,raw_data) {
             plot_count_vs_gene()
           })
 
-          shinyjs::show("download_box")
-
-
 
 
         output$sce_obj <- renderTable({
@@ -286,6 +298,7 @@ preQCServer <- function(id,raw_data) {
           table= c(ncol(scdata_filt()), nrow(scdata_filt())) %>% as.data.frame()
           colnames(table)  <- c("Summary")
           row.names(table) <- c("Total Cells", "Total Genes")
+
           table
 
         }, rownames = T, bordered=TRUE, align='c')
@@ -299,7 +312,7 @@ preQCServer <- function(id,raw_data) {
             dev.off()
           }
         )
-
+        shinyjs::show("download_box")
         output$tiff <- downloadHandler(
           filename="PreQC.tiff",
           content = function(file){
@@ -339,6 +352,11 @@ preQCServer <- function(id,raw_data) {
 
         })
       })#End observe plot
+
+      observeEvent(input$toAnalyze,
+                   {
+                     shinyjs::runjs("$('a[data-value=\"normalization\"]').tab('show');")
+                   })
 
 
       return(scdata_filt)

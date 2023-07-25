@@ -1,6 +1,8 @@
 #================#
 #Pre-analysis
 #================#
+
+#plot total counts in all the samples
 Plot_TotalCount = function(CS.data = NULL, used = 'counts', by = NULL, outIndex = getwd(), width = 4, height = 4.2, savePlot = T) {
 
   edata = assay(CS.data, used)
@@ -49,7 +51,7 @@ Plot_TotalCount = function(CS.data = NULL, used = 'counts', by = NULL, outIndex 
   return(g)
 }
 
-
+#plot total Genes in all the samples
 Plot_TotalGene = function(CS.data = NULL, used = 'counts', by = NULL, cutOff = 1, outIndex = getwd(), width = 4, height = 4.2, savePlot = T) {
 
   edata = assay(CS.data, used)
@@ -107,7 +109,7 @@ Plot_TotalGene = function(CS.data = NULL, used = 'counts', by = NULL, cutOff = 1
   return(g)
 }
 
-
+#plot mean counts in all the samples
 Plot_MeanCount = function(CS.data = NULL, used = 'counts', by = NULL, outIndex = getwd(), width = 4, height = 4.2, savePlot = T) {
 
   edata = assay(CS.data, used)
@@ -162,6 +164,7 @@ Plot_MeanCount = function(CS.data = NULL, used = 'counts', by = NULL, outIndex =
 #================#
 # QC
 #================#
+#QC filter based on number of genes, count, mitochondrial gene%
 Filter_Matrix = function(CS.data = NULL, matrix = NULL, totalCount = 200, totalGene = 200, geneCapt = 2, MT = 0.1, cutOff = 1) {
   if(!is.null(CS.data)) {
     print("Filtering by S4!")
@@ -216,6 +219,8 @@ Filter_Matrix = function(CS.data = NULL, matrix = NULL, totalCount = 200, totalG
 #================#
 # Normalization
 #================#
+
+# Normalize the raw count
 Normalize_Matrix = function(CS.data, method = 'lim', used = 'counts', batch = F) {
 
   CS.data = switch(EXPR = method,
@@ -246,11 +251,13 @@ Normalize_Matrix = function(CS.data, method = 'lim', used = 'counts', batch = F)
   return(CS.data)
 }
 
+# Log normalization
 Normalize_LogNormalize= function(CS.data, used = 'counts') {
   CS.data <- scran::computeSumFactors(CS.data)
   CS.data <- scater::logNormCounts(CS.data,name="NMcounts")
   return(CS.data)
 }
+#Variance stabilizing transformation using sctransform
 Normalize_scVST = function(CS.data, used = 'counts') {
   #View(assay(CS.data, used))
 
@@ -258,7 +265,7 @@ Normalize_scVST = function(CS.data, used = 'counts') {
   edata = assay(CS.data, used)
   #batch = CS.data@colData$batch
   #pheno = colData(CS.data)
-
+  #
   library(sctransform, quietly = T)
   edata_vst = sctransform::vst(as.matrix(edata))$y
 
@@ -310,7 +317,7 @@ Normalize_scVST = function(CS.data, used = 'counts') {
   return(CS.data)
 }
 
-
+#Variance stabilizing transformation using DESeq2
 Normalize_dqVST = function(CS.data, used = 'counts') {
   #View(assay(CS.data, used))
 
@@ -497,7 +504,7 @@ Normalize_scNorm = function(CS.data, used = 'counts') {
   return(CS.data)
 }
 
-
+#Normalization using Linnorm algorithm.
 Normalize_linnorm = function(CS.data, used = 'counts') {
   #View(assay(CS.data, used))
   edata = assay(CS.data, used)
@@ -567,7 +574,7 @@ Normalize_ruvseq = function(CS.data, used = 'counts', spkins) {
 
 
 #================#
-# Batch effect correction -- on expression matrix
+# Batch effect correction -- Evaluation
 #================#
 
 BatchEva = function(CS.data, method = 'cmx', used = NULL, PCNum = 3) {
@@ -582,9 +589,6 @@ BatchEva = function(CS.data, method = 'cmx', used = NULL, PCNum = 3) {
   else{
     used= "BEPCA"
   }
-
-
-
   evaPlot = switch(EXPR = method,
                'cmx' = BatchEva_cmix( CS.data = CS.data, used = used, PCNum = PCNum),
                'kbet' = BatchEva_kbet( CS.data = CS.data, used = used, PCNum = PCNum),
@@ -2668,7 +2672,7 @@ Plot_Development = function(CS.data, runWith = 'Umap', dimSe = c(1,2), colorBy =
   }
 
   library(ggplot2, quietly = T)
-  g.density.x = ggplot(data = df.plot, mapping = aes(x = cellOd, y = ..density.., color = colorBy)) +
+  g.density.x = ggplot(data = df.plot, mapping = aes(x = cellOd, y = after_stat(density), color = colorBy)) +
     geom_density() +
     theme(panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
