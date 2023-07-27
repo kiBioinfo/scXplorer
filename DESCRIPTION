@@ -78,6 +78,7 @@ Imports:
     spsComps (>= 0.3.2.1),
     thematic (>= 0.1.2.1),
     viridis (>= 0.6.3),
-    waiter (>= 0.2.5)
+    waiter (>= 0.2.5),
+    Rmisc
 Suggests: 
     sf
