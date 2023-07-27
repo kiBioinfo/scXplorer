@@ -120,14 +120,14 @@ cell_developement_analysis_Server <-function(id,cell_type) {
       plot_cell_development <- reactive({
         withProgress(message = 'Building single-cell trajectories...', value = 0, {
         req(Cell_develpment())
-        Plot_Development(CS.data = Cell_develpment() ,runWith = input$reduction, colorBy = input$colour_by )
+        Plot_Development(sce = Cell_develpment() ,runWith = input$reduction, colorBy = input$colour_by )
         })
         })
 
       plot_cell_development_curve <-reactive({
         req(Cell_develpment())
 
-        Plot_Development_Princurve(CS.data =Cell_develpment(), runWith = input$reduction, colorBy = input$colour_by )
+        Plot_Development_Princurve(sce =Cell_develpment(), runWith = input$reduction, colorBy = input$colour_by )
       })
 
 
