@@ -4,94 +4,95 @@ batch_dim_reduction_UI<-function(id) {
     fluidPage(
       fluidRow(style = "height: 78vh; overflow-y: auto;",
                tabBox(width = 12,
-                      tabPanel("Linear Dimensional Reduction", value="linear", tabsetPanel(id = "subTab1",
-                                                                                           tabPanel("Dim Loadings",value=1,
-                                                                                                    fluidRow(
-                                                                                                      tags$br(),
-                                                                                                      tags$br(),
-                                                                                                      column(width = 10,
-                                                                                                             wellPanel( plotOutput(ns('dotp'),height = "1000px")%>% withSpinner(color="#0dc5c1",type = 6,size=0.9)
-                                                                                                                        , style = "height: auto; width: 100%; border: 3px solid #CEECF5; text-align: end;",
+                      tabPanel("Linear Dimensional Reduction", value="linear",
+                               tabsetPanel(id = "subTab1",
+                                     tabPanel("Dim Loadings",value=1,
+                                                fluidRow(
+                                                  tags$br(),
+                                                  tags$br(),
+                                                  column(width = 10,
+                                                         wellPanel( plotOutput(ns('dotp'),height = "1000px")%>% withSpinner(color="#0dc5c1",type = 6,size=0.9)
+                                                                    , style = "height: auto; width: 100%; border: 3px solid #CEECF5; text-align: end;",
 
-                                                                                                                        download_plot_UI(ns("dim_loadings")))),
+                                                                    download_plot_UI(ns("dim_loadings")))),
 
-                                                                                                      column(width=2,
-                                                                                                             wellPanel( numericInput(ns("npc"), "Select No. Of PC :",6, min=1, max=50),
-                                                                                                                        style = " background-color: #CEECF5; border: 3px solid #CEECF5;"))
+                                                  column(width=2,
+                                                         wellPanel( numericInput(ns("npc"), "Select No. Of PC :",6, min=1, max=50),
+                                                                    style = " background-color: #CEECF5; border: 3px solid #CEECF5;"))
 
-                                                                                                    )),
+                                                )),
 
-                                                                                           tabPanel("PCA Plot",value=2,
-                                                                                                    fluidRow(
-                                                                                                      tags$br(),
-                                                                                                      tags$br(),
+                                       tabPanel("PCA Plot",value=2,
+                                                fluidRow(
+                                                  tags$br(),
+                                                  tags$br(),
 
-                                                                                                      column(width = 10,
-                                                                                                             wellPanel(plotOutput(ns('pcaP'), height=900),
-                                                                                                                       style = "height= auto;width: 100%; border: 3px solid #CEECF5;text-align: end;",
-                                                                                                                       download_plot_UI(ns("PCA"))
-                                                                                                             )),
+                                                  column(width = 10,
+                                                         wellPanel(plotOutput(ns('pcaP'), height=900),
+                                                                   style = "height= auto;width: 100%; border: 3px solid #CEECF5;text-align: end;",
+                                                                   download_plot_UI(ns("PCA"))
+                                                         )),
 
-                                                                                                      column(width=2,
-                                                                                                             wellPanel(numericInput(ns("xpc"), "PC (X-Axis)",1, min=1, max=50),numericInput(ns("ypc"), "PC (Y-Axis)",2, min=1, max=50),
-                                                                                                                       uiOutput(ns("colPC")),
-                                                                                                                       style = " background-color: #CEECF5; border: 3px solid #CEECF5;"
-                                                                                                             ))
+                                                  column(width=2,
+                                                         wellPanel(numericInput(ns("xpc"), "PC (X-Axis)",1, min=1, max=50),numericInput(ns("ypc"), "PC (Y-Axis)",2, min=1, max=50),
+                                                                   uiOutput(ns("colPC")),
+                                                                   style = " background-color: #CEECF5; border: 3px solid #CEECF5;"
+                                                         ))
 
-                                                                                                    )),
+                                                )),
 
-                                                                                           tabPanel("Heatmap",value=3,
-                                                                                                    fluidRow(
-                                                                                                      tags$br(),
-                                                                                                      tags$br(),
-                                                                                                      column(width = 10,
-                                                                                                             wellPanel(plotOutput(ns('heat'),height = "750px"),
-                                                                                                                       style = "height: auto; width: 100%; border: 3px solid #CEECF5; text-align: end;",
-                                                                                                                       download_plot_UI(ns("Heatmap_P"))
-                                                                                                             )),
-                                                                                                      column(width=2,
-                                                                                                             wellPanel(
-                                                                                                               numericInput(ns("dms"), "Select No. Of DIMs to show:",1, min=1, max=50),
-                                                                                                               numericInput(ns("ngenes"), "Select No. Of Features to show:",20, min=1, max=Inf),
-                                                                                                               style = " background-color: #CEECF5; border: 3px solid #CEECF5;"
-                                                                                                             )
-                                                                                                      ))),
+                                       tabPanel("Heatmap",value=3,
+                                                fluidRow(
+                                                  tags$br(),
+                                                  tags$br(),
+                                                  column(width = 10,
+                                                         wellPanel(plotOutput(ns('heat'),height = "750px"),
+                                                                   style = "height: auto; width: 100%; border: 3px solid #CEECF5; text-align: end;",
+                                                                   download_plot_UI(ns("Heatmap_P"))
+                                                         )),
+                                                  column(width=2,
+                                                         wellPanel(
+                                                           numericInput(ns("dms"), "Select No. Of DIMs to show:",1, min=1, max=50),
+                                                           numericInput(ns("ngenes"), "Select No. Of Features to show:",20, min=1, max=Inf),
+                                                           style = " background-color: #CEECF5; border: 3px solid #CEECF5;"
+                                                         )
+                                                  ))),
 
-                                                                                           tabPanel("Pairwise PCA Plot",value=4,
-                                                                                                    fluidRow(
-                                                                                                      tags$br(),
-                                                                                                      tags$br(),
-                                                                                                      column(width = 10,
-                                                                                                             wellPanel(plotOutput(ns('Pairwise_PCA'),height = "600px") %>% withSpinner(color="#0dc5c1",type = 6,size=0.9),
-                                                                                                                       style = "height: auto; width: 100%; border: 3px solid #CEECF5; text-align: end;",
-                                                                                                                       download_plot_UI(ns("Pair_PCA"))
-                                                                                                             )),
+                                       tabPanel("Pairwise PCA Plot",value=4,
+                                                fluidRow(
+                                                  tags$br(),
+                                                  tags$br(),
+                                                  column(width = 10,
+                                                         wellPanel(plotOutput(ns('Pairwise_PCA'),height = "600px") %>% withSpinner(color="#0dc5c1",type = 6,size=0.9),
+                                                                   style = "height: auto; width: 100%; border: 3px solid #CEECF5; text-align: end;",
+                                                                   download_plot_UI(ns("Pair_PCA"))
+                                                         )),
 
-                                                                                                      column(width=2,
-                                                                                                             wellPanel(numericInput(ns("n_pc"), "Select No. Of PC :",3, min=1, max=50),uiOutput(ns("col_PC")),
-                                                                                                                       style = " background-color: #CEECF5; border: 3px solid #CEECF5;"
-                                                                                                             ))
+                                                  column(width=2,
+                                                         wellPanel(numericInput(ns("n_pc"), "Select No. Of PC :",3, min=1, max=50),uiOutput(ns("col_PC")),
+                                                                   style = " background-color: #CEECF5; border: 3px solid #CEECF5;"
+                                                         ))
 
-                                                                                                    )),
+                                                )),
 
-                                                                                           tabPanel("Elbow Plot",value=5,
-                                                                                                    fluidRow(
-                                                                                                      tags$br(),
-                                                                                                      tags$br(),
+                                       tabPanel("Elbow Plot",value=5,
+                                                fluidRow(
+                                                  tags$br(),
+                                                  tags$br(),
 
-                                                                                                      column(width = 10,
-                                                                                                             wellPanel(plotOutput( ns('elbow'), height = "600px") %>% withSpinner(color="#0dc5c1",type = 6,size=0.9),
-                                                                                                                       style = "height: auto; width: 100%; border: 3px solid #CEECF5; text-align: end;",
-                                                                                                                       download_plot_UI(ns("elbow_plot"))
-                                                                                                             )),
+                                                  column(width = 10,
+                                                         wellPanel(plotOutput( ns('elbow'), height = "600px") %>% withSpinner(color="#0dc5c1",type = 6,size=0.9),
+                                                                   style = "height: auto; width: 100%; border: 3px solid #CEECF5; text-align: end;",
+                                                                   download_plot_UI(ns("elbow_plot"))
+                                                         )),
 
-                                                                                                      column(width=2,
-                                                                                                             wellPanel(numericInput(ns("elb"), "Select No. Of PC :",20, min=1, max=50),
-                                                                                                                       style = " background-color: #CEECF5; border: 3px solid #CEECF5;"
-                                                                                                             ))
-                                                                                                    )),
+                                                  column(width=2,
+                                                         wellPanel(numericInput(ns("elb"), "Select No. Of PC :",20, min=1, max=50),
+                                                                   style = " background-color: #CEECF5; border: 3px solid #CEECF5;"
+                                                         ))
+                                                )),
 
-                                                                                           selected = 1
+                                       selected = 1
                       )),
 
                       tabPanel("Non Linear Dimensional Reduction", value="non linear",
@@ -125,13 +126,15 @@ batch_dim_reduction_UI<-function(id) {
                                                     numericInput(ns("Dnp"), "Select No. Of PC :",20, min=1, max=50),  ns = NS(id) ),
 
 
-                                                  selectInput(ns("C_M"),"Select The Cluster Find Method",choices = c("K-Means","DBscan","Mclust","Hclust","Graph", "Hclust_cran", "Kmean_scran"),selected = "Graph"),
+                                                  selectInput(ns("C_M"),"Select The Cluster Find Method",
+                                                              choices = c("K-Means","DBscan","Mclust","Hclust",
+                                                                          "Graph", "Hclust_scran", "Kmean_scran"),selected = "Graph"),
 
                                                   conditionalPanel(
                                                     condition="input.C_M=='DBscan'",  ns = NS(id) ),
                                                   conditionalPanel(
                                                     condition = "input.C_M=='K-Means' || input.C_M=='Mclust' || input.C_M=='Hclust'",
-                                                    numericInput(ns("K_cln"),"Choose number of clusters:", 5,min=1, max=Inf),  ns = NS(id) ),
+                                                    numericInput(ns("K_cln"),"Choose number of clusters:", 5,min=1, max=Inf),  ns = NS(id)),
 
                                                   conditionalPanel(
                                                     condition="input.C_M=='Kmean_scran'",
@@ -177,15 +180,6 @@ batch_dim_reduction_Server <- function(id,batch_corrct) {
 
       })
 
-
-
-
-
-      # #PCA
-      # scdata<- reactive({
-      #   used= "BEVGcounts"
-      #   scater::runPCA(scdata(), exprs_values=used, altexp= used, name= "BEPCA")
-      # })
       #colour_input
       output$colPC<-renderUI({
         ns <- session$ns
@@ -229,7 +223,8 @@ batch_dim_reduction_Server <- function(id,batch_corrct) {
       #PCA Plot
       pca_plot<- reactive({
         req(scdata())
-        p=singleCellTK::plotPCA(scdata(),pcX=paste0("PC",input$xpc),pcY = paste0("PC",input$ypc), reducedDimName = "BEPCA",colorBy = input$colour_by) + theme_cowplot()
+        p=singleCellTK::plotPCA(scdata(),pcX=paste0("PC",input$xpc),
+                                pcY = paste0("PC",input$ypc), reducedDimName = "BEPCA",colorBy = input$colour_by) + theme_cowplot()
         p
       })
 
@@ -290,28 +285,80 @@ batch_dim_reduction_Server <- function(id,batch_corrct) {
 
       cs_data<- reactive({
         req(scdata())
+        withProgress(message = 'Dimension Reduction in progress......',
+                     detail = 'This may take a while...', value = 0, {
         if(input$dimM=="tSNE")
         {
           CS.data = scater::runTSNE(scdata(),dimred= "BEPCA", n_dimred=input$np, perplexity = input$perp, name= "tSNE")
-          return(CS.data)
+          # return(CS.data)
         }
         else
         {
           CS.data = scater::runUMAP(scdata(),  dimred= "BEPCA", n_dimred=input$np, name= "Umap")
-          return(CS.data)
-        }
-      })
-
-      cluster_find_data<- reactive({
-        req(cs_data())
-        CS.data = ClusterFind(cs_data(),method = input$C_M,runWith = input$dimM,k = input$K, ClusterNum = input$K_cln,PCNum= input$np,cluster.fun=input$algo)
-        if(any(c("All", "sizeFactor") %in% colnames(colData(CS.data)))){
-          CS.data@colData <- subset(CS.data@colData, select = -c(All, sizeFactor))
+          # return(CS.data)
         }
         shinyjs::show("go")
-        CS.data
+        return(CS.data)
+        })
+      })
 
-      })# Cluster find data
+      # Modal to plot optimum number of clusters in the dataset
+      dataModal <- function(failed = FALSE) {
+
+        modalDialog(
+          span(h5("Optimal number of clusters")),
+          tags$hr(),
+          uiOutput(ns("data_for_clusterSearch")),
+          numericInput(ns("n_PCs_for_clusterSearch"), "Select No. Of PC :",20, min=1, max=50),
+          plotOutput(ns("plotClusterSearch"))%>% withSpinner(color="#0dc5c1",type = 6,size=0.9),
+          #renderTable(tail(d,20),rownames=FALSE),
+          easyClose=TRUE,
+          footer = tagList(
+            modalButton("Close")
+          )
+        )
+      }
+      #Select data as input
+      output$data_for_clusterSearch <- renderUI({
+        req(cs_data())
+        shiny::selectInput(ns("runwith"),
+                           label = "Run with:",
+                           choices = c("VGcounts", SingleCellExperiment::reducedDimNames(cs_data())),
+                           selected = rev(reducedDimNames(cs_data()))[1], selectize = F)
+      })
+      #Print optimum clusters in dataset
+      output$plotClusterSearch <- renderPlot({
+        req(cs_data())
+        req(input$runwith)
+        req(input$n_PCs_for_clusterSearch)
+        ClusterNumSearch(cs_data(),runWith = input$runwith , PCNum = input$n_PCs_for_clusterSearch)
+      })
+
+
+      #Show modal for optimum cluster identification
+      observeEvent(input$C_M,{
+        req(input$C_M)
+        if(input$C_M=='K-Means' || input$C_M=='Mclust' || input$C_M=='Hclust'){
+          shiny::showModal(dataModal())
+        }
+
+      })
+      # Cluster find in dataset
+      cluster_find_data<- reactive({
+        req(cs_data())
+        withProgress(message = 'Finding clusters in progress......',
+                     detail = 'This may take a while...', value = 0, {
+
+                       CS.data = ClusterFind(cs_data(),method = input$C_M,runWith = input$dimM,
+                                             k = input$K, ClusterNum = input$K_cln,PCNum= input$np,cluster.fun = input$algo)
+                       if(any(c("sizeFactor") %in% colnames(colData(CS.data)))){
+                         CS.data@colData <- subset(CS.data@colData, select = -c(All, sizeFactor))
+                       }
+
+                       # shinyjs::show("go")
+                       return(CS.data)
+                     })
+      })
       output$color_non_linear<-renderUI({
         ns <- session$ns
         req(cluster_find_data())
@@ -340,12 +387,6 @@ batch_dim_reduction_Server <- function(id,batch_corrct) {
           non_linear_plot()
         },res = 96)
 
-
-        output$stat <- renderPrint({
-
-          cluster_find_data()
-
-        })
         shinyjs::show("DGE_analsis_tab")
       })
       #show/hide DGE_Analysis tab
@@ -362,7 +403,7 @@ batch_dim_reduction_Server <- function(id,batch_corrct) {
                          modalButton("Ok")
                         )
                      ))
-                    shinyjs::show(selector = "a[data-value=\"DGE_Analysis\"]")
+                     shinyjs::show(selector = "a[data-value=\"DGE_Analysis\"]")
                      shinyjs::runjs("$('a[data-value=\"DGE_Analysis\"]').tab('show');")
 
 

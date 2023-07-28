@@ -132,13 +132,14 @@ dim_reduction_UI<-function(id) {
 
 
                                      selectInput(ns("C_M"),"Select The Cluster Find Method",
-                                               choices = c("K-Means","DBscan","Mclust","Hclust","Graph", "Hclust_cran", "Kmean_scran"),selected = "Graph"),
+                                               choices = c("K-Means","DBscan","Mclust","Hclust","Graph", "Hclust_scran", "Kmean_scran"),
+                                               selected = "Graph"),
 
                                    conditionalPanel(
                                      condition="input.C_M=='DBscan'",  ns = NS(id) ),
                                    conditionalPanel(
                                      condition = "input.C_M=='K-Means' || input.C_M=='Mclust' || input.C_M=='Hclust'",
-                                     numericInput(ns("K_cln"),"Choose number of clusters:", 5,min=1, max=Inf),  ns = NS(id) ),
+                                     numericInput(ns("K_cln"),"Choose number of clusters:", 5,min=1, max=Inf),  ns = NS(id)),
 
                                    conditionalPanel(
                                      condition="input.C_M=='Kmean_scran'",
@@ -147,7 +148,9 @@ dim_reduction_UI<-function(id) {
                                    conditionalPanel(
                                      condition="input.C_M=='Graph'",
                                      selectInput(ns("algo"),label = "Choose the Algorithm:",
-                                                 choices = c("walktrap", "louvain", "infomap", 'fast_greedy', "label_prop", 'leading_eigen'), selected = "fast_greedy"),ns = NS(id) ),
+                                                 choices = c("walktrap", "louvain", "infomap",
+                                                             'fast_greedy', "label_prop", 'leading_eigen'),
+                                                 selected = "fast_greedy"),ns = NS(id) ),
                                    uiOutput(ns('color_non_linear')),
                                    shinyjs::hidden(actionBttn(ns("go"),label="EXEC",style = "jelly",color = "success",icon = icon("sliders"))),
                                    style = " background-color: #CEECF5; border: 3px solid #CEECF5;"
@@ -188,10 +191,13 @@ dim_reduction_Server <- function(id,normalization_data) {
 
 
 
-      #PCA
+    #PCA Diemsional reduction
     sc_data<- reactive({
+      withProgress(message = 'Dimension Reduction in progress......',
+                   detail = 'This may take a while...', value = 0, {
       req(scdata())
       scater::runPCA(scdata(), exprs_values=  "VGcounts", altexp= "VGcounts")
+     })
     })
       #colour_input
      output$colPC<-renderUI({
@@ -298,24 +304,74 @@ dim_reduction_Server <- function(id,normalization_data) {
 
       #Non Linear
 
+      # Umap/tSNE dimensional reduction
       cs_data<- reactive({
         req(sc_data())
+        # withProgress(message = 'Dimension Reduction in progress......',
+        #              detail = 'This may take a while...', value = 0, {
         if(input$dimM=="tSNE")
         {
           CS.data = DimReduction_tsne(sc_data(),  PCNum = input$np, perplexity = input$perp)
-          return(CS.data)
+          # return(CS.data)
         }
         else
         {
           CS.data = DimReduction_umap(sc_data(),  PCNum = input$np)
-          return(CS.data)
+          # return(CS.data)
         }
+        # shinyjs::show("go")
+        return(CS.data)
+        #})
       })
 
-      # Cluster find data
+      # Modal to plot optimum number of clusters in the dataset
+      dataModal <- function(failed = FALSE) {
+
+        modalDialog(
+          span(h5("Optimal number of clusters")),
+          tags$hr(),
+          uiOutput(ns("data_for_clusterSearch")),
+          numericInput(ns("n_PCs_for_clusterSearch"), "Select No. Of PC :",20, min=1, max=50),
+          plotOutput(ns("plotClusterSearch"))%>% withSpinner(color="#0dc5c1",type = 6,size=0.9),
+          #renderTable(tail(d,20),rownames=FALSE),
+          easyClose=TRUE,
+          footer = tagList(
+            modalButton("Close")
+          )
+        )
+      }
+      #Select data as input
+      output$data_for_clusterSearch <- renderUI({
+        req(cs_data())
+        shiny::selectInput(ns("runwith"),
+                           label = "Run with:",
+                           choices = c("VGcounts", SingleCellExperiment::reducedDimNames(cs_data())),
+                           selected = rev(reducedDimNames(cs_data()))[1], selectize = F)
+      })
+      #Print optimum clusters in dataset
+      output$plotClusterSearch <- renderPlot({
+        req(cs_data())
+        req(input$runwith)
+        req(input$n_PCs_for_clusterSearch)
+        ClusterNumSearch(cs_data(),runWith = input$runwith , PCNum = input$n_PCs_for_clusterSearch)
+      })
+
+
+      #Show modal for optimum cluster identification
+      observeEvent(input$C_M,{
+        req(input$C_M)
+        if(input$C_M=='K-Means' || input$C_M=='Mclust' || input$C_M=='Hclust'){
+          shiny::showModal(dataModal())
+        }
+
+      })
+
+
+      # find Clusters in dataset
       cluster_find_data<- reactive({
         req(sc_data())
-
+        withProgress(message = 'Finding clusters in progress......',
+                     detail = 'This may take a while...', value = 0, {
 
         CS.data = ClusterFind(cs_data(),method = input$C_M,runWith = input$dimM,
                               k = input$K, ClusterNum = input$K_cln,PCNum= input$np,cluster.fun = input$algo)
@@ -325,8 +381,9 @@ dim_reduction_Server <- function(id,normalization_data) {
 
           shinyjs::show("go")
           return(CS.data)
+        })
       })
-
+      #colour by column
       output$color_non_linear<-renderUI({
         req(cluster_find_data())
         ns <- session$ns
@@ -335,7 +392,7 @@ dim_reduction_Server <- function(id,normalization_data) {
                     choices = colnames(cluster_find_data()@colData)[!colnames(cluster_find_data()@colData) %in% names],
                     selected = rev(names(cluster_find_data()@colData))[1])
       })
-
+      #Plot reduce dim after clustering
       non_linear_plot<-reactive({
         req(cluster_find_data())
         validate(
@@ -359,6 +416,8 @@ dim_reduction_Server <- function(id,normalization_data) {
       })
 
       observeEvent(input$go,{
+        req(input$C_M)
+        req(non_linear_plot())
         if(any(typeof(non_linear_plot())=='list')){
           shinyjs::show("Skip_box")
         }
@@ -369,8 +428,11 @@ dim_reduction_Server <- function(id,normalization_data) {
         output$non_linear_reduction<-renderPlot({
           non_linear_plot()
         },res = 96)
+
       })
 
+
+      #Download dataset with clustering information
       output$dim_reduction_data <- downloadHandler(
         filename = function() {
           paste0(input$dimM,"_",input$C_M,".rds")
