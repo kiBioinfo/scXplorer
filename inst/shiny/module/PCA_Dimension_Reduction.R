@@ -3,6 +3,7 @@ dim_reduction_UI<-function(id) {
   tagList(
     fluidPage(
       fluidRow(style = "height: 78vh; overflow-y: auto;",
+               shinyFeedback::useShinyFeedback(),
       tabBox(width = 12,
              tabPanel("Linear Dimensional Reduction", value="linear",
                       tabsetPanel(id = "subTab1",
@@ -219,23 +220,26 @@ dim_reduction_Server <- function(id,normalization_data) {
 
       #loadings plot
       lodings_p<- reactive({
+        # req(input$npc)
         # If the length of the input is 0
         # (i.e. nothing is selected),we show
         # a feedback to the user in the form of a text
-        # If the length > 0, we remove the feedback.
-        if (length(input$npc) == 0){
-          showFeedbackWarning(
-            inputId = "npc",
-            text = "Select at least one PC"
-          )
-        } else {
-          shinyFeedback::hideFeedback("npc")
-        }
+        # # If the length > 0, we remove the feedback.
+        # if (length(input$npc) == 0){
+        #   showFeedbackWarning(
+        #     inputId = ns("npc"),
+        #     text = "Select at least one PC"
+        #   )
+        # } else {
+        #   shinyFeedback::hideFeedback("npc")
+        # }
         # req() allows to stop further code execution
         # if the condition is not a truthy.
         # Hence if input$npc is NULL, the computation
         # will be stopped here.
-        req(input$npc)
+        validate(
+          need(!is.na(input$npc) , "It should  be positive number")
+        )
         req(sc_data())
         p<-dim_lodingsViz(sc_data(),ndims = input$npc)
         p
@@ -244,6 +248,12 @@ dim_reduction_Server <- function(id,normalization_data) {
       #PCA Plot
       pca_plot<- reactive({
       req(sc_data())
+          validate(
+          need(!is.na(input$xpc) , "It should  be positive number")
+          )
+          validate(
+            need(!is.na(input$ypc), "It should  be positive number")
+          )
         p=singleCellTK::plotPCA(sc_data(),pcX=paste0("PC",input$xpc),
                                 pcY = paste0("PC",input$ypc), reducedDimName = "PCA",colorBy = input$colour_by) +
                                 theme_cowplot()
@@ -253,18 +263,32 @@ dim_reduction_Server <- function(id,normalization_data) {
       #Heatmap
       heatmap_plot<- reactive({
         req(sc_data())
+        validate(
+          need(!is.na(input$ngenes), "It should  be positive number")
+        )
+        validate(
+          need(!is.na(input$dms), "It should  be positive number")
+        )
         p=dim_heatmap(sc_data(), ndims=input$dms,nfeatures=input$ngenes)
         p
       })
       #Parwise PCA
       pairwise_pca_plot <- reactive({
         req(sc_data())
+        validate(
+          need(!is.na(input$n_pc), "It should at least 2 dimension")
+
+        )
         p=scater::plotReducedDim(sc_data(),dimred="PCA", ncomponents=input$n_pc,colour_by=input$colourP)
         p
       })
       #Elbow
       elbow_plt <- reactive({
         req(sc_data())
+        validate(
+          need(!is.na(input$elb), "It should  be positive number")
+
+        )
         p= ElbowPlot(sc_data(),ndims = input$elb)
         p
       })
@@ -309,6 +333,14 @@ dim_reduction_Server <- function(id,normalization_data) {
         req(sc_data())
         # withProgress(message = 'Dimension Reduction in progress......',
         #              detail = 'This may take a while...', value = 0, {
+        validate(
+          need(!is.na(input$np), "It should  be positive number")
+
+        )
+        validate(
+          need(!is.na(input$perp), "It should  be positive number")
+
+        )
         if(input$dimM=="tSNE")
         {
           CS.data = DimReduction_tsne(sc_data(),  PCNum = input$np, perplexity = input$perp)
@@ -372,6 +404,11 @@ dim_reduction_Server <- function(id,normalization_data) {
         req(sc_data())
         withProgress(message = 'Finding clusters in progress......',
                      detail = 'This may take a while...', value = 0, {
+         validate(
+           need(!is.na(input$K_cln) , "It should  be positive number")
+
+         )
+
 
         CS.data = ClusterFind(cs_data(),method = input$C_M,runWith = input$dimM,
                               k = input$K, ClusterNum = input$K_cln,PCNum= input$np,cluster.fun = input$algo)
