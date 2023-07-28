@@ -95,6 +95,7 @@ a {
     white-space: nowrap;
     background-color: #A020F0;
     transition: width .6s ease;
+    box-shadow: 2px 2px 5px #888888;
 }
 
 /*table color*/
@@ -126,6 +127,5 @@ a {
 .shiny-output-error-validation {
     color: #c9114d;
 }
-
 
 
