@@ -3,9 +3,6 @@ normalizationUI<-  function(id) {
   tagList(
     tabItem(tabName= "normalization",
             fluidPage(
-
-
-
                  fluidRow( style = "height: 78vh; overflow-y: auto;",
 
                    column(width = 10,
@@ -34,20 +31,37 @@ normalizationUI<-  function(id) {
                                                          label = "Select Method for Normalization :",
                                                          choices = c(
                                                            "Log normalization" ='LogNormalize',
-                                                           "SCTransform"  ='sct',
-                                                           "DESeq2::vst"  ='vst',
-                                                           "DESeq2::lib_size" = 'lib',
-                                                          "SCnorm" = 'scn',
-                                                          "Linnorm" = 'lim',
-                                                           'ruvseq'), selected='LogNormalize')),
+                                                           "SCTransform"       ='sct',
+                                                           "DESeq2::vst"       ='vst',
+                                                           "DESeq2::lib_size"  = 'lib',
+                                                           "SCnorm"            = 'scn',
+                                                           "Linnorm"           = 'lim',
+                                                           'ruvseq'), selected='LogNormalize'),
+                                  #Select count matrix
+
+                                    # selectInput(ns("countMatrix"), label = "Select count matrix for VG:",
+                                    #             choices = c(
+                                    #               "Raw counts" = "counts",
+                                    #               "Normalized counts" = "NMcounts"),
+                                    #             selected = "NMcounts"),
+                                    conditionalPanel(
+                                      condition = "input.INPUT_Nrmlz_Method=='sct' || input.INPUT_Nrmlz_Method=='vst' ||
+                                      input.INPUT_Nrmlz_Method=='lib' || input.INPUT_Nrmlz_Method =='scn' ||
+                                      input.INPUT_Nrmlz_Method == 'lim' || input.INPUT_Nrmlz_Method =='ruvseq' ",
+                                      checkboxInput(ns("log_count"), "Convert to log for plot?", FALSE),  ns = NS(id)),
+
+
+
+
+
+                                  ),
+
                            column(width=12, numericInput(ns("range"), "Select No. Of Features :",2000, min=0, max=Inf)),
                            column(width=12,
-                                  conditionalPanel(
-                                    condition ="input.INPUT_Nrmlz_Method=='LogNormalize' || input.INPUT_Nrmlz_Method=='sct'|| input.INPUT_Nrmlz_Method=='vst' || input.INPUT_Nrmlz_Method=='lib' || input.INPUT_Nrmlz_Method=='scn' || input.INPUT_Nrmlz_Method=='lim' || input.INPUT_Nrmlz_Method=='ruvseq'",
 
-                                  selectInput( ns("INPUT_feature_selection_Method"),
+                                  selectInput(ns("INPUT_feature_selection_Method"),
                                                          label = "Select variable feature selection Method :",
-                                                         choices = c("modelGeneVar"  = 'mvg'), selected='mvg'),  ns = NS(id) )#Conditional panel1
+                                                         choices = c("modelGeneVar"  = 'mvg'), selected='mvg')
                                   #
                                   # conditionalPanel(
                                   #   condition ="input.INPUT_Nrmlz_Method=='seu'",
@@ -119,6 +133,8 @@ normalizationServer <- function(id,filtered_data) {
         obj <- filtered_data()
         return(obj)
       })
+
+
       #Normalization
       normalize <- reactive({
         req(scdata())
@@ -129,13 +145,30 @@ normalizationServer <- function(id,filtered_data) {
 
         #data@colData = subset(data@colData, select = -c(nCount_RNA,nFeature_RNA, Mito_gene_percent, Hemoglobin_gene_percent, Ribosomal_gene_percent, sizeFactor))
         data
-      })#normalization reactive
+      })
+
+      observe({
+        input$INPUT_Nrmlz_Method
+        updateCheckboxInput(session , "log_count", value =  FALSE)
+      })
+
+
+
+
       #call variable feature plot function from visualizatin.R, return three inputs(1:plot,2:variance and men,3:singlecell object)
       plotlog<-reactive({
         req(normalize())
-        showNotification(paste("Variable gene Selection started using", input$INPUT_feature_selection_Method), type= "message", duration = 3 )
+        req(input$INPUT_Nrmlz_Method)
+        showNotification(paste("Variable gene Selection started using", input$INPUT_feature_selection_Method),
+                         type= "message", duration = 3 )
+        if(input$INPUT_Nrmlz_Method == 'LogNormalize'){
+          used = 'logcounts'
+        }
+        else{
+          used = 'NMcounts'
+        }
 
-        p=VariableGene_hvg_plot(normalize(),used = "NMcounts", ngene = input$range)
+        p=VariableGene_hvg_plot(normalize(),used = used, ngene = input$range, convert_to_log = input$log_count)
         vals$p =p
 
 
@@ -214,6 +247,9 @@ normalizationServer <- function(id,filtered_data) {
         data=plotlog()[[3]]
         if(any(c("nCount_RNA","nFeature_RNA", "Mito_gene_percent", "Hemoglobin_gene_percent", "Ribosomal_gene_percent") %in% colnames(colData(data)))){
           data@colData = subset(data@colData, select = -c(nCount_RNA,nFeature_RNA, Mito_gene_percent, Hemoglobin_gene_percent, Ribosomal_gene_percent))
+        }
+        if(any(SummarizedExperiment::assayNames(data) == "logcounts")){
+        assayNames(data)[which(assayNames(data) == "logcounts")] <- "NMcounts"
         }
 
         return(data)
