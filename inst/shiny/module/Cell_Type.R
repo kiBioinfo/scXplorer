@@ -6,7 +6,8 @@ cell_type_analysis_UI<-function(id) {
       fluidRow(style = "height: 78vh; overflow-y: auto;",
                column(width = 10,
                       wellPanel(
-                      plotOutput(ns('cell_type'), height = "800px")%>% withSpinner(color="#0dc5c1",type = 6,size=0.9), style = "height: auto; border: 3px solid #CEECF5; text-align: end;",
+                      plotOutput(ns('cell_type'), height = "800px")%>% withSpinner(color="#0dc5c1",type = 6,size=0.9),
+                      style = "height: auto; border: 3px solid #CEECF5; text-align: end;",
                       download_plot_UI(ns("Cell_type_p"))
                       )
                       ),
@@ -14,12 +15,16 @@ cell_type_analysis_UI<-function(id) {
 
                column(width = 2,
                       wellPanel(
-                        selectInput(ns('method'), label = "Chose cell type  annotation method:",choices = c("SingleR","sctype"), selected = "SingleR"),
+                        selectInput(ns('method'),
+                                    label = "Chose cell type  annotation method:",
+                                    choices = c("SingleR","sctype"), selected = "SingleR"),
                         conditionalPanel(
                           condition ="input.method=='SingleR'",
-                          selectInput( ns("singleR"),
-                                       label = "Choose the datasets :",
-                                       choices = c("BlueprintEncodeData","DatabaseImmuneCellExpressionData","HumanPrimaryCellAtlasData","ImmGenData","MonacoImmuneData","MouseRNAseqData"), selected='BlueprintEncodeData'),  ns = NS(id)
+                          selectInput(ns("singleR"),
+                                      label = "Choose the datasets :",
+                                      choices = c("BlueprintEncodeData","DatabaseImmuneCellExpressionData",
+                                                   "HumanPrimaryCellAtlasData","ImmGenData","MonacoImmuneData",
+                                                   "MouseRNAseqData"), selected='BlueprintEncodeData'),  ns = NS(id)
                         ),
                         conditionalPanel(
                           condition ="input.method=='sctype'",
