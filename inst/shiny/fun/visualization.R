@@ -14,11 +14,25 @@
 #' the SingleCellExperiment object can be accessed sce[[3]]
 #'
 #'
- VariableGene_hvg_plot = function(sce, used = 'counts', ngene = 1000, batch = F) {
-  # use assay of interest to find top HVG
+ VariableGene_hvg_plot = function(sce, used = 'counts', ngene = 1000, batch = F, convert_to_log = F) {
+   # use assay of interest to find top HVG
+   if(used == 'counts'){
+     edata = assay(sce, used) %>% as.data.frame()
+     edata = log2(edata+1)
+   }
+   else if(used == 'logcounts'){
+     edata = assay(sce, used) %>% as.data.frame()
+   }
+   else if(used == 'NMcounts'){
 
-    edata = assay(sce, used) %>% as.data.frame()
-    #edata = log2(edata+1)
+     if(convert_to_log){
+       edata = assay(sce, used) %>% as.data.frame()
+       edata = log2(edata+1)
+     }
+     else{
+       edata = assay(sce, used) %>% as.data.frame()
+     }
+   }
 
   if(batch) {
     batch = sce@colData$batch
@@ -30,6 +44,8 @@
     top20<-var %>% filter(Status=="TRUE") %>% arrange(FDR) %>% arrange(desc(bio)) %>% head(20)
     selected_genes<-var %>% filter(Status=="TRUE") %>% arrange(FDR)
     colnames(selected_genes)[c(1,4)]<-c("Average_expression","Variance")
+    #Select count matrix for variable genes
+    edata = assay(sce, used) %>% as.data.frame()
     edata.od = edata[top.hvgs2,]
 
 
@@ -41,6 +57,8 @@
     top20<-var %>% filter(Status=="TRUE") %>% arrange(FDR) %>% arrange(desc(bio)) %>% head(20)
     selected_genes<-var %>% filter(Status=="TRUE") %>% arrange(FDR)
     colnames(selected_genes)[c(1,4)]<-c("Average_expression","Variance")
+    #Select count matrix for variable genes
+    edata = assay(sce, used) %>% as.data.frame()
     edata.od = edata[top.hvgs2,]
 
   }
@@ -169,8 +187,11 @@ dim_heatmap=function(sce,ndims,nfeatures){
         else if(k == 'NMcounts'){
           count = "NMcounts"
         }
+        else if(k == 'logcounts'){
+          count = "logcounts"
+        }
         else{
-          count = 'count'
+          count = 'counts'
         }
       }
       edata<-assay(sce, count)
