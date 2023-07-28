@@ -3,11 +3,22 @@
 #================#
 
 #plot total counts in all the samples
-Plot_TotalCount = function(CS.data = NULL, used = 'counts', by = NULL, outIndex = getwd(), width = 4, height = 4.2, savePlot = T) {
+#' A function to Plot total counts in all the samples
+#'
+#' @param sce a SingleCellExperiment object
+#' @param used count matrix
+#' @param by column name in colData
+#'
+#' @return  plots
+#' @examples
+#'
+#' Plot_TotalCount(sce, used = 'counts',by = colnames(pheno)[1] )
+#'
+Plot_TotalCount = function(sce = NULL, used = 'counts', by = NULL, outIndex = getwd(), width = 4, height = 4.2, savePlot = T) {
 
-  edata = assay(CS.data, used)
-  batch = CS.data@colData$batch
-  pheno = colData(CS.data)
+  edata = assay(sce, used)
+  batch = sce@colData$batch
+  pheno = colData(sce)
 
   matrix = edata
   totalReadsForCell = apply(matrix, 2, sum)
@@ -52,11 +63,23 @@ Plot_TotalCount = function(CS.data = NULL, used = 'counts', by = NULL, outIndex 
 }
 
 #plot total Genes in all the samples
-Plot_TotalGene = function(CS.data = NULL, used = 'counts', by = NULL, cutOff = 1, outIndex = getwd(), width = 4, height = 4.2, savePlot = T) {
 
-  edata = assay(CS.data, used)
-  batch = CS.data@colData$batch
-  pheno = colData(CS.data)
+#' A function to Plot total Genes in all the samples
+#'
+#' @param sce a SingleCellExperiment object
+#' @param used count matrix
+#' @param by column name in colData
+#'
+#' @return  plots
+#' @examples
+#'
+#' Plot_TotalGene(sce, used = 'counts',by = colnames(pheno)[1] )
+#'
+Plot_TotalGene = function(sce = NULL, used = 'counts', by = NULL, cutOff = 1, outIndex = getwd(), width = 4, height = 4.2, savePlot = T) {
+
+  edata = assay(sce, used)
+  batch = sce@colData$batch
+  pheno = colData(sce)
 
   matrix = edata
 
@@ -110,11 +133,22 @@ Plot_TotalGene = function(CS.data = NULL, used = 'counts', by = NULL, cutOff = 1
 }
 
 #plot mean counts in all the samples
-Plot_MeanCount = function(CS.data = NULL, used = 'counts', by = NULL, outIndex = getwd(), width = 4, height = 4.2, savePlot = T) {
+#' A function to Plot mean counts in all the samples
+#'
+#' @param sce a SingleCellExperiment object
+#' @param used count matrix
+#' @param by column name in colData
+#'
+#' @return  plots
+#' @examples
+#'
+#' Plot_MeanCount(sce, used = 'counts',by = colnames(pheno)[1] )
+#'
+Plot_MeanCount = function(sce = NULL, used = 'counts', by = NULL, outIndex = getwd(), width = 4, height = 4.2, savePlot = T) {
 
-  edata = assay(CS.data, used)
-  batch = CS.data@colData$batch
-  pheno = colData(CS.data)
+  edata = assay(sce, used)
+  batch = sce@colData$batch
+  pheno = colData(sce)
 
   matrix = edata
 
@@ -165,12 +199,23 @@ Plot_MeanCount = function(CS.data = NULL, used = 'counts', by = NULL, outIndex =
 # QC
 #================#
 #QC filter based on number of genes, count, mitochondrial gene%
-Filter_Matrix = function(CS.data = NULL, matrix = NULL, totalCount = 200, totalGene = 200, geneCapt = 2, MT = 0.1, cutOff = 1) {
-  if(!is.null(CS.data)) {
+#' A function to filter raw data
+#'
+#' @param sce a SingleCellExperiment object
+#' @param totalCount minimum counts
+#' @param totalGene minimum genes
+#' @param MT mitochondrial %
+#' @return  a SingleCellExperiment object with filtered data
+#' @examples
+#'
+#' Filter_Matrix(sce)
+#'
+Filter_Matrix = function(sce = NULL, matrix = NULL, totalCount = 200, totalGene = 200, geneCapt = 2, MT = 0.1, cutOff = 1) {
+  if(!is.null(sce)) {
     print("Filtering by S4!")
-    edata = assay(CS.data, 'counts')
-    batch = CS.data@colData$batch
-    pheno = colData(CS.data)
+    edata = assay(sce, 'counts')
+    batch = sce@colData$batch
+    pheno = colData(sce)
 
     matrix = as.matrix(edata)
     totalCount.num = apply(matrix, 2, sum)
@@ -194,11 +239,11 @@ Filter_Matrix = function(CS.data = NULL, matrix = NULL, totalCount = 200, totalG
       edata = edata[,mt.exp.pt > MT]
     }
 
-    CS.data = SingleCellExperiment(assay = list(counts = edata, logcounts = log2(edata + 1)),
+    sce = SingleCellExperiment(assay = list(counts = edata, logcounts = log2(edata + 1)),
                                    colData = pheno,
                                    metadata = list(study = Study.Name))
 
-    return(CS.data)
+    return(sce)
 
   } else {
 
@@ -221,50 +266,65 @@ Filter_Matrix = function(CS.data = NULL, matrix = NULL, totalCount = 200, totalG
 #================#
 
 # Normalize the raw count
-Normalize_Matrix = function(CS.data, method = 'lim', used = 'counts', batch = F) {
 
-  CS.data = switch(EXPR = method,
-                   'sct'    = Normalize_scVST(   CS.data = CS.data, used = used),
-                   'vst'    = Normalize_dqVST(   CS.data = CS.data, used = used),
-                   'lib'    = Normalize_libsize( CS.data = CS.data, used = used),
-                   'scn'    = Normalize_scNorm(  CS.data = CS.data, used = used),
-                   'lim'    = Normalize_linnorm( CS.data = CS.data, used = used),
-                   'LogNormalize' = Normalize_LogNormalize(CS.data = CS.data, used = used))
-  #CS.data = Normalize_scVST(CS.data)
-  #CS.data = Normalize_dqVST(CS.data)
-  #CS.data = Normalize_libsize(CS.data)
-  #CS.data = Normalize_scNorm(CS.data)
-  #CS.data = Normalize_linnorm(CS.data)
+#' A function to normalize data
+#'
+#' @param sce a SingleCellExperiment object
+#' @param method method for narmalization
+#' @param used count matrix
+#' @param batch batch True/false
+#' @return  a SingleCellExperiment object with normalized data
+#' @examples
+#'
+#' Normalize_Matrix(sce)
+#'
 
-  return(CS.data)
+Normalize_Matrix = function(sce, method = 'lim', used = 'counts', batch = F) {
+
+  sce = switch(EXPR = method,
+                   'sct'    = Normalize_scVST(   sce = sce, used = used),
+                   'vst'    = Normalize_dqVST(   sce = sce, used = used),
+                   'lib'    = Normalize_libsize( sce = sce, used = used),
+                   'scn'    = Normalize_scNorm(  sce = sce, used = used),
+                   'lim'    = Normalize_linnorm( sce = sce, used = used),
+                   'LogNormalize' = Normalize_LogNormalize(sce = sce, used = used),
+                   'ruvseq' = Normalize_ruvseq(sce = sce, used = used)
+               )
+  #sce = Normalize_scVST(sce)
+  #sce = Normalize_dqVST(sce)
+  #sce = Normalize_libsize(sce)
+  #sce = Normalize_scNorm(sce)
+  #sce = Normalize_linnorm(sce)
+
+  return(sce)
 }
 
-.Normalize_Matrix = function(CS.data, method = 'lim', used = 'counts') {
+.Normalize_Matrix = function(sce, method = 'lim', used = 'counts') {
 
-  CS.data = switch(EXPR = method,
-                   'sct'    = .Normalize_scVST(   CS.data = CS.data, used = used),
-                   'vst'    = .Normalize_dqVST(   CS.data = CS.data, used = used),
-                   'lib'    = .Normalize_libsize( CS.data = CS.data, used = used),
-                   'scn'    = .Normalize_scNorm(  CS.data = CS.data, used = used),
-                   'lim'    = .Normalize_linnorm( CS.data = CS.data, used = used))
+  sce = switch(EXPR = method,
+                   'sct'    = .Normalize_scVST(   sce = sce, used = used),
+                   'vst'    = .Normalize_dqVST(   sce = sce, used = used),
+                   'lib'    = .Normalize_libsize( sce = sce, used = used),
+                   'scn'    = .Normalize_scNorm(  sce = sce, used = used),
+                   'lim'    = .Normalize_linnorm( sce = sce, used = used))
 
-  return(CS.data)
+  return(sce)
 }
 
 # Log normalization
-Normalize_LogNormalize= function(CS.data, used = 'counts') {
-  CS.data <- scran::computeSumFactors(CS.data)
-  CS.data <- scater::logNormCounts(CS.data,name="NMcounts")
-  return(CS.data)
+Normalize_LogNormalize= function(sce, used = 'counts') {
+  sce <- scran::computeSumFactors(sce)
+  sce <- scater::logNormCounts(sce)
+  return(sce)
 }
 #Variance stabilizing transformation using sctransform
-Normalize_scVST = function(CS.data, used = 'counts') {
-  #View(assay(CS.data, used))
+Normalize_scVST = function(sce, used = 'counts') {
+  #View(assay(sce, used))
 
   library(SingleCellExperiment, quietly = T)
-  edata = assay(CS.data, used)
-  #batch = CS.data@colData$batch
-  #pheno = colData(CS.data)
+  edata = assay(sce, used)
+  #batch = sce@colData$batch
+  #pheno = colData(sce)
   #
   library(sctransform, quietly = T)
   edata_vst = sctransform::vst(as.matrix(edata))$y
@@ -273,17 +333,17 @@ Normalize_scVST = function(CS.data, used = 'counts') {
   row.names(edata_vst) = rownames(edata)
   edata_vst[is.na(edata_vst)] = 0
 
-  assay(CS.data, 'NMcounts') = as.matrix(edata_vst)
-  return(CS.data)
+  assay(sce, 'NMcounts') = as.matrix(edata_vst)
+  return(sce)
 }
 
-.Normalize_scVST = function(CS.data, used = 'counts') {
-  #View(assay(CS.data, used))
+.Normalize_scVST = function(sce, used = 'counts') {
+  #View(assay(sce, used))
 
   library(SingleCellExperiment, quietly = T)
-  edata = assay(CS.data, used)
-  batch = CS.data@colData$batch
-  #pheno = colData(CS.data)
+  edata = assay(sce, used)
+  batch = sce@colData$batch
+  #pheno = colData(sce)
 
   ###
   unique.batch = unique(batch)
@@ -313,33 +373,33 @@ Normalize_scVST = function(CS.data, used = 'counts') {
   row.names(edata_vst) = rownames(edata)
   edata_vst[is.na(edata_vst)] = 0
 
-  assay(CS.data, 'NMcounts') = as.matrix(edata_vst)
-  return(CS.data)
+  assay(sce, 'NMcounts') = as.matrix(edata_vst)
+  return(sce)
 }
 
 #Variance stabilizing transformation using DESeq2
-Normalize_dqVST = function(CS.data, used = 'counts') {
-  #View(assay(CS.data, used))
+Normalize_dqVST = function(sce, used = 'counts') {
+  #View(assay(sce, used))
 
   library(SingleCellExperiment, quietly = T)
-  edata = assay(CS.data, used)
-  #batch = CS.data@colData$batch
-  #pheno = colData(CS.data)
+  edata = assay(sce, used)
+  #batch = sce@colData$batch
+  #pheno = colData(sce)
 
   library(DESeq2, quietly = T)
   edata_vst = DESeq2::vst(as.matrix(edata))
 
-  assay(CS.data, 'NMcounts') = as.matrix(edata_vst)
-  return(CS.data)
+  assay(sce, 'NMcounts') = as.matrix(edata_vst)
+  return(sce)
 }
 
-.Normalize_dqVST = function(CS.data, used = 'counts') {
-  #View(assay(CS.data, used))
+.Normalize_dqVST = function(sce, used = 'counts') {
+  #View(assay(sce, used))
 
   library(SingleCellExperiment, quietly = T)
-  edata = assay(CS.data, used)
-  batch = CS.data@colData$batch
-  #pheno = colData(CS.data)
+  edata = assay(sce, used)
+  batch = sce@colData$batch
+  #pheno = colData(sce)
 
   ###
   unique.batch = unique(batch)
@@ -368,30 +428,30 @@ Normalize_dqVST = function(CS.data, used = 'counts') {
   edata_vst = as.data.frame(edata_vst)[rownames(edata),]
   row.names(edata_vst) = rownames(edata)
 
-  assay(CS.data, 'NMcounts') = as.matrix(edata_vst)
-  return(CS.data)
+  assay(sce, 'NMcounts') = as.matrix(edata_vst)
+  return(sce)
 }
 
 
-Normalize_libsize = function(CS.data, used = 'counts') {
-  #View(assay(CS.data, used))
-  edata = assay(CS.data, used)
-  #batch = CS.data@colData$batch
-  #pheno = colData(CS.data)
+Normalize_libsize = function(sce, used = 'counts') {
+  #View(assay(sce, used))
+  edata = assay(sce, used)
+  #batch = sce@colData$batch
+  #pheno = colData(sce)
 
   library(DESeq2, quietly = T)
   lib.size = estimateSizeFactorsForMatrix(edata)
   edata_ed = t(t(edata)/lib.size)
 
-  assay(CS.data, 'NMcounts') = as.matrix(edata_ed)
-  return(CS.data)
+  assay(sce, 'NMcounts') = as.matrix(edata_ed)
+  return(sce)
 }
 
-.Normalize_libsize = function(CS.data, used = 'counts') {
-  #View(assay(CS.data, used))
-  edata = assay(CS.data, used)
-  batch = CS.data@colData$batch
-  #pheno = colData(CS.data)
+.Normalize_libsize = function(sce, used = 'counts') {
+  #View(assay(sce, used))
+  edata = assay(sce, used)
+  batch = sce@colData$batch
+  #pheno = colData(sce)
 
   ###
   unique.batch = unique(batch)
@@ -419,15 +479,15 @@ Normalize_libsize = function(CS.data, used = 'counts') {
   edata_ed = as.data.frame(edata_ed)[rownames(edata),]
   row.names(edata_ed) = rownames(edata)
 
-  assay(CS.data, 'NMcounts') = as.matrix(edata_ed)
-  return(CS.data)
+  assay(sce, 'NMcounts') = as.matrix(edata_ed)
+  return(sce)
 }
 
 
-Normalize_scNorm = function(CS.data, used = 'counts') {
-  edata = assay(CS.data, used)
-  batch = CS.data@colData$batch
-  #pheno = colData(CS.data)
+Normalize_scNorm = function(sce, used = 'counts') {
+  edata = assay(sce, used)
+  batch = sce@colData$batch
+  #pheno = colData(sce)
 
   if(is.null(batch)) {
     library(SCnorm, quietly = T)
@@ -457,14 +517,14 @@ Normalize_scNorm = function(CS.data, used = 'counts') {
 
   edata_scnorm = assay(DataNorm,'normcounts')
 
-  assay(CS.data, 'NMcounts') = as.matrix(edata_scnorm)
-  return(CS.data)
+  assay(sce, 'NMcounts') = as.matrix(edata_scnorm)
+  return(sce)
 }
 
-.Normalize_scNorm = function(CS.data, used = 'counts') {
-  edata = assay(CS.data, used)
-  batch = CS.data@colData$batch
-  #pheno = colData(CS.data)
+.Normalize_scNorm = function(sce, used = 'counts') {
+  edata = assay(sce, used)
+  batch = sce@colData$batch
+  #pheno = colData(sce)
 
   suppressPackageStartupMessages(library(SCnorm, quietly = T))
 
@@ -500,30 +560,30 @@ Normalize_scNorm = function(CS.data, used = 'counts') {
   edata_scnorm = as.data.frame(edata_scnorm)[rownames(edata),]
   row.names(edata_scnorm) = rownames(edata)
 
-  assay(CS.data, 'NMcounts') = as.matrix(edata_scnorm)
-  return(CS.data)
+  assay(sce, 'NMcounts') = as.matrix(edata_scnorm)
+  return(sce)
 }
 
 #Normalization using Linnorm algorithm.
-Normalize_linnorm = function(CS.data, used = 'counts') {
-  #View(assay(CS.data, used))
-  edata = assay(CS.data, used)
-  #batch = CS.data@colData$batch
-  #pheno = colData(CS.data)
+Normalize_linnorm = function(sce, used = 'counts') {
+  #View(assay(sce, used))
+  edata = assay(sce, used)
+  #batch = sce@colData$batch
+  #pheno = colData(sce)
 
   library(Linnorm, quietly = T)
   edata_lin = Linnorm::Linnorm.Norm(datamatrix = edata)
 
 
-  assay(CS.data, 'NMcounts') = as.matrix(edata_lin)
-  return(CS.data)
+  assay(sce, 'NMcounts') = as.matrix(edata_lin)
+  return(sce)
 }
 
-.Normalize_linnorm = function(CS.data, used = 'counts') {
-  #View(assay(CS.data, used))
-  edata = assay(CS.data, used)
-  batch = CS.data@colData$batch
-  #pheno = colData(CS.data)
+.Normalize_linnorm = function(sce, used = 'counts') {
+  #View(assay(sce, used))
+  edata = assay(sce, used)
+  batch = sce@colData$batch
+  #pheno = colData(sce)
 
   ###
   unique.batch = unique(batch)
@@ -551,14 +611,15 @@ Normalize_linnorm = function(CS.data, used = 'counts') {
   edata_lin = as.data.frame(edata_lin)[rownames(edata),]
   row.names(edata_lin) = rownames(edata)
 
-  assay(CS.data, 'NMcounts') = as.matrix(edata_lin)
-  return(CS.data)
+  assay(sce, 'NMcounts') = as.matrix(edata_lin)
+  return(sce)
 }
 
 
-Normalize_ruvseq = function(CS.data, used = 'counts', spkins) {
-  edata = assay(CS.data, used)
-  #batch = CS.data@colData$batch
+Normalize_ruvseq = function(sce, used = 'counts', spkins) {
+  edata = assay(sce, used)
+  #batch = sce@colData$batch
+  spkins=rownames(sce)[grep("(?i)^ERCC", rownames(sce))]
 
   spkins = spkins[spkins %in% rownames(edata)]
 
@@ -567,63 +628,73 @@ Normalize_ruvseq = function(CS.data, used = 'counts', spkins) {
 
   edata_ruv = edata_ruv$normalizedCounts
 
-  assay(CS.data, 'NMcounts') = edata_ruv
+  assay(sce, 'NMcounts') = edata_ruv
 
-  return(CS.data)
+  return(sce)
 }
 
 
 #================#
 # Batch effect correction -- Evaluation
 #================#
+#' A function for batch correction Evaluation
+#'
+#' @param sce a SingleCellExperiment object
+#' @param method method for batch correction evaluation
+#' @param used batch corrected count matrix/ batch corrected PCA
+#' @param PCNum number of PCs to use
+#' @return  a ggplot shows batch correction evaluation score
+#' @examples
+#'
+#' BatchEva(sce)
+#'
+BatchEva = function(sce, method = 'cmx', used = NULL, PCNum = 3) {
 
-BatchEva = function(CS.data, method = 'cmx', used = NULL, PCNum = 3) {
-
-  # Condition to select "used"
+  # Condition to select count matrix
   if(!is.null(used)){
     used=used
   }
-  else if ("BENMcounts" %in% assayNames(CS.data)) {
+  else if ("BENMcounts" %in% assayNames(sce)) {
     used= "BENMcounts"
   }
   else{
     used= "BEPCA"
   }
   evaPlot = switch(EXPR = method,
-               'cmx' = BatchEva_cmix( CS.data = CS.data, used = used, PCNum = PCNum),
-               'kbet' = BatchEva_kbet( CS.data = CS.data, used = used, PCNum = PCNum),
-               'slt'  = BatchEva_slt(  CS.data = CS.data, used = used, PCNum = PCNum))
+               'cmx' = BatchEva_cmix( sce = sce, used = used, PCNum = PCNum),
+               'kbet' = BatchEva_kbet( sce = sce, used = used, PCNum = PCNum),
+               'slt'  = BatchEva_slt(  sce = sce, used = used, PCNum = PCNum))
 
   return(evaPlot)
 }
 
 
-BatchEva_kbet = function(CS.data, used = 'BEPCA', PCNum = 3) {
+BatchEva_kbet = function(sce, used = 'BEPCA', PCNum = 3) {
 
   if(used == 'BEPCA') {
-    emb.bepca = reducedDim(CS.data, used)
+    emb.bepca = reducedDim(sce, used)
     if(ncol(emb.bepca) < PCNum) {
       PCNum = ncol(emb.bepca)
     }
   }
 
   if(used == 'PCA') {
-    emb.bepca = reducedDim(CS.data, used)
+    emb.bepca = reducedDim(sce, used)
     if(ncol(emb.bepca) < PCNum) {
       PCNum = ncol(emb.bepca)
     }
   }
 
   edata = switch (EXPR = used,
-                  'counts' = assay(CS.data, 'counts'),
-                  'VGcounts' = log2(assay(altExp(CS.data),'VGcounts') + 1),
-                  'PCA' = t(reducedDim(CS.data, used)[,c(1:PCNum)]),
-                  'BEPCA' = t(reducedDim(CS.data, used)[,c(1:PCNum)]),
-                  'BEcounts' = assay(CS.data, 'BEcounts'),
-                  'BENMcounts' =assay(CS.data, 'BENMcounts'))
+                  'counts' = assay(sce, 'counts'),
+                  'VGcounts' = log2(assay(altExp(sce),'VGcounts') + 1),
+                  'PCA' = t(reducedDim(sce, used)[,c(1:PCNum)]),
+                  'BEPCA' = t(reducedDim(sce, used)[,c(1:PCNum)]),
+                  'BEcounts' = assay(sce, 'BEcounts'),
+                  'BENMcounts' =assay(sce, 'BENMcounts'))
 
-  batch = CS.data@colData$batch
-  pheno = colData(CS.data)
+  batch = sce@colData$batch
+  pheno = colData(sce)
 
   batch.estimate = kBET::kBET(df = edata, batch = batch, plot = F)
 
@@ -638,32 +709,32 @@ BatchEva_kbet = function(CS.data, used = 'BEPCA', PCNum = 3) {
   return(g)
 }
 
-.BatchEva_kbet = function(CS.data, used = 'BEPCA', PCNum = 3) {
+.BatchEva_kbet = function(sce, used = 'BEPCA', PCNum = 3) {
 
   if(used == 'BEPCA') {
-    emb.bepca = reducedDim(CS.data, used)
+    emb.bepca = reducedDim(sce, used)
     if(ncol(emb.bepca) < PCNum) {
       PCNum = ncol(emb.bepca)
     }
   }
 
   if(used == 'PCA') {
-    emb.bepca = reducedDim(CS.data, used)
+    emb.bepca = reducedDim(sce, used)
     if(ncol(emb.bepca) < PCNum) {
       PCNum = ncol(emb.bepca)
     }
   }
 
   edata = switch (EXPR = used,
-                  'counts' = assay(CS.data, 'counts'),
-                  'VGcounts' = log2(assay(altExp(CS.data),'VGcounts') + 1),
-                  'PCA' = t(reducedDim(CS.data, used)[,c(1:PCNum)]),
-                  'BEPCA' = t(reducedDim(CS.data, used)[,c(1:PCNum)]),
-                  'BEcounts' = assay(CS.data, 'BEcounts'),
-                  'BENMcounts' =assay(CS.data, 'BENMcounts'))
+                  'counts' = assay(sce, 'counts'),
+                  'VGcounts' = log2(assay(altExp(sce),'VGcounts') + 1),
+                  'PCA' = t(reducedDim(sce, used)[,c(1:PCNum)]),
+                  'BEPCA' = t(reducedDim(sce, used)[,c(1:PCNum)]),
+                  'BEcounts' = assay(sce, 'BEcounts'),
+                  'BENMcounts' =assay(sce, 'BENMcounts'))
 
-  batch = CS.data@colData$batch
-  pheno = colData(CS.data)
+  batch = sce@colData$batch
+  pheno = colData(sce)
 
   batch.estimate = kBET::kBET(df = edata, batch = batch, plot = F)
 
@@ -675,17 +746,17 @@ BatchEva_kbet = function(CS.data, used = 'BEPCA', PCNum = 3) {
 }
 
 
-BatchEva_cmix = function(CS.data, used = 'PCA', PCNum = 3) {
+BatchEva_cmix = function(sce, used = 'PCA', PCNum = 3) {
 
   if(used == 'BEPCA') {
-    emb.bepca = reducedDim(CS.data, used)
+    emb.bepca = reducedDim(sce, used)
     if(ncol(emb.bepca) < PCNum) {
       PCNum = ncol(emb.bepca)
     }
   }
 
   if(used == 'PCA') {
-    emb.bepca = reducedDim(CS.data, used)
+    emb.bepca = reducedDim(sce, used)
     if(ncol(emb.bepca) < PCNum) {
       PCNum = ncol(emb.bepca)
     }
@@ -693,25 +764,25 @@ BatchEva_cmix = function(CS.data, used = 'PCA', PCNum = 3) {
   # use batch effect normalized count for batch effect evaluation
   if(used == 'BENMcounts') {
     used = "BEPCA"
-    CS.data <- scater::runPCA(CS.data, exprs_values="BENMcounts", name ="BEPCA")
-    emb.bepca = reducedDim(CS.data, used)
+    sce <- scater::runPCA(sce, exprs_values="BENMcounts", name ="BEPCA")
+    emb.bepca = reducedDim(sce, used)
     if(ncol(emb.bepca) < PCNum) {
       PCNum = ncol(emb.bepca)
     }
   }
 
   edata = switch (EXPR = used,
-                  #'counts' = assay(CS.data, 'counts'),
-                  #'VGcounts' = log2(assay(altExp(CS.data),'VGcounts') + 1),
-                  'PCA' = reducedDim(CS.data, used)[,c(1:PCNum)],
-                  'BEPCA' = reducedDim(CS.data, used)[,c(1:PCNum)])
+                  #'counts' = assay(sce, 'counts'),
+                  #'VGcounts' = log2(assay(altExp(sce),'VGcounts') + 1),
+                  'PCA' = reducedDim(sce, used)[,c(1:PCNum)],
+                  'BEPCA' = reducedDim(sce, used)[,c(1:PCNum)])
 
-  batch = CS.data@colData$batch
-  pheno = colData(CS.data)
+  batch = sce@colData$batch
+  pheno = colData(sce)
 
   #suppressPackageStartupMessages(library(CellMixS, quietly = T))
-  sce = SingleCellExperiment::SingleCellExperiment(assay = list(counts = assay(CS.data, 'counts'),
-                                                                logcounts = log2(assay(CS.data, 'counts') + 1)),
+  sce = SingleCellExperiment::SingleCellExperiment(assay = list(counts = assay(sce, 'counts'),
+                                                                logcounts = log2(assay(sce, 'counts') + 1)),
                                                    colData = data.frame(batch = batch))
 
   reducedDim(sce, 'PCA') = edata
@@ -753,34 +824,34 @@ BatchEva_cmix = function(CS.data, used = 'PCA', PCNum = 3) {
   return(plot.g)
 }
 
-.BatchEva_cmix = function(CS.data, used = 'PCA', PCNum = 3) {
+.BatchEva_cmix = function(sce, used = 'PCA', PCNum = 3) {
 
   if(used == 'BEPCA') {
-    emb.bepca = reducedDim(CS.data, used)
+    emb.bepca = reducedDim(sce, used)
     if(ncol(emb.bepca) < PCNum) {
       PCNum = ncol(emb.bepca)
     }
   }
 
   if(used == 'PCA') {
-    emb.bepca = reducedDim(CS.data, used)
+    emb.bepca = reducedDim(sce, used)
     if(ncol(emb.bepca) < PCNum) {
       PCNum = ncol(emb.bepca)
     }
   }
 
   edata = switch (EXPR = used,
-                  #'counts' = assay(CS.data, 'counts'),
-                  #'VGcounts' = log2(assay(altExp(CS.data),'VGcounts') + 1),
-                  'PCA' = reducedDim(CS.data, used)[,c(1:PCNum)],
-                  'BEPCA' = reducedDim(CS.data, used)[,c(1:PCNum)])
+                  #'counts' = assay(sce, 'counts'),
+                  #'VGcounts' = log2(assay(altExp(sce),'VGcounts') + 1),
+                  'PCA' = reducedDim(sce, used)[,c(1:PCNum)],
+                  'BEPCA' = reducedDim(sce, used)[,c(1:PCNum)])
 
-  batch = CS.data@colData$batch
-  pheno = colData(CS.data)
+  batch = sce@colData$batch
+  pheno = colData(sce)
 
   #suppressPackageStartupMessages(library(CellMixS, quietly = T))
-  sce = SingleCellExperiment::SingleCellExperiment(assay = list(counts = assay(CS.data, 'counts'),
-                                                                logcounts = log2(assay(CS.data, 'counts') + 1)),
+  sce = SingleCellExperiment::SingleCellExperiment(assay = list(counts = assay(sce, 'counts'),
+                                                                logcounts = log2(assay(sce, 'counts') + 1)),
                                                    colData = data.frame(batch = batch))
 
   reducedDim(sce, 'PCA') = edata
@@ -799,17 +870,17 @@ BatchEva_cmix = function(CS.data, used = 'PCA', PCNum = 3) {
 }
 
 
-BatchEva_slt = function(CS.data, used = 'BEPCA', PCNum = 3) {
+BatchEva_slt = function(sce, used = 'BEPCA', PCNum = 3) {
   edata = switch (EXPR = used,
-                  'counts' = assay(CS.data, 'counts'),
-                  'VGcounts' = log2(assay(altExp(CS.data),'VGcounts') + 1),
-                  'PCA' = t(reducedDim(CS.data, used)[,c(1:PCNum)]),
-                  'BEPCA' = t(reducedDim(CS.data, used)[,c(1:PCNum)]),
-                  'BEcounts' = assay(CS.data, 'BEcounts'),
-                  'BENMcounts' =assay(CS.data, 'BENMcounts'))
+                  'counts' = assay(sce, 'counts'),
+                  'VGcounts' = log2(assay(altExp(sce),'VGcounts') + 1),
+                  'PCA' = t(reducedDim(sce, used)[,c(1:PCNum)]),
+                  'BEPCA' = t(reducedDim(sce, used)[,c(1:PCNum)]),
+                  'BEcounts' = assay(sce, 'BEcounts'),
+                  'BENMcounts' =assay(sce, 'BENMcounts'))
 
-  batch = CS.data@colData$batch
-  pheno = colData(CS.data)
+  batch = sce@colData$batch
+  pheno = colData(sce)
 
   #stats::dist(edata)
   ss = cluster::silhouette(x = c(1:length(unique(batch)))[as.factor(batch)],
@@ -854,13 +925,13 @@ BatchEva_slt = function(CS.data, used = 'BEPCA', PCNum = 3) {
   return(sltg)
 }
 
-.BatchEva_slt = function(CS.data, used = 'BEPCA', PCNum = 3) {
+.BatchEva_slt = function(sce, used = 'BEPCA', PCNum = 3) {
   edata = switch (EXPR = used,
-                  'PCA' = t(reducedDim(CS.data, used)[,c(1:PCNum)]),
-                  'BEPCA' = t(reducedDim(CS.data, used)[,c(1:PCNum)]))
+                  'PCA' = t(reducedDim(sce, used)[,c(1:PCNum)]),
+                  'BEPCA' = t(reducedDim(sce, used)[,c(1:PCNum)]))
 
-  batch = CS.data@colData$batch
-  pheno = colData(CS.data)
+  batch = sce@colData$batch
+  pheno = colData(sce)
 
   ss = cluster::silhouette(x = c(1:length(unique(batch)))[as.factor(batch)],
                            dist = dist(t(edata)))
@@ -881,31 +952,41 @@ BatchEva_slt = function(CS.data, used = 'BEPCA', PCNum = 3) {
 #================#
 # Batch effect correction -- on expression matrix
 #================#
+#' A function for batch correction on expression matrix
+#'
+#' @param sce a SingleCellExperiment object
+#' @param method method for batch correction
+#' @param used  count matrix raw/Normalized
+#'
+#' @return  a batch corrected SingleCellExperiment object
+#' @examples
+#'
+#' BatchEffect_Matrix(sce)
+#'
+BatchEffect_Matrix = function(sce, method = 'cbtseq', used = 'counts') {
 
-BatchEffect_Matrix = function(CS.data, method = 'cbtseq', used = 'counts') {
+  sce = switch(EXPR = method,
+                   'bas'      = RmBatch_denoise(   sce = sce, used = used),
+                   'lima'     = RmBatch_limma(     sce = sce, used = used),
+                   'cbt'      = RmBatch_combat(    sce = sce, used = used),
+                   'cbtseq'   = RmBatch_combatseq( sce = sce, used = used),
+                   'mnn'      = RmBatch_mnn(       sce = sce, used = used),
+                   'sca'      = RmBatch_scano(     sce = sce, used = used))
 
-  CS.data = switch(EXPR = method,
-                   'bas'      = RmBatch_denoise(   CS.data = CS.data, used = used),
-                   'lima'     = RmBatch_limma(     CS.data = CS.data, used = used),
-                   'cbt'      = RmBatch_combat(    CS.data = CS.data, used = used),
-                   'cbtseq'   = RmBatch_combatseq( CS.data = CS.data, used = used),
-                   'mnn'      = RmBatch_mnn(       CS.data = CS.data, used = used),
-                   'sca'      = RmBatch_scano(     CS.data = CS.data, used = used))
-
-  return(CS.data)
+  return(sce)
 }
 
 
-RmBatch_denoise = function(CS.data, used = 'counts') {
+RmBatch_denoise = function(sce, used = 'counts') {
   cat(crayon::red('===Running denoise!===\n'))
-  #View(SummarizedExperiment::assay(CS.data, used))
-  #edata = SummarizedExperiment::assay(CS.data, used)
+  #View(SummarizedExperiment::assay(sce, used))
+  #edata = SummarizedExperiment::assay(sce, used)
   edata = switch(EXPR = used,
-                 'counts' = SummarizedExperiment::assay(CS.data, used),
-                 'NMcounts' = SummarizedExperiment::assay(CS.data, used),
-                 'VGcounts' = SummarizedExperiment::assay(SingleCellExperiment::altExp(CS.data, used), used))
+                 'counts' = SummarizedExperiment::assay(sce, used),
+                 'NMcounts' = SummarizedExperiment::assay(sce, used),
+                 'VGcounts' = SummarizedExperiment::assay(SingleCellExperiment::altExp(sce, used), used))
 
-  batch = SingleCellExperiment::colData(CS.data)[,'batch']
+  batch = SingleCellExperiment::colData(sce)[,'batch']
   #library(BASiCS, quietly = T)
   Data = SingleCellExperiment::SingleCellExperiment(assays = list(counts = edata),
                                                     colData = S4Vectors::DataFrame(BatchInfo = batch))
@@ -917,97 +998,97 @@ RmBatch_denoise = function(CS.data, used = 'counts') {
   edata_Denoised = BASiCS::BASiCS_DenoisedCounts(Data = Data, Chain = Chain)
 
   if(used == 'counts') {
-    SummarizedExperiment::assay(CS.data, 'BEcounts') = edata_Denoised
+    SummarizedExperiment::assay(sce, 'BEcounts') = edata_Denoised
   }
   if(used == 'VGcounts') {
-    SingleCellExperiment::altExp(CS.data, 'BEVGcounts') = SingleCellExperiment::SingleCellExperiment(assays = list(BEVGcounts = edata_Denoised))
+    SingleCellExperiment::altExp(sce, 'BEVGcounts') = SingleCellExperiment::SingleCellExperiment(assays = list(BEVGcounts = edata_Denoised))
   }
 
-  return(CS.data)
+  return(sce)
 }
 
 
-RmBatch_limma = function(CS.data, used = 'counts') {
+RmBatch_limma = function(sce, used = 'counts') {
   cat(crayon::red('===Running limma!===\n'))
   edata = switch(EXPR = used,
-                 'counts' = log2(SummarizedExperiment::assay(CS.data, used)+1),
-                 'NMcounts' = SummarizedExperiment::assay(CS.data, used),
-                 'VGcounts' = log2(SummarizedExperiment::assay(SingleCellExperiment::altExp(CS.data), used)+1))
-  edata_rbe = limma::removeBatchEffect(x = edata, batch = SingleCellExperiment::colData(CS.data)[,'batch'])
+                 'counts' = log2(SummarizedExperiment::assay(sce, used)+1),
+                 'NMcounts' = SummarizedExperiment::assay(sce, used),
+                 'VGcounts' = log2(SummarizedExperiment::assay(SingleCellExperiment::altExp(sce), used)+1))
+  edata_rbe = limma::removeBatchEffect(x = edata, batch = SingleCellExperiment::colData(sce)[,'batch'])
   edata_rbe[edata_rbe < 0] = 0
-  #SummarizedExperiment::assay(CS.data, 'BEcounts') = edata_rbe
+  #SummarizedExperiment::assay(sce, 'BEcounts') = edata_rbe
   if(used == 'counts') {
-    SummarizedExperiment::assay(CS.data, 'BEcounts') = edata_rbe
+    SummarizedExperiment::assay(sce, 'BEcounts') = edata_rbe
   }
   if(used == 'VGcounts') {
-    SingleCellExperiment::altExp(CS.data, 'BEVGcounts') = SingleCellExperiment::SingleCellExperiment(assays = list(BEVGcounts = edata_rbe))
+    SingleCellExperiment::altExp(sce, 'BEVGcounts') = SingleCellExperiment::SingleCellExperiment(assays = list(BEVGcounts = edata_rbe))
   }
   if(used== 'NMcounts' ){
-    SummarizedExperiment::assay(CS.data, 'BENMcounts') = edata_rbe
+    SummarizedExperiment::assay(sce, 'BENMcounts') = edata_rbe
   }
-  return(CS.data)
+  return(sce)
 
 }
 
 
-RmBatch_combat = function(CS.data, used = 'counts') {
+RmBatch_combat = function(sce, used = 'counts') {
   cat(crayon::red('===Running combat!===\n'))
   edata = switch(EXPR = used,
-                 'counts' = log2(SummarizedExperiment::assay(CS.data, used)+1),
-                 'NMcounts' = SummarizedExperiment::assay(CS.data, used),
-                 'VGcounts' = log2(SummarizedExperiment::assay(SingleCellExperiment::altExp(CS.data), used)+1))
-  batch = SingleCellExperiment::colData(CS.data)[,'batch']
+                 'counts' = log2(SummarizedExperiment::assay(sce, used)+1),
+                 'NMcounts' = SummarizedExperiment::assay(sce, used),
+                 'VGcounts' = log2(SummarizedExperiment::assay(SingleCellExperiment::altExp(sce), used)+1))
+  batch = SingleCellExperiment::colData(sce)[,'batch']
 
   var.data = apply(edata, 1, var)
   if(sum(var.data == 0) > 0) {
     rm.edata = edata[which(var.data == 0),,drop = F]
 
     edata = edata[-which(var.data == 0 ),]
-    modcombat = stats::model.matrix(~1, data = SummarizedExperiment::colData(CS.data))
+    modcombat = stats::model.matrix(~1, data = SummarizedExperiment::colData(sce))
     edata_combat = sva::ComBat(dat = as.matrix(edata), batch = batch, mod = modcombat, par.prior = TRUE)
 
     edata_combat = rbind(edata_combat, rm.edata)
-    edata_combat = edata_combat[rownames(SummarizedExperiment::assay(CS.data)),]
+    edata_combat = edata_combat[rownames(SummarizedExperiment::assay(sce)),]
   } else {
-    modcombat = stats::model.matrix(~1, data = SummarizedExperiment::colData(CS.data))
+    modcombat = stats::model.matrix(~1, data = SummarizedExperiment::colData(sce))
     edata_combat = sva::ComBat(dat = as.matrix(edata), batch = batch, mod = modcombat, par.prior=TRUE)
   }
 
   if(used == 'counts') {
-    SummarizedExperiment::assay(CS.data, 'BEcounts') = edata_combat
+    SummarizedExperiment::assay(sce, 'BEcounts') = edata_combat
   }
   if(used == 'VGcounts') {
-    SingleCellExperiment::altExp(CS.data, 'BEVGcounts') = SingleCellExperiment::SingleCellExperiment(assays = list(BEVGcounts = edata_combat))
+    SingleCellExperiment::altExp(sce, 'BEVGcounts') = SingleCellExperiment::SingleCellExperiment(assays = list(BEVGcounts = edata_combat))
   }
   if(used== 'NMcounts' ){
-    SummarizedExperiment::assay(CS.data, 'BENMcounts') = edata_combat
+    SummarizedExperiment::assay(sce, 'BENMcounts') = edata_combat
   }
-  return(CS.data)
+  return(sce)
 }
 
-RmBatch_combatseq = function(CS.data, used = 'counts') {
+RmBatch_combatseq = function(sce, used = 'counts') {
   cat(crayon::red('===Running combatseq!===\n'))
   edata = switch(EXPR = used,
-                 'counts' = SummarizedExperiment::assay(CS.data, used),
-                 'NMcounts' = SummarizedExperiment::assay(CS.data, used),
-                 'VGcounts' = SummarizedExperiment::assay(SingleCellExperiment::altExp(CS.data,used), used))
-  batch = SingleCellExperiment::colData(CS.data)[,'batch']
+                 'counts' = SummarizedExperiment::assay(sce, used),
+                 'NMcounts' = SummarizedExperiment::assay(sce, used),
+                 'VGcounts' = SummarizedExperiment::assay(SingleCellExperiment::altExp(sce,used), used))
+  batch = SingleCellExperiment::colData(sce)[,'batch']
   edata_combatseq = sva::ComBat_seq(counts = edata, batch = batch)
   if(used == 'counts') {
-    SummarizedExperiment::assay(CS.data, 'BEcounts') = log2(edata_combatseq + 1)
+    SummarizedExperiment::assay(sce, 'BEcounts') = log2(edata_combatseq + 1)
   }
   if(used == 'VGcounts') {
-    SingleCellExperiment::altExp(CS.data, 'BEVGcounts') = SingleCellExperiment::SingleCellExperiment(assays = list(BEVGcounts = log2(edata_combatseq + 1)))
+    SingleCellExperiment::altExp(sce, 'BEVGcounts') = SingleCellExperiment::SingleCellExperiment(assays = list(BEVGcounts = log2(edata_combatseq + 1)))
   }
   if(used== 'NMcounts' ){
-    SummarizedExperiment::assay(CS.data, 'BENMcounts') = edata_combatseq
+    SummarizedExperiment::assay(sce, 'BENMcounts') = edata_combatseq
   }
-  return(CS.data)
+  return(sce)
 }
 
-#RmBatch_mnn = function(CS.data, used = 'counts') {
-#  edata = SummarizedExperiment::assay(CS.data, used)
-#  batch = SingleCellExperiment::colData(CS.data)[,'batch']
+#RmBatch_mnn = function(sce, used = 'counts') {
+#  edata = SummarizedExperiment::assay(sce, used)
+#  batch = SingleCellExperiment::colData(sce)[,'batch']
 #
 #  combined = SingleCellExperiment::SingleCellExperiment(assays = list(counts = as.matrix(edata)))
 #  combined = batchelor::multiBatchNorm(combined, batch = batch)
@@ -1017,17 +1098,17 @@ RmBatch_combatseq = function(CS.data, used = 'counts') {
 #
 #  edata_mnn = as.matrix(SummarizedExperiment::assay(f.out2))
 #
-#  SummarizedExperiment::assay(CS.data, 'BEcounts') = edata_mnn
-#  return(CS.data)
+#  SummarizedExperiment::assay(sce, 'BEcounts') = edata_mnn
+#  return(sce)
 #}
 
-RmBatch_scano = function(CS.data, used = 'counts') {
+RmBatch_scano = function(sce, used = 'counts') {
   cat(crayon::red('===Running scanoramaCT!===\n'))
   edata = switch(EXPR = used,
-                 'counts' = log2(SummarizedExperiment::assay(CS.data, used)+1),
-                 'NMcounts' = SummarizedExperiment::assay(CS.data, used),
-                 'VGcounts' = log2(SummarizedExperiment::assay(SingleCellExperiment::altExp(CS.data, used), used)+1))
-  batch = SingleCellExperiment::colData(CS.data)[,'batch']
+                 'counts' = log2(SummarizedExperiment::assay(sce, used)+1),
+                 'NMcounts' = SummarizedExperiment::assay(sce, used),
+                 'VGcounts' = log2(SummarizedExperiment::assay(SingleCellExperiment::altExp(sce, used), used)+1))
+  batch = SingleCellExperiment::colData(sce)[,'batch']
 
   list.matrix = list()
   for(i in c(1: length(unique(batch)))) {
@@ -1044,10 +1125,11 @@ RmBatch_scano = function(CS.data, used = 'counts') {
   scanoramaCT = reticulate::import("scanoramaCT")
   np = reticulate::import("numpy")
   #merge = scanoramaCT$merge_datasets(processedMats, genes_list)#process = scanoramaCT$process_data(merge[[1]], merge[[2]], #hvg = 0L, dimred = 100L)#gcalign = scanoramaCT$find_alignments_gc(process[[1]], countsNorm)
+  # Batch correction
   integrated.corrected.data = scanoramaCT$correct(processedMats,
                                                   genes_list,
                                                   return_dimred = TRUE,
-                                                  return_dense = T)
+                                                  return_dense = T,verbose = F)
   #countsNormCorrected = unlist(lapply(gcalign, function(x) x[,1]))
   matCorrected = t(do.call(rbind, integrated.corrected.data[[2]]))
   rownames(matCorrected) = integrated.corrected.data[[3]]
@@ -1056,36 +1138,48 @@ RmBatch_scano = function(CS.data, used = 'counts') {
 
   matCorrected = matCorrected[rownames(edata), colnames(edata)]
   if(used == 'counts') {
-    SummarizedExperiment::assay(CS.data, 'BEcounts') = matCorrected
+    SummarizedExperiment::assay(sce, 'BEcounts') = matCorrected
   }
   if(used == 'VGcounts') {
-    SingleCellExperiment::altExp(CS.data, 'BEVGcounts') = SingleCellExperiment::SingleCellExperiment(assays = list(BEVGcounts = matCorrected))
+    SingleCellExperiment::altExp(sce, 'BEVGcounts') = SingleCellExperiment::SingleCellExperiment(assays = list(BEVGcounts = matCorrected))
   }
   if(used== 'NMcounts' ){
-    SummarizedExperiment::assay(CS.data, 'BENMcounts') = matCorrected
+    SummarizedExperiment::assay(sce, 'BENMcounts') = matCorrected
   }
 
-  return(CS.data)
+  return(sce)
 }
 
 
 #================#
 # Batch effect correction -- on dimension reduction
 #================#
-BatchEffect_DimReduction = function(CS.data, method = 'beer', used = 'counts') {
-  CS.data = switch(EXPR = method,
-                   'beer'  = RmBatch_beer( CS.data = CS.data, used = used),
-                   'cca'   = RmBatch_cca(  CS.data = CS.data, used = used),
-                   'dmnn'  = RmBatch_dmnn( CS.data = CS.data, used = used),
-                   'hmy'   = RmBatch_hmy(  CS.data = CS.data, used = used),
-                   'lig'   = RmBatch_lig(  CS.data = CS.data, used = used))
 
-  return(CS.data)
+#' A function for batch correction on dimension reduction
+#'
+#' @param sce a SingleCellExperiment object
+#' @param method method for batch correction onon dimension reduction
+#' @param used  count matrix raw/Normalized
+#'
+#' @return  a batch corrected SingleCellExperiment object
+#' @examples
+#'
+#' BatchEffect_DimReduction(sce)
+#'
+BatchEffect_DimReduction = function(sce, method = 'beer', used = 'counts') {
+  sce = switch(EXPR = method,
+                   'beer'  = RmBatch_beer( sce = sce, used = used),
+                   'cca'   = RmBatch_cca(  sce = sce, used = used),
+                   'dmnn'  = RmBatch_dmnn( sce = sce, used = used),
+                   'hmy'   = RmBatch_hmy(  sce = sce, used = used),
+                   'lig'   = RmBatch_lig(  sce = sce, used = used))
+
+  return(sce)
 
 }
 
 
-RmBatch_beer = function(CS.data, used = 'counts', showBy = 'PCA') {
+RmBatch_beer = function(sce, used = 'counts', showBy = 'PCA') {
 
   #BeerPath = readline("Path of BEER source file:")
   BeerPath = 'fun/BEER.R'
@@ -1095,8 +1189,8 @@ RmBatch_beer = function(CS.data, used = 'counts', showBy = 'PCA') {
   source(BeerPath)
   #source("~/T1/BE/BEER/BEER-0.1.7/BEER.R")
 
-  edata = assay(CS.data, used)
-  batch = CS.data@colData$batch
+  edata = assay(sce, used)
+  batch = sce@colData$batch
 
   mybeer=BEER(DATA = edata,
               BATCH = batch,
@@ -1114,15 +1208,15 @@ RmBatch_beer = function(CS.data, used = 'counts', showBy = 'PCA') {
   pcs_beer = pbmc@reductions$pca@cell.embeddings[,PCUSE]
 
   #if(showBy == 'PCA') {
-  reducedDim(CS.data, 'BEPCA') = pcs_beer
+  reducedDim(sce, 'BEPCA') = pcs_beer
   #}
-  return(CS.data)
+  return(sce)
 }
 
 
-RmBatch_cca = function(CS.data, used = 'counts', showby = 'PCA') {
-  edata = assay(CS.data, used)
-  batch = CS.data@colData$batch
+RmBatch_cca = function(sce, used = 'counts', showby = 'PCA') {
+  edata = assay(sce, used)
+  batch = sce@colData$batch
 
   batch.factor = unique(batch)
 
@@ -1143,15 +1237,15 @@ RmBatch_cca = function(CS.data, used = 'counts', showby = 'PCA') {
   immune.combined = ScaleData(immune.combined, verbose = FALSE)
   immune.combined = RunPCA(immune.combined, npcs = 30, verbose = FALSE)
 
-  reducedDim(CS.data, 'BEPCA') = as.matrix(immune.combined@reductions$pca@cell.embeddings)
+  reducedDim(sce, 'BEPCA') = as.matrix(immune.combined@reductions$pca@cell.embeddings)
 
-  return(CS.data)
+  return(sce)
 }
 
 
-RmBatch_dmnn = function(CS.data, used = 'counts', showby = 'PCA') {
-  edata = assay(CS.data, used)
-  batch = CS.data@colData$batch
+RmBatch_dmnn = function(sce, used = 'counts', showby = 'PCA') {
+  edata = assay(sce, used)
+  batch = sce@colData$batch
 
   #suppressPackageStartupMessages(library(SingleCellExperiment, quietly = T))
   combined = SingleCellExperiment::SingleCellExperiment(assays = list(counts = as.matrix(edata)))
@@ -1170,15 +1264,15 @@ RmBatch_dmnn = function(CS.data, used = 'counts', showby = 'PCA') {
   set.seed(0)
   f.out2 <- batchelor::fastMNN(combined, batch=combined$batch, subset.row=chosen.hvgs)
 
-  reducedDim(CS.data, 'BEPCA') = reducedDim(f.out2, "corrected")
+  reducedDim(sce, 'BEPCA') = reducedDim(f.out2, "corrected")
   #plot(reducedDim(f.out2, "corrected")[,c(1,2)], col = rainbow(2)[as.factor(groupVector)])
-  return(CS.data)
+  return(sce)
 }
 
 
-RmBatch_hmy = function(CS.data, used = 'counts', showby = 'PCA') {
-  edata = assay(CS.data, used)
-  batch = CS.data@colData$batch
+RmBatch_hmy = function(sce, used = 'counts', showby = 'PCA') {
+  edata = assay(sce, used)
+  batch = sce@colData$batch
 
   #suppressPackageStartupMessages(library(SingleCellExperiment, quietly = T))
   combined = SingleCellExperiment::SingleCellExperiment(assays = list(counts = as.matrix(edata)))
@@ -1194,7 +1288,7 @@ RmBatch_hmy = function(CS.data, used = 'counts', showby = 'PCA') {
   combined <- scater::runPCA(combined, subset_row=chosen.hvgs)
 
   #plot(reducedDim(combined, 'PCA')[,c(1,2)], col = as.factor(meta.table$Patients))
-  #plot(reducedDim(CS.data, 'PCA')[,c(1,2)], col = as.factor(meta.table$Patients))
+  #plot(reducedDim(sce, 'PCA')[,c(1,2)], col = as.factor(meta.table$Patients))
 
   harmony_embeddings = harmony::HarmonyMatrix(data_mat = reducedDim(combined, 'PCA')[,c(1:5)],
                                               meta_data = data.frame(batch = batch), vars_use = "batch",
@@ -1202,19 +1296,19 @@ RmBatch_hmy = function(CS.data, used = 'counts', showby = 'PCA') {
 
   #plot(harmony_embeddings[,c(1,2)], col = as.factor(meta.table$Patients))
 
-  #harmony_embeddings2 <- harmony::HarmonyMatrix(data_mat = reducedDim(CS.data, 'PCA')[,c(1:5)],
+  #harmony_embeddings2 <- harmony::HarmonyMatrix(data_mat = reducedDim(sce, 'PCA')[,c(1:5)],
   #                                             meta_data = data.frame(batch = batch), vars_use = "batch",
   #                                             do_pca=FALSE)
   #plot(harmony_embeddings2[,c(1,2)], col = as.factor(meta.table$Patients))
 
-  reducedDim(CS.data, 'BEPCA') = harmony_embeddings
-  return(CS.data)
+  reducedDim(sce, 'BEPCA') = harmony_embeddings
+  return(sce)
 }
 
 
-RmBatch_lig = function(CS.data, used = 'counts', showby = 'PCA') {
-  edata = assay(CS.data, used)
-  batch = CS.data@colData$batch
+RmBatch_lig = function(sce, used = 'counts', showby = 'PCA') {
+  edata = assay(sce, used)
+  batch = sce@colData$batch
 
   batch.factor = unique(batch)
 
@@ -1240,8 +1334,8 @@ RmBatch_lig = function(CS.data, used = 'counts', showby = 'PCA') {
   data.use.pca = prcomp(data.use)$x
   #plot(data.use.pca[,c(1,2)], col = as.factor(meta.table$Patients))
 
-  reducedDim(CS.data, 'BEPCA') = data.use.pca
-  return(CS.data)
+  reducedDim(sce, 'BEPCA') = data.use.pca
+  return(sce)
 }
 
 
@@ -1254,18 +1348,26 @@ RmBatch_lig = function(CS.data, used = 'counts', showby = 'PCA') {
 #================#
 # Dimension reduction
 #================#
-PCNumSearch = function(CS.data, runWith = 'VGcounts') {
+
+
+#' A function to search the optimum dimension to select for the further analysis
+#'
+#' @param sce a SingleCellExperiment object
+#' @param runWith count matrix variable genes count/ raw count matrix
+#'
+#'
+#' @return  a ggplot
+#' @examples
+#'
+#' PCNumSearch(sce)
+#'
+PCNumSearch = function(sce, runWith = 'VGcounts') {
   if (runWith == 'VGcounts') {
-    matrix.PJ = assay(altExp(CS.data), runWith)
+    matrix.PJ = assay(altExp(sce), runWith)
     matrix.PJ = log2(matrix.PJ + 1)
   }
-
-  if (runWith == 'PCA') {
-    matrix.PJ = t(reducedDim(CS.data, runWith))
-  }
-
-  if (runWith == 'BEPCA') {
-    matrix.PJ = t(reducedDim(CS.data, runWith))
+  else{
+    matrix.PJ = assay(sce, 'counts')
   }
 
 
@@ -1316,17 +1418,29 @@ PCNumSearch = function(CS.data, runWith = 'VGcounts') {
 #================#
 # Dimension reduction
 #================#
-Plot_DimReduction = function(CS.data, runWith = 'tSNE', colorBy = 'default', dim.se = c(1:2), showDensity = TRUE) {
+
+#' A function to plot dimension reduction
+#'
+#' @param sce a SingleCellExperiment object
+#' @param runWith dimension reduction PCA/tSNE/Umap
+#' @param colorBy select a column in colData
+#' @param showDensity T/F to show density on plot
+#' @return  a ggplot on dimension reduction
+#' @examples
+#'
+#' Plot_DimReduction(sce)
+#'
+Plot_DimReduction = function(sce, runWith = 'tSNE', colorBy = 'default', dim.se = c(1:2), showDensity = TRUE) {
   if (colorBy == 'default') {
-    colorBy = colnames(colData(CS.data))[1]
+    colorBy = colnames(colData(sce))[1]
   }
 
-  #CS.data = DimReduction_pca()
+  #sce = DimReduction_pca()
 
   #plot
-  df.plot = data.frame(reducedDim(CS.data, runWith)[,dim.se],
-                       colorBy = as.factor(colData(CS.data)[,colorBy]),
-                       color = as.character(colData(CS.data)[,colorBy]),
+  df.plot = data.frame(reducedDim(sce, runWith)[,dim.se],
+                       colorBy = as.factor(colData(sce)[,colorBy]),
+                       color = as.character(colData(sce)[,colorBy]),
 
                        stringsAsFactors = F)
 
@@ -1410,53 +1524,71 @@ Plot_DimReduction = function(CS.data, runWith = 'tSNE', colorBy = 'default', dim
   return(g.return)
 }
 
-
+#' A function to perform PCA dimension reduction
+#'
+#' @param sce a SingleCellExperiment object
+#' @param runWith PCA dimension reduction Variable gene counts/ batch corrected variable gene counts/Normalized counts/ normalized
+#'
+#' @return  a SummarizedExperiment object with PCA dimension reduction
+#' @examples
+#'
+#' DimReduction_pca(sce)
+#'
 DimReduction_pca = function(CS.data, runWith = 'VGcounts') {
-  matrix.PJ = assay(altExp(CS.data), 'VGcounts')
-  matrix.PJ = log2(matrix.PJ+1)
-
-  if(runWith == 'NMcounts') {
-    matrix.PJ = assay(CS.data, 'NMcounts')[rownames(assay(altExp(CS.data), 'VGcounts')),]
-  }
-  if(runWith == 'BEcounts') {
-    matrix.PJ = assay(CS.data, 'BEcounts')[rownames(assay(altExp(CS.data), 'VGcounts')),]
-  }
-
-  #dim(matrix.PJ)
-  emb.pca = prcomp(t(matrix.PJ))
-
-  reducedDim(CS.data, 'PCA') = emb.pca$x[,c(1:50)]
-
-  return(CS.data)
-}
-
-
-DimReduction_ica = function(CS.data, runWith = 'VGcounts') {
-  matrix.PJ = assay(altExp(CS.data), 'VGcounts')
-  matrix.PJ = log2(matrix.PJ+1)
-
-  if('NMcounts' %in% names(CS.data@assays)) {
-    matrix.PJ = assay(CS.data, 'NMcounts')[rownames(assay(altExp(CS.data), 'VGcounts')),]
-  }
-  if('BEcounts' %in% names(CS.data@assays)) {
-    matrix.PJ = assay(CS.data, 'BEcounts')[rownames(assay(altExp(CS.data), 'VGcounts')),]
-  }
-
-  library(fastICA, quietly = T)
-  emb.ica = fastICA(X = matrix.PJ, n.comp = 50)#nrow(matrix.PJ))
-
-  reducedDim(CS.data, 'PCA') = emb.ica$A
-
-  return(CS.data)
-}
-
-
-DimReduction_tsne = function(CS.data, runWith = 'PCA', PCNum = 20, perplexity = 30, parallelRun = TRUE) {
 
   matrix.PJ = switch (EXPR = runWith,
-                      'VGcounts' = log2(assay(altExp(CS.data),'VGcounts') + 1),
-                      'PCA' = t(reducedDim(CS.data, runWith)[,c(1:PCNum)]),
-                      'BEPCA' = t(reducedDim(CS.data, runWith)[,c(1:PCNum)]))
+                      'VGcounts'   = log2(SummarizedExperiment::assay(SingleCellExperiment::altExp(CS.data), 'VGcounts')+1),
+                      'BEVGcounts' = SummarizedExperiment::assay(SingleCellExperiment::altExp(CS.data, 'BEVGcounts'), 'BEVGcounts'),
+                      'NMcounts'   = SummarizedExperiment::assay(CS.data, 'NMcounts')[rownames(SummarizedExperiment::assay(SingleCellExperiment::altExp(CS.data), 'VGcounts')),],
+                      'BEcounts'   = SummarizedExperiment::assay(CS.data, 'BEcounts')[rownames(SummarizedExperiment::assay(SingleCellExperiment::altExp(CS.data), 'VGcounts')),])
+  emb.pca = prcomp(t(matrix.PJ))
+  SingleCellExperiment::reducedDim(CS.data, 'PCA') = emb.pca$x[,c(1:50)]
+  return(CS.data)
+}
+
+#' A function to perform ICA dimension reduction
+#'
+#' @param sce a SingleCellExperiment object
+#' @param runWith ICA dimension reduction Variable gene counts/ batch corrected variable gene counts/Normalized counts/ normalized
+#'
+#' @return  a SummarizedExperiment object with ICA dimension reduction
+#' @examples
+#'
+#' DimReduction_ica(sce)
+#'
+DimReduction_ica = function(CS.data, runWith = 'VGcounts') {
+
+  matrix.PJ = switch (EXPR = runWith,
+                      'VGcounts' = log2(SummarizedExperiment::assay(SingleCellExperiment::altExp(CS.data), 'VGcounts')+1),
+                      'BEVGcounts' = SummarizedExperiment::assay(SingleCellExperiment::altExp(CS.data, 'BEVGcounts'), 'BEVGcounts'),
+                      'NMcounts' = SummarizedExperiment::assay(CS.data, 'NMcounts')[rownames(SummarizedExperiment::assay(SingleCellExperiment::altExp(CS.data), 'VGcounts')),],
+                      'BEcounts' = SummarizedExperiment::assay(CS.data, 'BEcounts')[rownames(SummarizedExperiment::assay(SingleCellExperiment::altExp(CS.data), 'VGcounts')),])
+
+  emb.ica = fastICA::fastICA(X = matrix.PJ, n.comp = 50)#nrow(matrix.PJ))
+
+  SingleCellExperiment::reducedDim(CS.data, 'PCA') = emb.ica$A
+
+  return(CS.data)
+}
+
+#' A function to perform tSNE dimension reduction
+#'
+#' @param sce a SingleCellExperiment object
+#' @param runWith use dimension reduction data PCA/ICA
+#' @param perplexity the perplexity parameter determines how many nearest
+#' neighbors are considered for each point when computing the pairwise similarities between points
+#' @param PCNum number of dimension to consider
+#' @return  a SummarizedExperiment object with tSNE dimension reduction
+#' @examples
+#'
+#' DimReduction_tsne(sce)
+#'
+DimReduction_tsne = function(sce, runWith = 'PCA', PCNum = 20, perplexity = 30, parallelRun = TRUE) {
+
+  matrix.PJ = switch (EXPR = runWith,
+                      'VGcounts' = log2(assay(altExp(sce),'VGcounts') + 1),
+                      'PCA' = t(reducedDim(sce, runWith)[,c(1:PCNum)]),
+                      'BEPCA' = t(reducedDim(sce, runWith)[,c(1:PCNum)]))
 
   library(Rtsne, quietly = T)
   if (parallelRun) {
@@ -1481,18 +1613,28 @@ DimReduction_tsne = function(CS.data, runWith = 'PCA', PCNum = 20, perplexity = 
     colnames(emb.tsne) = c('tSNE_1', 'tSNE_2')
   }
 
-  reducedDim(CS.data, 'tSNE') = emb.tsne
+  reducedDim(sce, 'tSNE') = emb.tsne
 
-  return(CS.data)
+  return(sce)
 }
 
-
-DimReduction_umap = function(CS.data, runWith = 'PCA', PCNum = 20) {
+#' A function to perform Umap dimension reduction
+#'
+#' @param sce a SingleCellExperiment object
+#' @param runWith use dimension reduction data PCA/ICA
+#'
+#' @param PCNum number of dimension to consider
+#' @return  a SummarizedExperiment object with Umap dimension reduction
+#' @examples
+#'
+#' DimReduction_umap(sce)
+#'
+DimReduction_umap = function(sce, runWith = 'PCA', PCNum = 20) {
 
   matrix.PJ = switch (EXPR = runWith,
-                      'VGcounts' = log2(assay(altExp(CS.data),'VGcounts') + 1),
-                      'PCA' = t(reducedDim(CS.data, runWith)[,c(1:PCNum)]),
-                      'BEPCA' = t(reducedDim(CS.data, runWith)[,c(1:PCNum)]))
+                      'VGcounts' = log2(assay(altExp(sce),'VGcounts') + 1),
+                      'PCA' = t(reducedDim(sce, runWith)[,c(1:PCNum)]),
+                      'BEPCA' = t(reducedDim(sce, runWith)[,c(1:PCNum)]))
 
   library(umap, quietly = T)
   set.seed(15555)
@@ -1500,18 +1642,30 @@ DimReduction_umap = function(CS.data, runWith = 'PCA', PCNum = 20) {
 
   emb.umap = emb.umap$layout
   colnames(emb.umap) = paste0('Umap_', c(1:ncol(emb.umap)))
-  reducedDim(CS.data, 'Umap') = emb.umap
+  reducedDim(sce, 'Umap') = emb.umap
 
-  return(CS.data)
+  return(sce)
 }
 
 
-DimReduction_dfmap = function(CS.data, runWith = 'PCA', PCNum = 20) {
+#' A function to perform dfmap dimension reduction
+#'
+#' @param sce a SingleCellExperiment object
+#' @param runWith use dimension reduction data PCA/ICA
+#'
+#' @param PCNum number of dimension to consider
+#' @return  a SummarizedExperiment object with dfmap dimension reduction
+#' @examples
+#'
+#' DimReduction_dfmap(sce)
+#'
+
+DimReduction_dfmap = function(sce, runWith = 'PCA', PCNum = 20) {
 
   matrix.PJ = switch (EXPR = runWith,
-                      'VGcounts' = log2(assay(altExp(CS.data),'VGcounts') + 1),
-                      'PCA' = t(reducedDim(CS.data, runWith)[,c(1:PCNum)]),
-                      'BEPCA' = t(reducedDim(CS.data, runWith)[,c(1:PCNum)]))
+                      'VGcounts' = log2(assay(altExp(sce),'VGcounts') + 1),
+                      'PCA' = t(reducedDim(sce, runWith)[,c(1:PCNum)]),
+                      'BEPCA' = t(reducedDim(sce, runWith)[,c(1:PCNum)]))
 
   library(destiny, quietly = T)
   set.seed(15555)
@@ -1519,17 +1673,17 @@ DimReduction_dfmap = function(CS.data, runWith = 'PCA', PCNum = 20) {
   emb.dm = as.data.frame(emb.dm@eigenvectors)
   row.names(emb.dm) = colnames(matrix.PJ)
 
-  reducedDim(CS.data, 'DFmap') = emb.dm
+  reducedDim(sce, 'DFmap') = emb.dm
 
-  return(CS.data)
+  return(sce)
 }
 
 
-DimReduction_ddtree = function(CS.data, runWith = 'PCA', PCNum = 20) {
+DimReduction_ddtree = function(sce, runWith = 'PCA', PCNum = 20) {
   matrix.PJ = switch (EXPR = runWith,
-                      'VGcounts' = log2(assay(altExp(CS.data),'VGcounts') + 1),
-                      'PCA' = t(reducedDim(CS.data, runWith)[,c(1:PCNum)]),
-                      'BEPCA' = t(reducedDim(CS.data, runWith)[,c(1:PCNum)]))
+                      'VGcounts' = log2(assay(altExp(sce),'VGcounts') + 1),
+                      'PCA' = t(reducedDim(sce, runWith)[,c(1:PCNum)]),
+                      'BEPCA' = t(reducedDim(sce, runWith)[,c(1:PCNum)]))
 
   library(DDRTree)
   DDRTree_res = DDRTree::DDRTree(X = matrix.PJ, dimensions = 2)
@@ -1566,28 +1720,43 @@ DimReduction_ddtree = function(CS.data, runWith = 'PCA', PCNum = 20) {
 #================#
 # Most variable genes
 #================#
-SelectVariableGene = function(CS.data, method = 'mvg', used = 'counts', ngene = 1000, batch = F) {
 
-  if(!batch) {CS.data = switch(EXPR = method,
 
-                               'seu'   = VariableGene_seu(   CS.data = CS.data, used = used, ngene = ngene),
-                               'mvg'   = VariableGene_mvg(   CS.data = CS.data, used = used, ngene = ngene),
-                               'hvg'   = VariableGene_hvg(   CS.data = CS.data, used = used, ngene = ngene))
+#' A function to find most variable genes in the dataset
+#'
+#' @param sce a SingleCellExperiment object
+#' @param method method to predict most variable genes
+#' @param ngene number of genes to consider
+#' @param used count matrix
+#' @param batch batch T/F
+#' @return  a SummarizedExperiment object with vgcounts
+#' @examples
+#'
+#' SelectVariableGene(sce)
+#'
+
+SelectVariableGene = function(sce, method = 'mvg', used = 'counts', ngene = 1000, batch = F) {
+
+  if(!batch) {sce = switch(EXPR = method,
+
+                               'seu'   = VariableGene_seu(   sce = sce, used = used, ngene = ngene),
+                               'mvg'   = VariableGene_mvg(   sce = sce, used = used, ngene = ngene),
+                               'hvg'   = VariableGene_hvg(   sce = sce, used = used, ngene = ngene))
   } else {
     #print("xxxxx")
-    CS.data = VariableGene_hvg(   CS.data = CS.data, used = used, ngene = ngene, batch = T)
+    sce = VariableGene_hvg(   sce = sce, used = used, ngene = ngene, batch = T)
   }
 
-  return(CS.data)
+  return(sce)
 }
 
 
 
+# Variable Gene selection using Seurat
 
-
-VariableGene_seu = function(CS.data, used = 'counts', ngene = 1000) {
+VariableGene_seu = function(sce, used = 'counts', ngene = 1000) {
   library(Seurat, quietly = T)
-  edata = assay(CS.data, used)
+  edata = assay(sce, used)
 
   ctrl = CreateSeuratObject(counts = edata, min.cells = 0, min.features = 0)
   ctrl = NormalizeData(ctrl)
@@ -1595,14 +1764,15 @@ VariableGene_seu = function(CS.data, used = 'counts', ngene = 1000) {
 
   edata.od = edata[match(VariableFeatures(ctrl), rownames(ctrl@assays$RNA@counts)),]
 
-  altExp(CS.data, 'VGcounts') = SingleCellExperiment(assay = list(VGcounts = edata[rownames(edata.od),]))
+  altExp(sce, 'VGcounts') = SingleCellExperiment(assay = list(VGcounts = edata[rownames(edata.od),]))
 
-  return(CS.data)
+  return(sce)
 }
 
+# Variable Gene selection using Deseq2 mvg
 
-VariableGene_mvg = function(CS.data, used = 'counts', ngene = 1000) {
-  edata = assay(CS.data, used)
+VariableGene_mvg = function(sce, used = 'counts', ngene = 1000) {
+  edata = assay(sce, used)
 
   library(DESeq2, quietly = T)
   lib.size = estimateSizeFactorsForMatrix(edata)
@@ -1636,52 +1806,67 @@ VariableGene_mvg = function(CS.data, used = 'counts', ngene = 1000) {
 
   edata.od = edata[varorder,]
 
-  altExp(CS.data, 'VGcounts') = SingleCellExperiment(assay = list(VGcounts = edata.od[1:ngene,]))
-  return(CS.data)
+  altExp(sce, 'VGcounts') = SingleCellExperiment(assay = list(VGcounts = edata.od[1:ngene,]))
+  return(sce)
 }
 
+# Variable Gene selection using scran
+VariableGene_hvg = function(sce, used = 'counts', ngene = 1000, batch = F) {
 
-VariableGene_hvg = function(CS.data, used = 'counts', ngene = 1000, batch = F) {
 
-
-    edata = assay(CS.data, 'counts')
+    edata = assay(sce, 'counts')
     edata = log2(edata+1)
 
 
 
   if(batch) {
-    batch = CS.data@colData$batch
+    batch = sce@colData$batch
 
     dec = scran::modelGeneVar(edata, block = batch)
     top.hvgs2 <- scran::getTopHVGs(dec, n=ngene)
 
     edata.od = edata[top.hvgs2,]
 
-    altExp(CS.data, 'VGcounts') = SingleCellExperiment(assay = list(VGcounts = edata.od))
+    altExp(sce, 'VGcounts') = SingleCellExperiment(assay = list(VGcounts = edata.od))
   } else {
     dec = scran::modelGeneVar(edata)
     top.hvgs2 <- scran::getTopHVGs(dec, n=ngene)
 
     edata.od = edata[top.hvgs2,]
 
-    altExp(CS.data, 'VGcounts') = SingleCellExperiment(assay = list(VGcounts = edata.od))
+    altExp(sce, 'VGcounts') = SingleCellExperiment(assay = list(VGcounts = edata.od))
   }
 
-  return(CS.data)
+  return(sce)
 }
 
 
 #================#
 # Clustering
 #================#
-ClusterNumSearch = function(CS.data, runWith = 'VGcounts', PCNum = 10) {
+
+#' A function to find optimum number of clusters in the dataset
+#'
+#' @param sce a SingleCellExperiment object
+#' @param runWith run with VGcounts/PCA/ICA/tSNE/Umap
+#'
+#' @param PCNum number of PCs to consider only in PCA/ICA condition
+#'
+#' @return  a ggplot represents number of clusters
+#' @examples
+#'
+#' ClusterNumSearch(sce)
+#'
+
+ClusterNumSearch = function(sce, runWith = 'VGcounts', PCNum = 10) {
 
   matrix.run = switch(EXPR       = runWith,
-                      'VGcounts' = assay(altExp(CS.data),'VGcounts'),
-                      'PCA'      = reducedDim(x = CS.data, type = 'PCA')[,1:PCNum],
-                      'ICA'      = reducedDim(x = CS.data, type = 'ICA')[,1:PCNum],
-                      'tSNE'     = reducedDim(x = CS.data, type = 'tSNE')[,1:2],
-                      'Umap'     = reducedDim(x = CS.data, type = 'Umap')[,1:2])
+                      'VGcounts' = assay(altExp(sce),'VGcounts'),
+                      'PCA'      = reducedDim(x = sce, type = 'PCA')[,1:PCNum],
+                      'BEPCA'    = reducedDim(x = sce, type = 'PCA')[,1:PCNum],
+                      'ICA'      = reducedDim(x = sce, type = 'ICA')[,1:PCNum],
+                      'tSNE'     = reducedDim(x = sce, type = 'tSNE')[,1:2],
+                      'Umap'     = reducedDim(x = sce, type = 'Umap')[,1:2])
 
   #library(factoextra, quietly = T)
   #Partitioning methods, such as k-means clustering require the users to specify the number of clusters to be generated.
@@ -1690,75 +1875,107 @@ ClusterNumSearch = function(CS.data, runWith = 'VGcounts', PCNum = 10) {
   plot(res.cluster.num)
 }
 
+#' A function to find clusters in the dataset
+#'
+#' @param sce a SingleCellExperiment object
+#' @param runWith run with VGcounts/PCA/ICA/tSNE/Umap
+#' @param method a method to predict number of clusters in the dataset
+#' @param ClusterNum user defind number of clusters
+#' @param PCNum number of PCs to consider only in PCA/ICA condition
+#'
+#' @return  a SummarizedExperiment object with clusters
+#' @examples
+#'
+#' ClusterFind(sce)
+#'
 
-ClusterFind_kmean = function(CS.data, ClusterNum, runWith = 'PCA', PCNum = 10){
+ClusterFind = function(sce, method = 'Hclust', ClusterNum = 3, runWith = 'PCA', PCNum = 10, k=100,cluster.fun='walktrap') {
+
+  sce = switch(EXPR = method,
+               'Hclust'	 = ClusterFind_hclust(   sce = sce,  ClusterNum = ClusterNum, runWith = runWith, PCNum = PCNum),
+               'K-Means'     = ClusterFind_kmean(  sce = sce,  ClusterNum = ClusterNum, runWith = runWith, PCNum = PCNum),
+               'Mclust'	 = ClusterFind_mclust(    sce = sce,  ClusterNum = ClusterNum, runWith = runWith, PCNum = PCNum),
+               'Graph'	 = ClusterFind_graph( sce = sce,   runWith = runWith, PCNum = PCNum, cluster.fun= cluster.fun),
+               'DBscan'      = ClusterFind_dbscan(sce=sce, runWith = runWith, PCNum = PCNum),
+               'Hclust_scran'	= ClusterFind_hclust_scran(sce=sce, runWith = runWith),
+               'Kmean_scran' = ClusterFind_kmean_scran(sce = sce,  k = k, runWith = runWith)
+  )
+
+
+  return(sce)
+}
+
+# Clustering with k-mean
+ClusterFind_kmean = function(sce, ClusterNum, runWith = 'PCA', PCNum = 10){
 
   matrix.run = switch(EXPR       = runWith,
-                      'VGcounts' = assay(altExp(CS.data),'VGcounts'),
-                      'PCA'      = reducedDim(x = CS.data, type = 'PCA')[,1:PCNum],
-                      'ICA'      = reducedDim(x = CS.data, type = 'ICA')[,1:PCNum],
-                      'tSNE'     = reducedDim(x = CS.data, type = 'tSNE')[,1:2],
-                      'Umap'     = reducedDim(x = CS.data, type = 'Umap')[,1:2])
+                      'VGcounts' = assay(altExp(sce),'VGcounts'),
+                      'PCA'      = reducedDim(x = sce, type = 'PCA')[,1:PCNum],
+                      'ICA'      = reducedDim(x = sce, type = 'ICA')[,1:PCNum],
+                      'tSNE'     = reducedDim(x = sce, type = 'tSNE')[,1:2],
+                      'Umap'     = reducedDim(x = sce, type = 'Umap')[,1:2])
 
   set.seed(0)
   res.km = kmeans(x = matrix.run, centers = ClusterNum)
   res.km.cluster = res.km$cluster
   #plot(c(1:nrow(matrix.run)), match(rownames(matrix.run), names(res.km.cluster)))
 
-  colData(CS.data)$cluster = as.character(res.km.cluster)
-  #colLabels(CS.data)<-as.factor(res.km.cluster)
-  return(CS.data)
+  colData(sce)$cluster = as.character(res.km.cluster)
+  #colLabels(sce)<-as.factor(res.km.cluster)
+  return(sce)
 }
 
-
-ClusterFind_dbscan = function(CS.data, runWith = 'PCA', PCNum = 10){
+# Clustering with dbscan
+ClusterFind_dbscan = function(sce, runWith = 'PCA', PCNum = 10){
 
   matrix.run = switch(EXPR       = runWith,
-                      'VGcounts' = assay(altExp(CS.data),'VGcounts'),
-                      'PCA'      = reducedDim(x = CS.data, type = 'PCA')[,1:PCNum],
-                      'ICA'      = reducedDim(x = CS.data, type = 'ICA')[,1:PCNum],
-                      'tSNE'     = reducedDim(x = CS.data, type = 'tSNE')[,1:2],
-                      'Umap'     = reducedDim(x = CS.data, type = 'Umap')[,1:2])
+                      'VGcounts' = assay(altExp(sce),'VGcounts'),
+                      'PCA'      = reducedDim(x = sce, type = 'PCA')[,1:PCNum],
+                      'ICA'      = reducedDim(x = sce, type = 'ICA')[,1:PCNum],
+                      'tSNE'     = reducedDim(x = sce, type = 'tSNE')[,1:2],
+                      'Umap'     = reducedDim(x = sce, type = 'Umap')[,1:2])
 
   #library(dbscan, quietly = T)
   set.seed(0)
   res.db = dbscan::dbscan(x = matrix.run, eps = 0.4, minPts = 5)
   res.db.cluster = res.db$cluster
 
-  colData(CS.data)$cluster = as.character(res.db.cluster)
-  #colLabels(CS.data)<- as.factor(res.db.cluster)
-  return(CS.data)
+  colData(sce)$cluster = as.character(res.db.cluster)
+  #colLabels(sce)<- as.factor(res.db.cluster)
+  return(sce)
 }
 
+# Clustering with mclust
 
-ClusterFind_mclust = function(CS.data, ClusterNum = 3, runWith = 'PCA', PCNum = 10){
+ClusterFind_mclust = function(sce, ClusterNum = 3, runWith = 'PCA', PCNum = 10){
 
   matrix.run = switch(EXPR       = runWith,
-                      'VGcounts' = assay(altExp(CS.data),'VGcounts'),
-                      'PCA'      = reducedDim(x = CS.data, type = 'PCA')[,1:PCNum],
-                      'ICA'      = reducedDim(x = CS.data, type = 'ICA')[,1:PCNum],
-                      'tSNE'     = reducedDim(x = CS.data, type = 'tSNE')[,1:2],
-                      'Umap'     = reducedDim(x = CS.data, type = 'Umap')[,1:2])
+                      'VGcounts' = assay(altExp(sce),'VGcounts'),
+                      'PCA'      = reducedDim(x = sce, type = 'PCA')[,1:PCNum],
+                      'ICA'      = reducedDim(x = sce, type = 'ICA')[,1:PCNum],
+                      'tSNE'     = reducedDim(x = sce, type = 'tSNE')[,1:2],
+                      'Umap'     = reducedDim(x = sce, type = 'Umap')[,1:2])
 
   suppressPackageStartupMessages(library(mclust, quietly = T))
   res.mc = mclust::Mclust(data = matrix.run, G =  c(1:ClusterNum))
   res.mc.cluster = res.mc$classification
   #plot(c(1:nrow(matrix.run)), match(rownames(matrix.run), names(res.mc.cluster)))
 
-  colData(CS.data)$cluster = as.character(res.mc.cluster)
-  #colLabels(CS.data) <- as.factor(res.mc.cluster)
-  return(CS.data)
+  colData(sce)$cluster = as.character(res.mc.cluster)
+  #colLabels(sce) <- as.factor(res.mc.cluster)
+  return(sce)
 }
 
+# Clustering with hierarchical
 
-ClusterFind_hclust = function(CS.data, ClusterNum = 3, runWith = 'PCA', PCNum = 10) {
+ClusterFind_hclust = function(sce, ClusterNum = 3, runWith = 'PCA', PCNum = 10) {
 
   matrix.run = switch(EXPR       = runWith,
-                      'VGcounts' = assay(altExp(CS.data),'VGcounts'),
-                      'PCA'      = reducedDim(x = CS.data, type = 'PCA')[,1:PCNum],
-                      'ICA'      = reducedDim(x = CS.data, type = 'ICA')[,1:PCNum],
-                      'tSNE'     = reducedDim(x = CS.data, type = 'tSNE')[,1:2],
-                      'Umap'     = reducedDim(x = CS.data, type = 'Umap')[,1:2])
+                      'VGcounts' = assay(altExp(sce),'VGcounts'),
+                      'PCA'      = reducedDim(x = sce, type = 'PCA')[,1:PCNum],
+                      'ICA'      = reducedDim(x = sce, type = 'ICA')[,1:PCNum],
+                      'tSNE'     = reducedDim(x = sce, type = 'tSNE')[,1:2],
+                      'Umap'     = reducedDim(x = sce, type = 'Umap')[,1:2])
 
   suppressPackageStartupMessages(library(dplyr, quietly = T))
   res.hc = matrix.run %>%
@@ -1769,40 +1986,41 @@ ClusterFind_hclust = function(CS.data, ClusterNum = 3, runWith = 'PCA', PCNum = 
   res.hc.cluster = cutree(tree = res.hc, k = ClusterNum)
   #plot(c(1:nrow(matrix.run)), match(rownames(matrix.run), names(res.hc.cluster)))
 
-  colData(CS.data)$cluster = as.character(res.hc.cluster)
-  #colLabels(CS.data)<- as.factor(res.hc.cluster)
-  return(CS.data)
+  colData(sce)$cluster = as.character(res.hc.cluster)
+  #colLabels(sce)<- as.factor(res.hc.cluster)
+  return(sce)
 }
 
-
-ClusterFind_graph = function(CS.data, runWith = 'PCA', PCNum = 10,cluster.fun) {
+# Graph basecd clustering
+ClusterFind_graph = function(sce, runWith = 'PCA', PCNum = 10,cluster.fun) {
   library(bluster)
 library(scran)
 #  matrix.run = switch(EXPR       = runWith,
-#                      'VGcounts' = assay(altExp(CS.data),'VGcounts'),
-#                      'PCA'      = reducedDim(x = CS.data, type = 'PCA')[,1:PCNum],
-#                      'ICA'      = reducedDim(x = CS.data, type = 'ICA')[,1:PCNum],
-#                      'BEPCA'    = reducedDim(x = CS.data, type = 'BEPCA')[,1:PCNum],
-#                      'tSNE'     = reducedDim(x = CS.data, type = 'tSNE')[,1:2],
-#                      'Umap'     = reducedDim(x = CS.data, type = 'Umap')[,1:2])
+#                      'VGcounts' = assay(altExp(sce),'VGcounts'),
+#                      'PCA'      = reducedDim(x = sce, type = 'PCA')[,1:PCNum],
+#                      'ICA'      = reducedDim(x = sce, type = 'ICA')[,1:PCNum],
+#                      'BEPCA'    = reducedDim(x = sce, type = 'BEPCA')[,1:PCNum],
+#                      'tSNE'     = reducedDim(x = sce, type = 'tSNE')[,1:2],
+#                      'Umap'     = reducedDim(x = sce, type = 'Umap')[,1:2])
 #
-#  com.graph = MUDAN::getComMembership(matrix.CS.datarun,
+#  com.graph = MUDAN::getComMembership(matrix.scerun,
 #                                       k=k,
 #                                       method=igraph::cluster_infomap,
 #                                       verbose=FALSE)
-nn.clusters2 <- clusterCells(x=CS.data, use.dimred= runWith,
+nn.clusters2 <- clusterCells(x=sce, use.dimred= runWith,
     BLUSPARAM=NNGraphParam( cluster.fun=cluster.fun))
 
 
-  colData(CS.data)$cluster = as.character(nn.clusters2)
-  #colLabels(CS.data)<-as.factor(nn.clusters2)
-  return(CS.data)
+  colData(sce)$cluster = as.character(nn.clusters2)
+  #colLabels(sce)<-as.factor(nn.clusters2)
+  return(sce)
 }
 
-ClusterFind_hclust_scran<- function(CS.data, runWith)
+# hierarchical clustering from scran package
+ClusterFind_hclust_scran<- function(sce, runWith)
 {
 set.seed(1111)
-khclust.info <- clusterCells(x=CS.data, use.dimred=runWith,
+khclust.info <- clusterCells(x=sce, use.dimred=runWith,
     BLUSPARAM=TwoStepParam(
         first=KmeansParam(centers=1000),
         second=HclustParam(method="ward.D2", cut.dynamic=TRUE,
@@ -1810,50 +2028,36 @@ khclust.info <- clusterCells(x=CS.data, use.dimred=runWith,
     ),
     full=TRUE
 )
-colData(CS.data)$cluster = as.character(khclust.info$clusters)
-#colLabels(CS.data)<- as.factor(khclust.info$clusters)
- return(CS.data)
+colData(sce)$cluster = as.character(khclust.info$clusters)
+#colLabels(sce)<- as.factor(khclust.info$clusters)
+ return(sce)
 
 }
 # Setting the seed due to the randomness of k-means.
-ClusterFind_kmean_scran<- function(CS.data, runWith,k=30){
+# kmean clustering from scran package
+ClusterFind_kmean_scran<- function(sce, runWith,k=30){
 set.seed(0101010)
-kgraph.clusters <- clusterCells(x=CS.data, use.dimred= runWith,
+kgraph.clusters <- clusterCells(x=sce, use.dimred= runWith,
     BLUSPARAM=TwoStepParam(
         first=KmeansParam(centers=1000),
         second=NNGraphParam(k=k)
     )
 )
-colData(CS.data)$cluster = as.character(kgraph.clusters)
-#colLabels(CS.data)<- as.factor(kgraph.clusters)
-return(CS.data)
+colData(sce)$cluster = as.character(kgraph.clusters)
+#colLabels(sce)<- as.factor(kgraph.clusters)
+return(sce)
 }
 
 
-ClusterFind = function(CS.data, method = 'Hclust', ClusterNum = 3, runWith = 'PCA', PCNum = 10, k=100,cluster.fun='walktrap') {
-
-  CS.data = switch(EXPR = method,
-                   'Hclust'	 = ClusterFind_hclust(   CS.data = CS.data,  ClusterNum = ClusterNum, runWith = runWith, PCNum = PCNum),
-                   'K-Means'     = ClusterFind_kmean(  CS.data = CS.data,  ClusterNum = ClusterNum, runWith = runWith, PCNum = PCNum),
-                   'Mclust'	 = ClusterFind_mclust(    CS.data = CS.data,  ClusterNum = ClusterNum, runWith = runWith, PCNum = PCNum),
-                   'Graph'	 = ClusterFind_graph( CS.data = CS.data,   runWith = runWith, PCNum = PCNum, cluster.fun= cluster.fun),
-                   'DBscan'      = ClusterFind_dbscan(CS.data=CS.data, runWith = runWith, PCNum = PCNum),
-		   'Hclust_cran'	= ClusterFind_hclust_scran(CS.data=CS.data, runWith = runWith),
-		   'Kmean_scran' = ClusterFind_kmean_scran(CS.data = CS.data,  k = k, runWith = runWith)
-)
-
-
-  return(CS.data)
-}
 
 #================#
 # Differentially expressed analysis
 #================#
-Plot_HeatmapDEG = function(CS.data, used = 'counts', by = NULL, group1 = NULL, group2 = NULL, degTable, degTop = 10, expScale = F, expLog = T, outIndex = getwd(), savePlot = T) {
+Plot_HeatmapDEG = function(sce, used = 'counts', by = NULL, group1 = NULL, group2 = NULL, degTable, degTop = 10, expScale = F, expLog = T, outIndex = getwd(), savePlot = T) {
   #by: will take the first one as major to present the data
-  edata = assay(CS.data, used)
-  batch = CS.data@colData$batch
-  pheno = colData(CS.data)
+  edata = assay(sce, used)
+  batch = sce@colData$batch
+  pheno = colData(sce)
 
   if(is.null(batch)) {
     annotationForCol = data.frame(pheno)
@@ -1955,15 +2159,15 @@ Plot_HeatmapDEG = function(CS.data, used = 'counts', by = NULL, group1 = NULL, g
 
 }
 
-DEG_Analyzer_All = function(CS.data, used = 'counts', cmp, useBatch = FALSE, method = 'limma', groupVector = NULL, expt = 0.2, parallel_TF = FALSE, ncores = 1) {
+DEG_Analyzer_All = function(sce, used = 'counts', cmp, useBatch = FALSE, method = 'limma', groupVector = NULL, expt = 0.2, parallel_TF = FALSE, ncores = 1) {
   #library(SingleCellExperiment)
   #cmp = any column name of interest to find deg
-  edata = assay(CS.data, used)
-  #batch = CS.data@colData$batch
-  pheno = colData(CS.data)
+  edata = assay(sce, used)
+  #batch = sce@colData$batch
+  pheno = colData(sce)
 
   if(useBatch) {
-    batch = CS.data@colData$batch
+    batch = sce@colData$batch
   } else {
     batch = NULL
   }
@@ -2000,14 +2204,14 @@ DEG_Analyzer_All = function(CS.data, used = 'counts', cmp, useBatch = FALSE, met
 }
 
 ### For all factors ----
-DEG_Analyzer_c2c = function(CS.data, used = 'counts', cmp, useBatch = FALSE, method = 'limma', groupVector = NULL, expt = 0.2, parallel_TF = FALSE, ncores = 1) {
+DEG_Analyzer_c2c = function(sce, used = 'counts', cmp, useBatch = FALSE, method = 'limma', groupVector = NULL, expt = 0.2, parallel_TF = FALSE, ncores = 1) {
   #library(SingleCellExperiment)
-  edata = SummarizedExperiment::assay(CS.data, used)
-  #batch = SingleCellExperiment::colData(CS.data)[,'batch']
-  pheno = SummarizedExperiment::colData(CS.data)
+  edata = SummarizedExperiment::assay(sce, used)
+  #batch = SingleCellExperiment::colData(sce)[,'batch']
+  pheno = SummarizedExperiment::colData(sce)
 
   if(useBatch) {
-    batch = SingleCellExperiment::colData(CS.data)[,'batch']
+    batch = SingleCellExperiment::colData(sce)[,'batch']
   } else {
     batch = NULL
   }
@@ -2043,13 +2247,13 @@ DEG_Analyzer_c2c = function(CS.data, used = 'counts', cmp, useBatch = FALSE, met
   return(degList)
 }
 
-DEG_Analyzer = function(CS.data, used = 'counts', cmp, useBatch = FALSE, method = 'limma', groupVector = NULL, group1, group2 = NULL, expt = 0.2, parallel_TF = FALSE, ncores = 1) {
-  edata = assay(CS.data, used)
-  #batch = CS.data@colData$batch
-  pheno = colData(CS.data)
+DEG_Analyzer = function(sce, used = 'counts', cmp, useBatch = FALSE, method = 'limma', groupVector = NULL, group1, group2 = NULL, expt = 0.2, parallel_TF = FALSE, ncores = 1) {
+  edata = assay(sce, used)
+  #batch = sce@colData$batch
+  pheno = colData(sce)
 
   if(useBatch) {
-    batch = CS.data@colData$batch
+    batch = sce@colData$batch
   } else {
     batch = NULL
   }
@@ -2065,7 +2269,7 @@ DEG_Analyzer = function(CS.data, used = 'counts', cmp, useBatch = FALSE, method 
       edata = edata[,!is.na(groupVector)]
 
       if(useBatch) {
-        batch = CS.data@colData$batch[!is.na(groupVector)]
+        batch = sce@colData$batch[!is.na(groupVector)]
       }
 
       groupVector = groupVector[!is.na(groupVector)]
@@ -2080,7 +2284,7 @@ DEG_Analyzer = function(CS.data, used = 'counts', cmp, useBatch = FALSE, method 
       edata = edata[,!is.na(groupVector)]
 
       if(useBatch) {
-        batch = CS.data@colData$batch[!is.na(groupVector)]
+        batch = sce@colData$batch[!is.na(groupVector)]
       } else {
         batch = NULL
       }
@@ -2103,11 +2307,11 @@ DEG_Analyzer = function(CS.data, used = 'counts', cmp, useBatch = FALSE, method 
 }
 
 
-#DEG_limma = function(CS.data, used = 'counts', cmp, groupVector = NULL, group1, group2 = NULL, expt = NULL) {
+#DEG_limma = function(sce, used = 'counts', cmp, groupVector = NULL, group1, group2 = NULL, expt = NULL) {
 DEG_limma = function(edata, groupVector = NULL, group1, group2 = NULL, expt = NULL) {
-  #edata = assay(CS.data, used)
-  ##batch = CS.data@colData$batch
-  #pheno = colData(CS.data)
+  #edata = assay(sce, used)
+  ##batch = sce@colData$batch
+  #pheno = colData(sce)
 
   #if (is.null(groupVector)) {
   #  if (is.null(group2)) {
@@ -2459,28 +2663,28 @@ DEG_desingle = function(edata, groupVector = NULL, group1, group2 = NULL, expt =
 #================#
 # Cell development
 #================#
-Plot_Development_old = function(CS.data, method = 'CT', runWith = 'PCA', batch = F, colorBy = 'default', plot = TRUE, rev = F) {
+Plot_Development_old = function(sce, method = 'CT', runWith = 'PCA', batch = F, colorBy = 'default', plot = TRUE, rev = F) {
 
   dimSe = c(1,2)
-  CS.data = switch(EXPR       = method,
-                   'PC'       = CellDev_Princurve(CS.data = CS.data, runWith = runWith),#, dimSe = dimSe),
-                   'CT'       = CellDev_CytoTrace(CS.data = CS.data, used = 'counts', batch = batch),
+  sce = switch(EXPR       = method,
+                   'PC'       = CellDev_Princurve(sce = sce, runWith = runWith),#, dimSe = dimSe),
+                   'CT'       = CellDev_CytoTrace(sce = sce, used = 'counts', batch = batch),
                    'ICA'      = ,
                    'tSNE'     = ,
                    'Umap'     = )
 
   if (colorBy == 'default') {
-    colorBy = colnames(colData(CS.data))[1]
+    colorBy = colnames(colData(sce))[1]
   }
 
-  cell.order = CS.data$cellOd
+  cell.order = sce$cellOd
   if(rev) {
     cell.order = max(cell.order) - cell.order
   }
 
-  df.plot = data.frame(reducedDim(CS.data, runWith)[,dimSe],
-                       colorBy = as.factor(colData(CS.data)[,colorBy]),
-                       color = as.character(colData(CS.data)[,colorBy]),
+  df.plot = data.frame(reducedDim(sce, runWith)[,dimSe],
+                       colorBy = as.factor(colData(sce)[,colorBy]),
+                       color = as.character(colData(sce)[,colorBy]),
                        cellOd = cell.order,
 
                        stringsAsFactors = F)
@@ -2610,23 +2814,23 @@ Plot_Development_old = function(CS.data, method = 'CT', runWith = 'PCA', batch =
                              rel_heights = c(10,2), nrow = 2)
   print(g.all)
 
-  return(CS.data)
+  return(sce)
 }
 
-Plot_Development = function(CS.data, runWith = 'Umap', dimSe = c(1,2), colorBy = 'default', rev = F, devWindowNum = 5) {
+Plot_Development = function(sce, runWith = 'Umap', dimSe = c(1,2), colorBy = 'default', rev = F, devWindowNum = 5) {
 
   if (colorBy == 'default') {
-    colorBy = colnames(colData(CS.data))[1]
+    colorBy = colnames(colData(sce))[1]
   }
 
-  cell.order = CS.data$cellOd
+  cell.order = sce$cellOd
   if(rev) {
     cell.order = max(cell.order) - cell.order
   }
 
-  df.plot = data.frame(reducedDim(CS.data, runWith)[,dimSe],
-                       colorBy = as.factor(colData(CS.data)[,colorBy]),
-                       color = as.character(colData(CS.data)[,colorBy]),
+  df.plot = data.frame(reducedDim(sce, runWith)[,dimSe],
+                       colorBy = as.factor(colData(sce)[,colorBy]),
+                       color = as.character(colData(sce)[,colorBy]),
                        cellOd = cell.order,
                        stringsAsFactors = F)
 
@@ -2703,21 +2907,21 @@ Plot_Development = function(CS.data, runWith = 'Umap', dimSe = c(1,2), colorBy =
   return(g.all)
 }
 
-Plot_Development_Princurve = function(CS.data, runWith = 'Umap', dimSe = c(1,2), colorBy = 'default', rev = F) {
+Plot_Development_Princurve = function(sce, runWith = 'Umap', dimSe = c(1,2), colorBy = 'default', rev = F) {
   if (colorBy == 'default') {
-    colorBy = colnames(colData(CS.data))[1]
+    colorBy = colnames(colData(sce))[1]
   }
 
-  cell.order = CS.data$cellOd
+  cell.order = sce$cellOd
   if(rev) {
     cell.order = max(cell.order) - cell.order
   }
 
   suppressPackageStartupMessages(library(ggplot2, quietly = T))
-  df.plot = data.frame(reducedDim(CS.data, runWith)[,dimSe],
-                       fit_x = reducedDim(CS.data, 'PrinFit')[,1],
-                       fit_y = reducedDim(CS.data, 'PrinFit')[,2],
-                       colorBy = as.factor(colData(CS.data)[,colorBy]),
+  df.plot = data.frame(reducedDim(sce, runWith)[,dimSe],
+                       fit_x = reducedDim(sce, 'PrinFit')[,1],
+                       fit_y = reducedDim(sce, 'PrinFit')[,2],
+                       colorBy = as.factor(colData(sce)[,colorBy]),
                        cellOd = cell.order,
                        stringsAsFactors = F)
   df.plot.od = df.plot[order(df.plot$cellOd, decreasing = T),]
@@ -2764,61 +2968,61 @@ Plot_Development_Princurve = function(CS.data, runWith = 'Umap', dimSe = c(1,2),
 
 ### Find pseudo trajectory ----
 
-CellDevelopment <- function(CS.data,  method='Princurve_fit', runWith = 'PCA', dimSe = c(1,2),  used = 'counts', batch = F , clusterSe= 'cluster', seedBy){
+CellDevelopment <- function(sce,  method='Princurve_fit', runWith = 'PCA', dimSe = c(1,2),  used = 'counts', batch = F , clusterSe= 'cluster', seedBy){
 
-  CS.data <- switch(EXPR = method,
-                    "Princurve_fit" = CellDev_Princurve_fit(CS.data, runWith = runWith, dimSe = dimSe),
-                    "CytoTrace" = CellDev_CytoTrace(CS.data, used = used, batch = batch),
-                    "Slingshot" = CellDev_Slingshot(CS.data, clusterSe= clusterSe, runWith = runWith),
-                    "Monocle" = CellDev_Monocle(CS.data, seedBy))
-  return(CS.data)
+  sce <- switch(EXPR = method,
+                    "Princurve_fit" = CellDev_Princurve_fit(sce, runWith = runWith, dimSe = dimSe),
+                    "CytoTrace" = CellDev_CytoTrace(sce, used = used, batch = batch),
+                    "Slingshot" = CellDev_Slingshot(sce, clusterSe= clusterSe, runWith = runWith),
+                    "Monocle" = CellDev_Monocle(sce, seedBy))
+  return(sce)
 }
 
 
 
-CellDev_Princurve_fit = function(CS.data, runWith = 'PCA', dimSe = c(1,2)) {
+CellDev_Princurve_fit = function(sce, runWith = 'PCA', dimSe = c(1,2)) {
 
-  fit1 = princurve::principal_curve(SingleCellExperiment::reducedDim(CS.data, runWith)[,dimSe], plot = F, smoother = "smooth_spline")
+  fit1 = princurve::principal_curve(SingleCellExperiment::reducedDim(sce, runWith)[,dimSe], plot = F, smoother = "smooth_spline")
   cell.order = fit1$lambda
-  SummarizedExperiment::colData(CS.data)$cellOd = cell.order
-  SingleCellExperiment::reducedDim(CS.data, 'PrinFit') = fit1$s
-  return(CS.data)
+  SummarizedExperiment::colData(sce)$cellOd = cell.order
+  SingleCellExperiment::reducedDim(sce, 'PrinFit') = fit1$s
+  return(sce)
 }
 
-CellDev_CytoTrace = function(CS.data, used = 'counts', batch = F) {
-  edata = SummarizedExperiment::assay(CS.data, used)
+CellDev_CytoTrace = function(sce, used = 'counts', batch = F) {
+  edata = SummarizedExperiment::assay(sce, used)
   #suppressPackageStartupMessages(library(CytoTRACE, quietly = T))
   if(!batch) {
     results2 = CytoTRACE::CytoTRACE(mat = log2(edata + 1))
-    SummarizedExperiment::colData(CS.data)$cellOd = results2$CytoTRACE
+    SummarizedExperiment::colData(sce)$cellOd = results2$CytoTRACE
   } else {
-    batch = SingleCellExperiment::colData(CS.data)[,'batch']
+    batch = SingleCellExperiment::colData(sce)[,'batch']
     results2 = CytoTRACE::CytoTRACE(mat = log2(edata + 1), batch = batch)
-    SummarizedExperiment::colData(CS.data)$cellOd = results2$CytoTRACE
+    SummarizedExperiment::colData(sce)$cellOd = results2$CytoTRACE
   }
-  return(CS.data)
+  return(sce)
 }
 
-CellDev_Slingshot = function(CS.data, clusterSe= 'label', runWith = 'PCA') {
+CellDev_Slingshot = function(sce, clusterSe= 'label', runWith = 'PCA') {
   #clusterSe = 'ClusterGraph'
-  sim = slingshot::slingshot(CS.data, clusterLabels = clusterSe, reducedDim = runWith)
-  SummarizedExperiment::colData(CS.data)$cellOd = sim@colData$slingPseudotime_1
-  #plot(SingleCellExperiment::reducedDim(CS.data, runWith))
+  sim = slingshot::slingshot(sce, clusterLabels = clusterSe, reducedDim = runWith)
+  SummarizedExperiment::colData(sce)$cellOd = sim@colData$slingPseudotime_1
+  #plot(SingleCellExperiment::reducedDim(sce, runWith))
   #lines(slingshot::SlingshotDataSet(sim), lwd=2, col='black')
-  return(CS.data)
+  return(sce)
 
 }
 
-CellDev_Monocle = function(CS.data, seedBy) {
+CellDev_Monocle = function(sce, seedBy) {
   #seedBy = Cell Type or cluster:(Single or multiple)
   #E.g. cluster: 1:5 or 6
-  cds = monocle3::new_cell_data_set(expression_data = SummarizedExperiment::assay(CS.data, 'counts'),
-                                    cell_metadata = SingleCellExperiment::colData(CS.data),
-                                    gene_metadata = data.frame(gene_short_name = rownames(SummarizedExperiment::assay(CS.data, 'counts')),
-                                                               row.names = rownames(SummarizedExperiment::assay(CS.data, 'counts'))))
-  col.name = colnames(SingleCellExperiment::colData(CS.data))[apply(SingleCellExperiment::colData(CS.data), 2, function(col) any(col == seedBy))]
+  cds = monocle3::new_cell_data_set(expression_data = SummarizedExperiment::assay(sce, 'counts'),
+                                    cell_metadata = SingleCellExperiment::colData(sce),
+                                    gene_metadata = data.frame(gene_short_name = rownames(SummarizedExperiment::assay(sce, 'counts')),
+                                                               row.names = rownames(SummarizedExperiment::assay(sce, 'counts'))))
+  col.name = colnames(SingleCellExperiment::colData(sce))[apply(SingleCellExperiment::colData(sce), 2, function(col) any(col == seedBy))]
   cds = monocle3::preprocess_cds(cds, num_dim = 50)
-  if('batch' %in% colnames(SingleCellExperiment::colData(CS.data))) { cds = monocle3::align_cds(cds, alignment_group = "batch") }
+  if('batch' %in% colnames(SingleCellExperiment::colData(sce))) { cds = monocle3::align_cds(cds, alignment_group = "batch") }
   cds = monocle3::reduce_dimension(cds)
   cds = monocle3::cluster_cells(cds)
   cds = monocle3::learn_graph(cds)
@@ -2827,25 +3031,25 @@ CellDev_Monocle = function(CS.data, seedBy) {
   closest_vertex = as.matrix(closest_vertex[colnames(cds), ])
   root_pr_nodes = igraph::V(monocle3::principal_graph(cds)[["UMAP"]])$name[as.numeric(names(which.max(table(closest_vertex[cell_ids,]))))]
   cds = monocle3::order_cells(cds, root_pr_nodes=root_pr_nodes)
-  SummarizedExperiment::colData(CS.data)$cellOd = monocle3::pseudotime(cds)[colnames(SummarizedExperiment::assay(CS.data, 'counts'))]
-  return(CS.data)
+  SummarizedExperiment::colData(sce)$cellOd = monocle3::pseudotime(cds)[colnames(SummarizedExperiment::assay(sce, 'counts'))]
+  return(sce)
 }
 
 #================#
 # Plot markers
 #================#
 mks = c('T', 'KRT15')
-Plot_MarkersScatter = function(CS.data, mks, used = 'logcounts', runWith = 'tSNE', dim.se = c(1,2), shapeBy = NULL, splitBy = NULL) {
+Plot_MarkersScatter = function(sce, mks, used = 'logcounts', runWith = 'tSNE', dim.se = c(1,2), shapeBy = NULL, splitBy = NULL) {
   matrix.run = switch(EXPR       = runWith,
-                      'PCA'      = reducedDim(x = CS.data, type = 'PCA')[,dim.se],
-                      'ICA'      = reducedDim(x = CS.data, type = 'ICA')[,dim.se],
-                      'tSNE'     = reducedDim(x = CS.data, type = 'tSNE'),
-                      'Umap'     = reducedDim(x = CS.data, type = 'Umap'))
+                      'PCA'      = reducedDim(x = sce, type = 'PCA')[,dim.se],
+                      'ICA'      = reducedDim(x = sce, type = 'ICA')[,dim.se],
+                      'tSNE'     = reducedDim(x = sce, type = 'tSNE'),
+                      'Umap'     = reducedDim(x = sce, type = 'Umap'))
 
-  edata = assay(CS.data, used)
+  edata = assay(sce, used)
 
-  batch = CS.data@colData$batch
-  pheno = colData(CS.data)
+  batch = sce@colData$batch
+  pheno = colData(sce)
 
   library(ggplot2)
   library(RColorBrewer)
@@ -2954,18 +3158,18 @@ Plot_MarkersScatter = function(CS.data, mks, used = 'logcounts', runWith = 'tSNE
   return(VectorX_new)
 }
 
-.mySelect_PCNum = function(CS.data, used = 'VGcounts', method = 'elbow') {
+.mySelect_PCNum = function(sce, used = 'VGcounts', method = 'elbow') {
   if (used == 'VGcounts') {
-    matrix.PJ = assay(altExp(CS.data), used)
+    matrix.PJ = assay(altExp(sce), used)
     matrix.PJ = log2(matrix.PJ + 1)
   }
 
   if (used == 'PCA') {
-    matrix.PJ = t(reducedDim(CS.data, used))
+    matrix.PJ = t(reducedDim(sce, used))
   }
 
   if (used == 'BEPCA') {
-    matrix.PJ = t(reducedDim(CS.data, used))
+    matrix.PJ = t(reducedDim(sce, used))
   }
 
 
@@ -2991,16 +3195,16 @@ Plot_MarkersScatter = function(CS.data, mks, used = 'logcounts', runWith = 'tSNE
   return(pc.num)
 }
 
-.myTestMarker = function(CS.data, markers, used = 'counts', runWith = 'PCA') {
+.myTestMarker = function(sce, markers, used = 'counts', runWith = 'PCA') {
 
   if(used == 'counts') {
-    edata = assay(CS.data, used)
+    edata = assay(sce, used)
     edata = log2(edata + 1)
   } else {
-    edata = assay(CS.data, used)
+    edata = assay(sce, used)
   }
 
-  emb = reducedDim(CS.data, runWith)
+  emb = reducedDim(sce, runWith)
 
   matrix.exp = edata[markers,,drop = F]
 
