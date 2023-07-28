@@ -264,7 +264,7 @@ preQCServer <- function(id,raw_data) {
         #withProgress(message = "Creating plot  ...",{
 
          # waiter_show(html = spin_ball())
-        withProgress(message = 'Calculation in progress', value = 0, {
+        withProgress(message = 'Calculation in progress...', value = 0, {
           for(i in 1:10) {
             incProgress(1/10)
             Sys.sleep(0.5)
