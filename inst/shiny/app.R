@@ -12,25 +12,32 @@ lapply(all_packages, library, character.only=TRUE)
 
 #
 options(shiny.maxRequestSize=10000*1024^2)
-source("fun/cs.R",encoding = "utf-8")
-source("fun/visualization.R",encoding = "utf-8")
-source("fun/Preprocessing.R",encoding = "utf-8")
+#Import Functions
+#source("fun/cs.R",encoding = "utf-8")
+#source("fun/visualization.R",encoding = "utf-8")
+
+source("fun/Preprocessing_Fun.R",encoding = "utf-8")
+source("fun/Normalization_Fun.R",encoding = "utf-8")
+source("fun/Dimensional_Reduction_Fun.R",encoding = "utf-8")
+source("fun/Clustering_Fun.R",encoding = "utf-8")
+source("fun/Batch_correction_Fun.R",encoding = "utf-8")
+source("fun/Differential_Gene_Expression_Analysis_Fun.R",encoding = "utf-8")
+source("fun/Cell_type_annotation_Fun.R",encoding = "utf-8")
+source("fun/Cell_development_Fun.R",encoding = "utf-8")
+
+#import modules
 
 source("module/sidebar.R",encoding = "utf-8")
 source("module/data_input_new.R",encoding = "utf-8")
 source("module/Pre_QC.R",encoding = "utf-8")
 source("module/Normalization.R",encoding = "utf-8")
 source("module/PCA_Dimension_Reduction.R",encoding = "utf-8")
-
 source("module/marker_identification_DEG.R",encoding = "utf-8")
 source("module/Cell_Type.R",encoding = "utf-8")
-
 source("module/Batch_correction.R",encoding = "utf-8")
 source("module/batch_non_linear.R",encoding = "utf-8")
 source("module/variable_gene_batch.R",encoding = "utf-8")
 source("module/batch_linear.R",encoding = "utf-8")
-
-
 source("module/batch_correction_evaluation.R",encoding = "utf-8")
 source("module/Cell_developement.R",encoding = "utf-8")
 source("module/plot_download.R", encoding = "utf-8")
