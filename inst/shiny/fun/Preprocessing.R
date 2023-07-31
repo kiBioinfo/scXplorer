@@ -338,6 +338,115 @@ filter_raw_data <- function(
 }
 
 
+################################################################################
+##################### VISUALIZATION ############################################
+################################################################################
+#' A function Plot raw data
+#'
+#' @param sce a SingleCellExperiment object
+#' @param colour_by column name in colData
+#' @return a plots
+#' @examples
+#'
+#' Plot_raw_data(sce, colour_by="All")
+#'
+#Plot raw data
+Plot_raw_data<-function(sce, colour_by="All"){
+
+  cowplot::plot_grid(plotColData(sce, y = "nFeature_RNA", x = colour_by, colour_by = colour_by),
+                     scater::plotColData(sce, y = "nCount_RNA", x = colour_by, colour_by = colour_by),
+                     plotColData(sce, y = "Mito_gene_percent",x = colour_by, colour_by = colour_by),
+                     plotColData(sce, y = "Hemoglobin_gene_percent",x = colour_by, colour_by = colour_by),
+                     plotColData(sce, y = "Ribosomal_gene_percent",x = colour_by, colour_by = colour_by),
+                     plotColData(sce, x = "nCount_RNA", y = "nFeature_RNA", colour_by = colour_by),
+                     plotColData(sce, x = "nFeature_RNA", y = "Mito_gene_percent", colour_by = colour_by),
+                     plotColData(sce, x = "nFeature_RNA", y = "Ribosomal_gene_percent", colour_by = colour_by),
+                     plotColData(sce, x = "nFeature_RNA", y = "Hemoglobin_gene_percent", colour_by = colour_by)
+                     ,ncol = 3)
+
+}
+#p + scale_color_manual(values=c("#999999"))
+#Plot QC after filteration
+
+#
+# ggplot(edata, aes(y=nFeature_RNA, x=Type, fill=Type)) + geom_violin( alpha=0.9) + cowplot::theme_cowplot() + geom_point(position = position_jitter(seed = 1, width = 0.2), size= 1, shape=19)
+# p2=edata %>% ggplot(aes(y=nCount_RNA, x=featureVector, fill=featureVector)) +
+#   geom_violin( alpha=0.9, position = position_dodge(width = 0.9)) + cowplot::theme_cowplot() +
+#   geom_point(position = position_jitter(seed = 1, width = 0.2), size= 1, shape=19) +
+#   theme(legend.position = "none") +
+#   labs(x = "PBMC", title = "nCount_RNA")+
+#   theme(axis.text.x = element_blank(), plot.title = element_text(hjust = 0.5))
+#
+#
+# edata_filt %>% filter(nFeature_RNA> 200 & nFeature_RNA<15000 & nCount_RNA> 1000 & nCount_RNA<1000000 & Ribosomal_gene_percent>5) %>%
+#   ggplot(aes(y=nCount_RNA, x=featureVector, fill=featureVector)) +
+#   geom_violin( alpha=0.9, show.legend = FALSE) + cowplot::theme_cowplot() +
+#   geom_point(position = position_jitter(seed = 1, width = 0.2), size= 1, shape=19) +
+#
+#   labs(x = "PBMC", title = "nCount_RNA", y=NULL)+
+#   theme(axis.text.x = element_blank(), plot.title = element_text(hjust = 0.5))
+#
+
+#' A function Plot filtered data
+#'
+#' @param sce a SingleCellExperiment object
+#' @param colour_by column name in colData
+#' @return  plots
+#' @examples
+#'
+#' plot_filterd_data(sce, colour_by="All")
+#'
+#Plot Filterd data
+plot_filterd_data<- function(scdata,  y=NULL, colour_by=NULL, x=NULL){
+  edata=scdata%>% colData() %>% data.frame()
+  if(is.null(x)){
+    if(colour_by=="All"){
+
+      p= edata %>%  ggplot(aes(y=edata[,y], x=All, fill=All)) +
+        geom_violin( alpha=0.3, show.legend = FALSE) + cowplot::theme_cowplot() +
+        # geom_point(position = position_jitter(seed = 1, width = 0.2), size= 1, shape=19, show.legend = FALSE) +
+
+        labs(x = "All", title =y, y=NULL)+
+        theme(axis.text.x = element_blank(), plot.title = element_text(hjust = 0.5))
+    }
+
+    else {
+
+      p=edata %>% ggplot(aes(y=edata[,y], x=edata[,colour_by], fill=edata[,colour_by])) +
+        geom_violin( alpha=0.3, show.legend = FALSE) + cowplot::theme_cowplot() +
+        #geom_point(position = position_jitter(seed = 1, width = 0.2), size= 1, shape=19, show.legend = FALSE) +
+
+        labs(x =colour_by , title = y, y=NULL)+
+        theme(plot.title = element_text(hjust = 0.5))
+    }
+  }
+
+
+  else{
+    if(colour_by=="All"){
+
+      p= edata %>%  ggplot(aes(y=edata[,y], x=edata[,x], col=All)) +
+        geom_point( alpha=0.3, show.legend = TRUE, size= 3) + cowplot::theme_cowplot() +
+        # geom_point(position = position_jitter(seed = 1, width = 0.2), size= 1, shape=19, show.legend = FALSE) +
+
+        labs(x = x, title =NULL, y=y)+
+        theme(axis.text.x = element_blank(), plot.title = element_text(hjust = 0.5))
+    }
+
+    else {
+
+      p=edata %>% ggplot(aes(y=edata[,y], x=edata[,x], col=edata[,colour_by])) +
+        geom_point( alpha=0.3, show.legend = TRUE, size =3) + cowplot::theme_cowplot() +
+        #geom_point(position = position_jitter(seed = 1, width = 0.2), size= 1, shape=19, show.legend = FALSE) +
+
+        labs(x = x, title =NULL, y=y, color = colour_by)+
+        theme(plot.title = element_text(hjust = 0.5))
+
+    }
+  }
+  return(p)
+}
+
 
 
 
