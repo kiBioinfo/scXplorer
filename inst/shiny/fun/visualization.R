@@ -254,11 +254,12 @@ ElbowPlot <- function(sce, ndims = 20, reduction = 'PCA') {
 }
 
 # A function to perform PCA using scater
-PCA_run<-function(sce,topGenes)
-{
+PCA_run <- function(sce,topGenes){
   data=scater::runPCA(sce,subset_row=topGenes)
   return(data)
 }
+
+
 
 #' A function to make a DEG table
 #'
@@ -366,8 +367,8 @@ return(p)
 #'
 
 Cell_Type_Annotation<- function(data=sce,method='SingleR',
-                                dataset="BlueprintEncodeData", TissueType,  clusters, used='counts')
-{
+                                dataset="BlueprintEncodeData", TissueType,  clusters, used='counts'){
+
   clusters=data@colData$cluster
   # sce= SingleCellExperiment object
   # dataset = for singleR method: celldex::
