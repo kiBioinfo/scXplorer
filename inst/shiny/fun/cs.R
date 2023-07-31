@@ -1992,9 +1992,11 @@ ClusterFind_hclust = function(sce, ClusterNum = 3, runWith = 'PCA', PCNum = 10) 
 }
 
 # Graph basecd clustering
+# cluster.fun = one of walktrap/louvain/infomap/fast_greedy/label_prop/leading_eigen
 ClusterFind_graph = function(sce, runWith = 'PCA', PCNum = 10,cluster.fun) {
-  library(bluster)
-library(scran)
+
+suppressPackageStartupMessages(library(scran, quietly = T))
+suppressPackageStartupMessages(library(bluster, quietly = T))
 #  matrix.run = switch(EXPR       = runWith,
 #                      'VGcounts' = assay(altExp(sce),'VGcounts'),
 #                      'PCA'      = reducedDim(x = sce, type = 'PCA')[,1:PCNum],
@@ -2017,6 +2019,7 @@ nn.clusters2 <- clusterCells(x=sce, use.dimred= runWith,
 }
 
 # hierarchical clustering from scran package
+
 ClusterFind_hclust_scran<- function(sce, runWith)
 {
 set.seed(1111)
@@ -2053,7 +2056,19 @@ return(sce)
 #================#
 # Differentially expressed analysis
 #================#
-Plot_HeatmapDEG = function(sce, used = 'counts', by = NULL, group1 = NULL, group2 = NULL, degTable, degTop = 10, expScale = F, expLog = T, outIndex = getwd(), savePlot = T) {
+#' A function to plot heatmap of differential expressed genes
+#'
+#' @param sce a SingleCellExperiment object
+#' @param used run with counts
+#' @param group1 group 1 for comparison. it may be cluster/disease condition
+#' @param group2 group 2 for comparison. it may be cluster/disease condition
+#'
+#' @return  a heatmap
+#'
+#' Plot_HeatmapDEG(sce, group1 =1, group2 = 12)
+#'
+Plot_HeatmapDEG = function(sce, used = 'counts', by = NULL, group1 = NULL, group2 = NULL,
+                           degTable, degTop = 10, expScale = F, expLog = T, outIndex = getwd(), savePlot = T) {
   #by: will take the first one as major to present the data
   edata = assay(sce, used)
   batch = sce@colData$batch
@@ -2158,10 +2173,21 @@ Plot_HeatmapDEG = function(sce, used = 'counts', by = NULL, group1 = NULL, group
   return(p)
 
 }
+#' A function to identify differential expressed genes one group vs rest of the groups
+#'
+#' @param sce a SingleCellExperiment object
+#' @param used run with counts
+#' @param cmp group 1 for comparison. it may be cluster/disease condition
+#' @param useBatch true/false
+#' @param method  method to identify DEG
+#'
+#' @return  a list of tables for DEG
+#'
+#' DEG_Analyzer_All(sce, cmp = 1)
+#'
 
-DEG_Analyzer_All = function(sce, used = 'counts', cmp, useBatch = FALSE, method = 'limma', groupVector = NULL, expt = 0.2, parallel_TF = FALSE, ncores = 1) {
-  #library(SingleCellExperiment)
-  #cmp = any column name of interest to find deg
+DEG_Analyzer_All = function(sce, used = 'counts', cmp, useBatch = FALSE,
+                            method = 'limma', groupVector = NULL, expt = 0.2, parallel_TF = FALSE, ncores = 1) {
   edata = assay(sce, used)
   #batch = sce@colData$batch
   pheno = colData(sce)
@@ -2204,6 +2230,19 @@ DEG_Analyzer_All = function(sce, used = 'counts', cmp, useBatch = FALSE, method 
 }
 
 ### For all factors ----
+#' A function to identify differential expressed genes one group vs rest of the groups
+#'
+#' @param sce a SingleCellExperiment object
+#' @param used run with counts
+#' @param cmp group 1 for comparison. it may be cluster/disease condition
+#' @param useBatch true/false
+#' @param method  method to identify DEG
+#' @param cmp column name of the comparision vector
+#' @return  a list of tables for DEG
+#'
+#' DEG_Analyzer_All(sce, cmp = 'cluster')
+#'
+
 DEG_Analyzer_c2c = function(sce, used = 'counts', cmp, useBatch = FALSE, method = 'limma', groupVector = NULL, expt = 0.2, parallel_TF = FALSE, ncores = 1) {
   #library(SingleCellExperiment)
   edata = SummarizedExperiment::assay(sce, used)
@@ -2247,7 +2286,22 @@ DEG_Analyzer_c2c = function(sce, used = 'counts', cmp, useBatch = FALSE, method 
   return(degList)
 }
 
-DEG_Analyzer = function(sce, used = 'counts', cmp, useBatch = FALSE, method = 'limma', groupVector = NULL, group1, group2 = NULL, expt = 0.2, parallel_TF = FALSE, ncores = 1) {
+#' A function to identify differential expressed genes one group vs another group
+#'
+#' @param sce a SingleCellExperiment object
+#' @param used run with counts
+#' @param group1 1st group  for comparison. it may be cluster/disease condition
+#' @param group2  2nd group  for comparison. it may be cluster/disease condition
+#' @param useBatch use batch T/F
+#' @param method  method to identify DEG
+#' @param cmp column name of the comparison vector
+#' @return  a a DEG table
+#'
+#' DEG_Analyzer(sce, cmp = 'cluster', group1 =1, group2=2 , method = 'limma' )
+#'
+
+DEG_Analyzer = function(sce, used = 'counts', cmp, useBatch = FALSE, method = 'limma',
+                        groupVector = NULL, group1, group2 = NULL, expt = 0.2, parallel_TF = FALSE, ncores = 1) {
   edata = assay(sce, used)
   #batch = sce@colData$batch
   pheno = colData(sce)
@@ -2308,6 +2362,7 @@ DEG_Analyzer = function(sce, used = 'counts', cmp, useBatch = FALSE, method = 'l
 
 
 #DEG_limma = function(sce, used = 'counts', cmp, groupVector = NULL, group1, group2 = NULL, expt = NULL) {
+# A function to identify DEG using limma package
 DEG_limma = function(edata, groupVector = NULL, group1, group2 = NULL, expt = NULL) {
   #edata = assay(sce, used)
   ##batch = sce@colData$batch
@@ -2379,7 +2434,7 @@ DEG_limma = function(edata, groupVector = NULL, group1, group2 = NULL, expt = NU
   return(res)
 }
 
-
+# A function to identify DEG using edger package
 DEG_edger = function(edata, groupVector = NULL, batch = NULL, group1, group2 = NULL, expt = NULL) {
   #
   groupVector = factor(groupVector, levels = c(group1, group2))
@@ -2436,7 +2491,7 @@ DEG_edger = function(edata, groupVector = NULL, batch = NULL, group1, group2 = N
   return(res)
 }
 
-
+# A function to identify DEG using deseq2 package
 DEG_deseq = function(edata, groupVector = NULL, batch = NULL, group1, group2 = NULL, expt = NULL, parallel_TF = FALSE, ncores = 1) {
   suppressPackageStartupMessages(library(DESeq2, quietly = T))
 
@@ -2492,7 +2547,7 @@ DEG_deseq = function(edata, groupVector = NULL, batch = NULL, group1, group2 = N
   return(res)
 }
 
-
+# A function to identify DEG using mast package
 DEG_mast = function(edata, groupVector = NULL, batch = NULL, group1, group2 = NULL, expt = NULL, parallel_TF = FALSE, ncores = 1) {
   suppressPackageStartupMessages(library(MAST, quietly = T))
 
@@ -2554,7 +2609,7 @@ DEG_mast = function(edata, groupVector = NULL, batch = NULL, group1, group2 = NU
   return(res)
 }
 
-
+# A function to identify DEG using monocle package
 DEG_monocle = function(edata, groupVector = NULL, batch = NULL, group1, group2 = NULL, expt = NULL, parallel_TF = FALSE, ncores = 1) {
   suppressPackageStartupMessages(library(monocle3, quietly = T))
   suppressPackageStartupMessages(library(dplyr, quietly = T))
@@ -2616,7 +2671,7 @@ DEG_monocle = function(edata, groupVector = NULL, batch = NULL, group1, group2 =
   return(res)
 }
 
-
+# A function to identify DEG using desingle package
 DEG_desingle = function(edata, groupVector = NULL, group1, group2 = NULL, expt = NULL, parallel_TF = FALSE, ncores = 1) {
   suppressPackageStartupMessages(library(DEsingle, quietly = T))
 
@@ -2817,6 +2872,16 @@ Plot_Development_old = function(sce, method = 'CT', runWith = 'PCA', batch = F, 
   return(sce)
 }
 
+#' A function to plot cell cycle development
+#'
+#' @param sce a SingleCellExperiment object with cell development trajectory analysis info
+#' @param runWith run with dimension reduction Umap/tSNE
+#' @param colorBy name of the column to use for color
+#'
+#' @return  a plot shows cell development in Pseudo Trajectory
+#'
+#' Plot_Development(sce, runWith = 'Umap', colorBy = 'cellType' )
+#'
 Plot_Development = function(sce, runWith = 'Umap', dimSe = c(1,2), colorBy = 'default', rev = F, devWindowNum = 5) {
 
   if (colorBy == 'default') {
@@ -2968,7 +3033,19 @@ Plot_Development_Princurve = function(sce, runWith = 'Umap', dimSe = c(1,2), col
 
 ### Find pseudo trajectory ----
 
-CellDevelopment <- function(sce,  method='Princurve_fit', runWith = 'PCA', dimSe = c(1,2),  used = 'counts', batch = F , clusterSe= 'cluster', seedBy){
+#' A function to Find pseudo trajectory
+#'
+#' @param sce a SingleCellExperiment object with cell development trajectory analysis info
+#' @param runWith run with dimension reduction Umap/tSNE/PCA
+#' @param batch batch T/F
+#' @param method a method to Find pseudo trajectory
+#' @return  a plot shows cell development in Pseudo Trajectory
+#'
+#' Plot_Development(sce, runWith = 'Umap', colorBy = 'cellType' )
+#'
+
+CellDevelopment <- function(sce,  method='Princurve_fit', runWith = 'PCA', dimSe = c(1,2),
+                            used = 'counts', batch = F , clusterSe= 'cluster', seedBy){
 
   sce <- switch(EXPR = method,
                     "Princurve_fit" = CellDev_Princurve_fit(sce, runWith = runWith, dimSe = dimSe),
@@ -3013,9 +3090,10 @@ CellDev_Slingshot = function(sce, clusterSe= 'label', runWith = 'PCA') {
 
 }
 
+#seedBy = Cell Type or cluster:(Single or multiple)
+#E.g. cluster: 1:5 or 6
 CellDev_Monocle = function(sce, seedBy) {
-  #seedBy = Cell Type or cluster:(Single or multiple)
-  #E.g. cluster: 1:5 or 6
+
   cds = monocle3::new_cell_data_set(expression_data = SummarizedExperiment::assay(sce, 'counts'),
                                     cell_metadata = SingleCellExperiment::colData(sce),
                                     gene_metadata = data.frame(gene_short_name = rownames(SummarizedExperiment::assay(sce, 'counts')),
