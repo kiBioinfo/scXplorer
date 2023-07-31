@@ -13,11 +13,16 @@ dim_reduction_UI<-function(id) {
                           tags$br(),
                           tags$br(),
                           column(width = 10,
-                                 wellPanel(plotOutput(ns('dotp'), height=1000, width = '100%'),
-                                           style = "height= auto;width: 100%; border: 3px solid #CEECF5; text-align: end;",
-
-                                           download_plot_UI(ns("dim_loadings")))
-                                 ),
+                                 wellPanel(
+                                   plotOutput(ns('dotp'), height=1000, width = '100%')%>%
+                                     withSpinner(color="#0dc5c1",type = 6,size=0.9),
+                                   #Align download button to the bottom left corner
+                                   fluidRow(
+                                     column(width = 12, align = "right",
+                                           download_plot_UI(ns("dim_loadings"))
+                                   )),
+                                  style = "height= auto;width: 100%; border: 3px solid #CEECF5;"
+                                 )),
 
                           column(width=2,
                             wellPanel( numericInput(ns("npc"), "Select No. Of PC :",1, min=1, max=50),
@@ -31,9 +36,17 @@ dim_reduction_UI<-function(id) {
                            tags$br(),
 
                            column(width = 10,
-                                  wellPanel(plotOutput(ns('pcaP'), height="1000px", width = '100%'),
-                                             style = "height= auto;width: 100%; border: 3px solid #CEECF5; text-align: end;",
+                                  wellPanel(
+                                    plotOutput(ns('pcaP'), height="1000px", width = '100%')%>%
+                                      withSpinner(color="#0dc5c1",type = 6,size=0.9),
+                                    #Align download button to the bottom left corner
+                                    fluidRow(
+                                      column(width = 12, align = "right",
                                              download_plot_UI(ns("PCA"))
+                                      )),
+                                        # style = "height= auto;width: 100%; border: 3px solid #CEECF5; text-align: end;",
+                                    style = "height= auto;width: 100%; border: 3px solid #CEECF5;"
+
                                   )),
 
                            column(width=2,
@@ -50,9 +63,16 @@ dim_reduction_UI<-function(id) {
                            tags$br(),
                            tags$br(),
                          column(width = 10,
-                                wellPanel(plotOutput(ns('heat'),height = "1000px", width = '100%'),
-                                          style = "height: auto; width: 100%; border: 3px solid #CEECF5;text-align: end;",
-                                          download_plot_UI(ns("Heatmap_P"))
+                                wellPanel(
+                                  plotOutput(ns('heat'),height = "1000px", width = '100%')%>%
+                                    withSpinner(color="#0dc5c1",type = 6,size=0.9),
+                                  #Align download button to the bottom left corner
+                                  fluidRow(
+                                    column(width = 12, align = "right",
+                                           download_plot_UI(ns("Heatmap_P"))
+                                    )),
+                                  style = "height: auto; width: 100%; border: 3px solid #CEECF5;",
+
                                           )),
                          column(width=2,
                                 wellPanel(
@@ -67,14 +87,20 @@ dim_reduction_UI<-function(id) {
                          tags$br(),
                          tags$br(),
                          column(width = 10,
-                                wellPanel(plotOutput(ns('Pairwise_PCA'),height = "1000px", width = '100%') %>%
+                                wellPanel(
+                                  plotOutput(ns('Pairwise_PCA'),height = "1000px", width = '100%') %>%
                                           withSpinner(color="#0dc5c1",type = 6,size=0.9),
-                                          style = "height: auto; width: 100%; border: 3px solid #CEECF5;text-align: end;",
-                                          download_plot_UI(ns("Pair_PCA"))
-                                          )),
+                                  fluidRow(
+                                    column(width = 12, align = "right",
+                                           download_plot_UI(ns("Pair_PCA"))
+                                    )),
+                                    style = "height: auto; width: 100%; border: 3px solid #CEECF5;",
+
+                                  )),
 
                              column(width=2,
-                                    wellPanel(numericInput(ns("n_pc"), "Select No. Of PC :",3, min=1, max=50),uiOutput(ns("col_PC")),
+                                    wellPanel(numericInput(ns("n_pc"), "Select No. Of PC :",3, min=1, max=50),
+                                              uiOutput(ns("col_PC")),
                                               style = " background-color: #CEECF5; border: 3px solid #CEECF5;"
                                               ))
 
@@ -86,9 +112,15 @@ dim_reduction_UI<-function(id) {
                          tags$br(),
 
                          column(width = 10,
-                                wellPanel(plotOutput( ns('elbow'), height = "1000px", width = '100%') ,
-                                          style = "height: auto; width: 100%; border: 3px solid #CEECF5;text-align: end;",
-                                          download_plot_UI(ns("elbow_plot"))
+                                wellPanel(plotOutput( ns('elbow'), height = "1000px", width = '100%') %>%
+                                            withSpinner(color="#0dc5c1",type = 6,size=0.9),
+                                          fluidRow(
+                                            column(width = 12, align = "right",
+                                                   download_plot_UI(ns("elbow_plot"))
+                                            )),
+
+                                          style = "height: auto; width: 100%; border: 3px solid #CEECF5;",
+
                                           )),
 
                              column(width=2,
@@ -105,10 +137,14 @@ dim_reduction_UI<-function(id) {
                       fluidRow(
 
                             column(width = 10,
-                                   wellPanel( plotOutput(ns('non_linear_reduction'), width = "100%", height = "1000px")%>%
+                                   wellPanel( plotOutput(ns('non_linear_reduction'), width = "100%", height = "1000px") %>%
                                               withSpinner(color="#0dc5c1",type = 6,size=0.9),
-                                              style = "height: auto; width: 100%; border: 3px solid #CEECF5; text-align: end;",
-                                              download_plot_UI(ns("Dim_reduction"))
+                                              fluidRow(
+                                                column(width = 12, align = "right",
+                                                       download_plot_UI(ns("Dim_reduction"))
+                                                )),
+                                              style = "height: auto; width: 100%; border: 3px solid #CEECF5;",
+
                                               )),
 
 
