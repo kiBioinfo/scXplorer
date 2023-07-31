@@ -87,50 +87,37 @@ batchCorrct_Server <- function(id,normalization_data) {
       })#scdata
 
       #batch correction
+
       batch_effect <- reactive({
         req(scdata())
         errors <- c()
         req(input$batch_correction_type)
-        #showNotification(paste("batch effect correction using", input$batch_correction_type ) , type = "message", duration = 3)
-        if(input$batch_correction_type== "exprsn_mtrx"){
-          tryCatch(
-            {
-              # sce= BatchEffect_Matrix(scdata(), method = input$corxn_method_exprsn,used = input$expression_data_exprsn)
-              # if(any(altExpNames(sce)== 'BEVGcounts')){
-              #   sce= scater::runPCA(sce, exprs_values='BEVGcounts', altexp= 'BEVGcounts', name= "BEPCA")
-              # }
-              # else if(any(assayNames(sce)== 'BENMcounts')){
-              #   sce= scater::runPCA(sce, exprs_values='BENMcounts', name= "BEPCA")
-              # }
-              # else if(any(assayNames(sce)== 'BEcounts')){
-              #   sce= scater::runPCA(sce, exprs_values='BEcounts', name= "BEPCA")
-              # }
-              if(input$expression_data_exprsn=='counts'){
-                sce= BatchEffect_Matrix(scdata(), method = input$corxn_method_exprsn,used = 'counts')
+        tryCatch(
+          {
+            if(input$batch_correction_type== "exprsn_mtrx"){
+              sce= BatchEffect_Matrix(scdata(), method = input$corxn_method_exprsn,used = input$expression_data_exprsn)
+              if(input$expression_data_exprsn =='counts'){
                 sce= scater::runPCA(sce, exprs_values='BEcounts', name= "BEPCA")
               }
               else if (input$expression_data_exprsn=='NMcounts'){
-                sce= BatchEffect_Matrix(scdata(), method = input$corxn_method_exprsn,used = 'NMcounts')
                 sce= scater::runPCA(sce, exprs_values='BENMcounts', name= "BEPCA")
               }
               else if (input$expression_data_exprsn== 'VGcounts'){
-                sce= BatchEffect_Matrix(scdata(), method = input$corxn_method_exprsn,used = 'VGcounts')
                 sce= scater::runPCA(sce, exprs_values='BEVGcounts', altexp= 'BEVGcounts', name= "BEPCA")
               }
 
-            },
+            }
+            else if (input$batch_correction_type== "dim_rdxn") {
+              sce=BatchEffect_DimReduction(scdata(), method = input$corxn_method_rdxn, used = input$expression_data)
+              # return(sce)
+            }
+            return(sce)
+          },
           error = function(e) {
             errors <- c(errors, "Use another method")
             return(errors)
           }
-          )
-
-        }
-        else if (input$batch_correction_type== "dim_rdxn") {
-         sce=BatchEffect_DimReduction(scdata(), method = input$corxn_method_rdxn, used = input$expression_data)
-        }
-
-        return(sce)
+        )
       })
 
       observeEvent(input$correct_batch,{
