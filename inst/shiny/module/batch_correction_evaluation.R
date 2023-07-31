@@ -7,9 +7,14 @@ batchCorrct_evalutn_UI<-  function(id) {
 
                        column(width = 10,
                               wellPanel(
-                                plotOutput(ns("batch_evaluation_plot"), height = "800px")%>% withSpinner(color="#0dc5c1",type = 6,size=0.9),
-                                style = "height: auto; border: 3px solid #CEECF5; text-align: end;",
-                                download_plot_UI(ns("batch_crrcn_evln_plot"))
+                                plotOutput(ns("batch_evaluation_plot"), height = "800px")%>%
+                                  withSpinner(color="#0dc5c1",type = 6,size=0.9),
+                                fluidRow(
+                                  column(width = 12, align = "right",
+                                         download_plot_UI(ns("batch_crrcn_evln_plot"))
+                                  )),
+                                style = "height: auto; border: 3px solid #CEECF5;",
+
 
                               )
                               ),
