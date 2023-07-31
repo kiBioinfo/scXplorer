@@ -11,10 +11,16 @@ batch_dim_reduction_UI<-function(id) {
                                                   tags$br(),
                                                   tags$br(),
                                                   column(width = 10,
-                                                         wellPanel( plotOutput(ns('dotp'),height = "1000px")%>% withSpinner(color="#0dc5c1",type = 6,size=0.9)
-                                                                    , style = "height: auto; width: 100%; border: 3px solid #CEECF5; text-align: end;",
+                                                         wellPanel( plotOutput(ns('dotp'),height = "1000px") %>%
+                                                                     withSpinner(color="#0dc5c1",type = 6,size=0.9),
+                                                                    #Align download button to the bottom left corner
+                                                                    fluidRow(
+                                                                      column(width = 12, align = "right",
+                                                                             download_plot_UI(ns("dim_loadings"))
+                                                                      )),
+                                                                    style = "height: auto; width: 100%; border: 3px solid #CEECF5;",
 
-                                                                    download_plot_UI(ns("dim_loadings")))),
+                                                                    )),
 
                                                   column(width=2,
                                                          wellPanel( numericInput(ns("npc"), "Select No. Of PC :",6, min=1, max=50),
@@ -28,9 +34,17 @@ batch_dim_reduction_UI<-function(id) {
                                                   tags$br(),
 
                                                   column(width = 10,
-                                                         wellPanel(plotOutput(ns('pcaP'), height=900),
-                                                                   style = "height= auto;width: 100%; border: 3px solid #CEECF5;text-align: end;",
-                                                                   download_plot_UI(ns("PCA"))
+                                                         wellPanel(
+                                                           plotOutput(ns('pcaP'), height=900) %>%
+                                                             withSpinner(color="#0dc5c1",type = 6,size=0.9),
+                                                           #Align download button to the bottom left corner
+                                                           fluidRow(
+                                                             column(width = 12, align = "right",
+                                                                    download_plot_UI(ns("PCA"))
+                                                             )),
+
+                                                            style = "height= auto;width: 100%; border: 3px solid #CEECF5;",
+
                                                          )),
 
                                                   column(width=2,
@@ -46,9 +60,15 @@ batch_dim_reduction_UI<-function(id) {
                                                   tags$br(),
                                                   tags$br(),
                                                   column(width = 10,
-                                                         wellPanel(plotOutput(ns('heat'),height = "750px"),
-                                                                   style = "height: auto; width: 100%; border: 3px solid #CEECF5; text-align: end;",
-                                                                   download_plot_UI(ns("Heatmap_P"))
+                                                         wellPanel(plotOutput(ns('heat'),height = "750px") %>%
+                                                                     withSpinner(color="#0dc5c1",type = 6,size=0.9),
+                                                                   #Align download button to the bottom left corner
+                                                                   fluidRow(
+                                                                     column(width = 12, align = "right",
+                                                                            download_plot_UI(ns("Heatmap_P"))
+                                                                     )),
+                                                                   style = "height: auto; width: 100%; border: 3px solid #CEECF5;",
+
                                                          )),
                                                   column(width=2,
                                                          wellPanel(
@@ -63,9 +83,15 @@ batch_dim_reduction_UI<-function(id) {
                                                   tags$br(),
                                                   tags$br(),
                                                   column(width = 10,
-                                                         wellPanel(plotOutput(ns('Pairwise_PCA'),height = "600px") %>% withSpinner(color="#0dc5c1",type = 6,size=0.9),
-                                                                   style = "height: auto; width: 100%; border: 3px solid #CEECF5; text-align: end;",
-                                                                   download_plot_UI(ns("Pair_PCA"))
+                                                         wellPanel(plotOutput(ns('Pairwise_PCA'),height = "600px") %>%
+                                                                     withSpinner(color="#0dc5c1",type = 6,size=0.9),
+                                                                   #Align download button to the bottom left corner
+                                                                   fluidRow(
+                                                                     column(width = 12, align = "right",
+                                                                            download_plot_UI(ns("Pair_PCA"))
+                                                                     )),
+                                                                   style = "height: auto; width: 100%; border: 3px solid #CEECF5;",
+
                                                          )),
 
                                                   column(width=2,
@@ -81,9 +107,15 @@ batch_dim_reduction_UI<-function(id) {
                                                   tags$br(),
 
                                                   column(width = 10,
-                                                         wellPanel(plotOutput( ns('elbow'), height = "600px") %>% withSpinner(color="#0dc5c1",type = 6,size=0.9),
-                                                                   style = "height: auto; width: 100%; border: 3px solid #CEECF5; text-align: end;",
-                                                                   download_plot_UI(ns("elbow_plot"))
+                                                         wellPanel(plotOutput( ns('elbow'), height = "600px") %>%
+                                                                     withSpinner(color="#0dc5c1",type = 6,size=0.9),
+                                                                   #Align download button to the bottom left corner
+                                                                   fluidRow(
+                                                                     column(width = 12, align = "right",
+                                                                            download_plot_UI(ns("elbow_plot"))
+                                                                            )),
+                                                                   style = "height: auto; width: 100%; border: 3px solid #CEECF5;",
+
                                                          )),
 
                                                   column(width=2,
@@ -100,9 +132,15 @@ batch_dim_reduction_UI<-function(id) {
                                fluidRow(
 
                                  column(width = 10,
-                                        wellPanel( plotOutput(ns('non_linear_reduction'), width = "100%", height = "600px")%>% withSpinner(color="#0dc5c1",type = 6,size=0.9),
-                                                   style = "height: auto; width: 100%; border: 3px solid #CEECF5; text-align: end;",
-                                                   download_plot_UI(ns("Dim_reduction"))
+                                        wellPanel(plotOutput(ns('non_linear_reduction'), width = "100%", height = "600px")%>%
+                                                     withSpinner(color="#0dc5c1",type = 6,size=0.9),
+                                                  #Align download button to the bottom left corner
+                                                  fluidRow(
+                                                    column(width = 12, align = "right",
+                                                           download_plot_UI(ns("Dim_reduction"))
+                                                    )),
+                                                   style = "height: auto; width: 100%; border: 3px solid #CEECF5;",
+
                                         )),
 
 
@@ -186,35 +224,24 @@ batch_dim_reduction_Server <- function(id,batch_corrct) {
         req(scdata())
         selectInput(ns("colour_by"),
                     label = "Colour By:",
-                    choices =  colnames(scdata()@colData)[!colnames(scdata()@colData) %in% names],selected =  rev(names(scdata()@colData))[1])
+                    choices =  colnames(scdata()@colData)[!colnames(scdata()@colData) %in% names],
+                    selected =  rev(names(scdata()@colData))[1])
       })
       output$col_PC<-renderUI({
         ns <- session$ns
         req(scdata())
         selectInput(ns("colourP"),
                     label = "Colour By:",
-                    choices =  colnames(scdata()@colData)[!colnames(scdata()@colData) %in% names],selected =  rev(names(scdata()@colData))[1])
+                    choices =  colnames(scdata()@colData)[!colnames(scdata()@colData) %in% names],
+                    selected =  rev(names(scdata()@colData))[1])
       })
 
       #loadings plot
       lodings_p<- reactive({
-        # If the length of the input is 0
-        # (i.e. nothing is selected),we show
-        # a feedback to the user in the form of a text
-        # If the length > 0, we remove the feedback.
-        if (length(input$npc) == 0){
-          showFeedbackWarning(
-            inputId = "npc",
-            text = "Select at least one PC"
-          )
-        } else {
-          shinyFeedback::hideFeedback("npc")
-        }
-        # req() allows to stop further code execution
-        # if the condition is not a truthy.
-        # Hence if input$npc is NULL, the computation
-        # will be stopped here.
-        req(input$npc)
+
+        validate(
+          need(!is.na(input$npc) , "It should  be positive number")
+        )
         req(scdata())
         p<-dim_lodingsViz(scdata(),ndims = input$npc)
         p
@@ -223,6 +250,13 @@ batch_dim_reduction_Server <- function(id,batch_corrct) {
       #PCA Plot
       pca_plot<- reactive({
         req(scdata())
+        req(input$colour_by)
+        validate(
+          need(!is.na(input$xpc) , "It should  be positive number")
+        )
+        validate(
+          need(!is.na(input$ypc), "It should  be positive number")
+        )
         p=singleCellTK::plotPCA(scdata(),pcX=paste0("PC",input$xpc),
                                 pcY = paste0("PC",input$ypc), reducedDimName = "BEPCA",colorBy = input$colour_by) + theme_cowplot()
         p
@@ -231,18 +265,33 @@ batch_dim_reduction_Server <- function(id,batch_corrct) {
       #Heatmap
       heatmap_plot<- reactive({
         req(scdata())
+        validate(
+          need(!is.na(input$ngenes), "It should  be positive number")
+        )
+        validate(
+          need(!is.na(input$dms), "It should  be positive number")
+        )
         p=dim_heatmap(scdata(), ndims=input$dms,nfeatures=input$ngenes)
         p
       })
       #Parwise PCA
       pairwise_pca_plot <- reactive({
         req(scdata())
+        req(input$colourP)
+        validate(
+          need(!is.na(input$n_pc), "It should at least 2 dimension")
+
+        )
         p=scater::plotReducedDim(scdata(),dimred="BEPCA", ncomponents=input$n_pc,colour_by=input$colourP)
         p
       })
       #Elbow
       elbow_plt <- reactive({
         req(scdata())
+        validate(
+          need(!is.na(input$elb), "It should  be positive number")
+
+        )
         p= ElbowPlot(scdata(),ndims = input$elb)
         p
       })
