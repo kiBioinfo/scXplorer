@@ -7,8 +7,12 @@ cell_type_analysis_UI<-function(id) {
                column(width = 10,
                       wellPanel(
                       plotOutput(ns('cell_type'), height = "800px")%>% withSpinner(color="#0dc5c1",type = 6,size=0.9),
-                      style = "height: auto; border: 3px solid #CEECF5; text-align: end;",
-                      download_plot_UI(ns("Cell_type_p"))
+                      fluidRow(
+                        column(width = 12, align = "right",
+                               download_plot_UI(ns("Cell_type_p"))
+                        )),
+                      style = "height: auto; border: 3px solid #CEECF5;",
+
                       )
                       ),
 
@@ -82,6 +86,13 @@ cell_type_analysis_Server <-function(id,DGE) {
           #   incProgress(1/10)
           #   Sys.sleep(0.5)
           # }
+       if(input$method == 'sctype'){
+         validate(
+           need(!is.na(input$SCtype), "Please select a tissue")
+
+         )
+       }
+
         data= Cell_Type_Annotation(data= scdata(), dataset= input$singleR , TissueType= input$SCtype, method=input$method )
         data
         # setProgress(value = 1)
