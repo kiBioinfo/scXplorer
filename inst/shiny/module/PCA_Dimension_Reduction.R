@@ -153,20 +153,13 @@ dim_reduction_UI<-function(id) {
 
 
                             column(width=2,
-                                  wellPanel(selectInput(ns("dimM"), "Select Dim reduction Method :",choices = c("tSNE", "Umap"),selected="Umap"),
+                                  wellPanel(selectInput(ns("dimM"), "Select Dim reduction Method :",choices = c("tSNE", "Umap"),
+                                                        selected="tSNE"),
+                                            numericInput(ns("np"), "Select No. Of PC :",20, min=1, max=50),
                                    conditionalPanel(
                                      condition = "input.dimM=='tSNE'",
-                                     numericInput(ns("np"), "Select No. Of PC :",20, min=1, max=50),
                                      numericInput(ns("perp"), "Select Perplexity Value :",30, min=1, max=Inf)
                                      ,  ns = NS(id) ),
-                                   conditionalPanel(
-                                     condition = "input.dimM=='Umap'",
-                                     numericInput(ns("Unp"), "Select No. Of PC :",20, min=1, max=50),  ns = NS(id) ),
-
-                                   conditionalPanel(
-                                     condition = "input.dimM=='DFmap'",
-                                     numericInput(ns("Dnp"), "Select No. Of PC :",20, min=1, max=50),  ns = NS(id) ),
-
 
                                      selectInput(ns("C_M"),"Select The Cluster Find Method",
                                                choices = c("K-Means","DBscan","Mclust","Hclust","Graph", "Hclust_scran", "Kmean_scran"),
@@ -369,21 +362,24 @@ dim_reduction_Server <- function(id,normalization_data) {
         req(sc_data())
         # withProgress(message = 'Dimension Reduction in progress......',
         #              detail = 'This may take a while...', value = 0, {
+
         validate(
           need(!is.na(input$np), "It should  be positive number")
 
         )
-        validate(
-          need(!is.na(input$perp), "It should  be positive number")
-
-        )
         if(input$dimM=="tSNE")
         {
+          validate(
+            need(!is.na(input$perp), "It should  be positive number")
+
+          )
+
           CS.data = DimReduction_tsne(sc_data(),  PCNum = input$np, perplexity = input$perp)
           # return(CS.data)
         }
-        else
+        else if((input$dimM=="Umap"))
         {
+
           CS.data = DimReduction_umap(sc_data(),  PCNum = input$np)
           # return(CS.data)
         }
