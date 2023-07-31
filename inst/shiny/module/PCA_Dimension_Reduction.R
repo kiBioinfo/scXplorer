@@ -154,7 +154,7 @@ dim_reduction_UI<-function(id) {
 
                             column(width=2,
                                   wellPanel(selectInput(ns("dimM"), "Select Dim reduction Method :",choices = c("tSNE", "Umap"),
-                                                        selected="tSNE"),
+                                                        selected="Umap"),
                                             numericInput(ns("np"), "Select No. Of PC :",20, min=1, max=50),
                                    conditionalPanel(
                                      condition = "input.dimM=='tSNE'",
