@@ -364,7 +364,7 @@ dim_reduction_Server <- function(id,normalization_data) {
         #              detail = 'This may take a while...', value = 0, {
 
         validate(
-          need(!is.na(input$np), "It should  be positive number")
+          need(input$np !='', "It should  be positive number")
 
         )
         if(input$dimM=="tSNE")
