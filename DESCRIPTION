@@ -82,3 +82,4 @@ Imports:
 Suggests: 
     sf
 bioc::release/SingleR
+bioc::release/edgeR
