@@ -350,9 +350,7 @@
     "CytoTRACE": {
       "Package": "CytoTRACE",
       "Version": "0.3.3",
-      "Source": "Local",
-      "RemoteType": "local",
-      "RemoteUrl": "./CytoTRACE_0.3.3.tar.gz",
+      "Source": "unknown",
       "Requirements": [
         "HiClimR",
         "R",
@@ -368,7 +366,7 @@
         "reticulate",
         "sva"
       ],
-      "Hash": "4725f2379fb113764f9d46b5f433a598"
+      "Hash": "ff190e380f7264681807baec5bc2029c"
     },
     "DBI": {
       "Package": "DBI",
@@ -444,26 +442,6 @@
         "stats"
       ],
       "Hash": "231c6bfcd15dc1728281d265f995d35b"
-    },
-    "DOSE": {
-      "Package": "DOSE",
-      "Version": "3.24.2",
-      "Source": "Bioconductor",
-      "Requirements": [
-        "AnnotationDbi",
-        "BiocParallel",
-        "GOSemSim",
-        "HDO.db",
-        "R",
-        "fgsea",
-        "ggplot2",
-        "methods",
-        "qvalue",
-        "reshape2",
-        "stats",
-        "utils"
-      ],
-      "Hash": "05f80e98659acafea2d28e22752b5c9c"
     },
     "DT": {
       "Package": "DT",
@@ -631,31 +609,6 @@
         "stats"
       ],
       "Hash": "7a29697b75e027767a53fde6c903eca7"
-    },
-    "GO.db": {
-      "Package": "GO.db",
-      "Version": "3.16.0",
-      "Source": "Bioconductor",
-      "Requirements": [
-        "AnnotationDbi",
-        "R",
-        "methods"
-      ],
-      "Hash": "21c1446b676a6a58bc1e4154755fc65d"
-    },
-    "GOSemSim": {
-      "Package": "GOSemSim",
-      "Version": "2.24.0",
-      "Source": "Bioconductor",
-      "Requirements": [
-        "AnnotationDbi",
-        "GO.db",
-        "R",
-        "Rcpp",
-        "methods",
-        "utils"
-      ],
-      "Hash": "e92b4860e59eafe8155d958ec5a861e1"
     },
     "GSEABase": {
       "Package": "GSEABase",
@@ -852,18 +805,6 @@
         "utils"
       ],
       "Hash": "47551501a292037411c49c38d236ff24"
-    },
-    "HDO.db": {
-      "Package": "HDO.db",
-      "Version": "0.99.1",
-      "Source": "Bioconductor",
-      "Requirements": [
-        "AnnotationDbi",
-        "R",
-        "methods",
-        "utils"
-      ],
-      "Hash": "be08478e9424bbb54a3890d08e01192b"
     },
     "HGNChelper": {
       "Package": "HGNChelper",
@@ -1111,17 +1052,6 @@
         "stats"
       ],
       "Hash": "963ab8fbaf980a5b081ed40419081439"
-    },
-    "NLP": {
-      "Package": "NLP",
-      "Version": "0.2-1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "utils"
-      ],
-      "Hash": "94b0a21c13933f61cf6272a192964624"
     },
     "PCAtools": {
       "Package": "PCAtools",
@@ -2707,32 +2637,6 @@
       ],
       "Hash": "5edbbabab6ce0bf7900a74fd4358628e"
     },
-    "clusterProfiler": {
-      "Package": "clusterProfiler",
-      "Version": "4.6.2",
-      "Source": "Bioconductor",
-      "Requirements": [
-        "AnnotationDbi",
-        "DOSE",
-        "GO.db",
-        "GOSemSim",
-        "R",
-        "downloader",
-        "dplyr",
-        "enrichplot",
-        "gson",
-        "magrittr",
-        "methods",
-        "plyr",
-        "qvalue",
-        "rlang",
-        "stats",
-        "tidyr",
-        "utils",
-        "yulab.utils"
-      ],
-      "Hash": "361fedea64a0ef1eae86d7f6f7a3b0a4"
-    },
     "coda": {
       "Package": "coda",
       "Version": "0.19-4",
@@ -3177,17 +3081,6 @@
       ],
       "Hash": "79bf3f66590752ffbba20f8d2da94c7c"
     },
-    "downloader": {
-      "Package": "downloader",
-      "Version": "0.4",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "digest",
-        "utils"
-      ],
-      "Hash": "f4f2a915e0dedbdf016a83b63477349f"
-    },
     "dplyr": {
       "Package": "dplyr",
       "Version": "1.1.2",
@@ -3356,37 +3249,6 @@
       ],
       "Hash": "d6fe55ea717f33189d37cf78c698f490"
     },
-    "enrichplot": {
-      "Package": "enrichplot",
-      "Version": "1.18.4",
-      "Source": "Bioconductor",
-      "Requirements": [
-        "DOSE",
-        "GOSemSim",
-        "R",
-        "RColorBrewer",
-        "aplot",
-        "ggnewscale",
-        "ggplot2",
-        "ggraph",
-        "ggtree",
-        "graphics",
-        "grid",
-        "igraph",
-        "magrittr",
-        "methods",
-        "plyr",
-        "purrr",
-        "reshape2",
-        "rlang",
-        "scatterpie",
-        "shadowtext",
-        "stats",
-        "utils",
-        "yulab.utils"
-      ],
-      "Hash": "1c0dfd4d466a9c6f15caf6b1ba48a95b"
-    },
     "ensembldb": {
       "Package": "ensembldb",
       "Version": "2.22.0",
@@ -3500,36 +3362,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "f7736a18de97dea803bde0a2daaafb27"
-    },
-    "fastmatch": {
-      "Package": "fastmatch",
-      "Version": "1.1-3",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R"
-      ],
-      "Hash": "dabc225759a2c2b241e60e42bf0e8e54"
-    },
-    "fgsea": {
-      "Package": "fgsea",
-      "Version": "1.24.0",
-      "Source": "Bioconductor",
-      "Requirements": [
-        "BH",
-        "BiocParallel",
-        "Matrix",
-        "R",
-        "Rcpp",
-        "cowplot",
-        "data.table",
-        "fastmatch",
-        "ggplot2",
-        "grid",
-        "stats",
-        "utils"
-      ],
-      "Hash": "c682d67fea435759f50ff8dc6dcd6b8d"
     },
     "fields": {
       "Package": "fields",
@@ -3996,35 +3828,6 @@
       ],
       "Hash": "3b5b879c6228531eb1c5fdb78c2024b3"
     },
-    "ggforce": {
-      "Package": "ggforce",
-      "Version": "0.4.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "MASS",
-        "R",
-        "Rcpp",
-        "RcppEigen",
-        "cli",
-        "ggplot2",
-        "grDevices",
-        "grid",
-        "gtable",
-        "lifecycle",
-        "polyclip",
-        "rlang",
-        "scales",
-        "stats",
-        "systemfonts",
-        "tidyselect",
-        "tweenr",
-        "utils",
-        "vctrs",
-        "withr"
-      ],
-      "Hash": "a06503f54e227f79b45a72df2946a2d2"
-    },
     "ggfortify": {
       "Package": "ggfortify",
       "Version": "0.4.16",
@@ -4055,16 +3858,6 @@
         "utils"
       ],
       "Hash": "f31174df0168499f1aa33bc7f96bfc25"
-    },
-    "ggnewscale": {
-      "Package": "ggnewscale",
-      "Version": "0.4.9",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "ggplot2"
-      ],
-      "Hash": "2d3ce9ca9737ecf195794c63fc40b990"
     },
     "ggplot.multistats": {
       "Package": "ggplot.multistats",
@@ -4149,37 +3942,6 @@
         "utils"
       ],
       "Hash": "c957612b8bb1ee9ab7b2450d26663e7e"
-    },
-    "ggraph": {
-      "Package": "ggraph",
-      "Version": "2.1.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "MASS",
-        "R",
-        "Rcpp",
-        "cli",
-        "digest",
-        "dplyr",
-        "ggforce",
-        "ggplot2",
-        "ggrepel",
-        "graphlayouts",
-        "grid",
-        "gtable",
-        "igraph",
-        "lifecycle",
-        "rlang",
-        "scales",
-        "stats",
-        "tidygraph",
-        "utils",
-        "vctrs",
-        "viridis",
-        "withr"
-      ],
-      "Hash": "62672fd99df5df5814f442e9cd5ec29b"
     },
     "ggrastr": {
       "Package": "ggrastr",
@@ -4469,31 +4231,6 @@
       ],
       "Hash": "ed149e9995e7d1cbfebe1820980eed68"
     },
-    "graphlayouts": {
-      "Package": "graphlayouts",
-      "Version": "1.0.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "Rcpp",
-        "RcppArmadillo",
-        "igraph"
-      ],
-      "Hash": "8e6e2044b72071ae7ea601808887423c"
-    },
-    "gridBase": {
-      "Package": "gridBase",
-      "Version": "0.4-7",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "graphics",
-        "grid"
-      ],
-      "Hash": "c6b1256546a22b4b9f4fae3ba5117b97"
-    },
     "gridExtra": {
       "Package": "gridExtra",
       "Version": "2.3",
@@ -4529,21 +4266,6 @@
         "R"
       ],
       "Hash": "195f3206842ea5ae11968e8d462bb828"
-    },
-    "gson": {
-      "Package": "gson",
-      "Version": "0.1.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "jsonlite",
-        "methods",
-        "rlang",
-        "stats",
-        "tidyr",
-        "utils"
-      ],
-      "Hash": "d37d82cf043b679dd802e91d0b2ef6a1"
     },
     "gtable": {
       "Package": "gtable",
@@ -5795,17 +5517,6 @@
       ],
       "Hash": "e22193c47c891d1a011dade7f262cc65"
     },
-    "org.Mm.eg.db": {
-      "Package": "org.Mm.eg.db",
-      "Version": "3.16.0",
-      "Source": "Bioconductor",
-      "Requirements": [
-        "AnnotationDbi",
-        "R",
-        "methods"
-      ],
-      "Hash": "f03f94839b1db9ef14042e62135f0bb5"
-    },
     "pROC": {
       "Package": "pROC",
       "Version": "1.18.2",
@@ -6705,29 +6416,6 @@
       ],
       "Hash": "1de7ab598047a87bba48434ba35d497d"
     },
-    "rrvgo": {
-      "Package": "rrvgo",
-      "Version": "1.10.0",
-      "Source": "Bioconductor",
-      "Requirements": [
-        "AnnotationDbi",
-        "GO.db",
-        "GOSemSim",
-        "ggplot2",
-        "ggrepel",
-        "grDevices",
-        "grid",
-        "methods",
-        "pheatmap",
-        "shiny",
-        "stats",
-        "tm",
-        "treemap",
-        "umap",
-        "wordcloud"
-      ],
-      "Hash": "a24a49c947b6fc0881aaec261792429b"
-    },
     "rsample": {
       "Package": "rsample",
       "Version": "1.1.1",
@@ -7082,24 +6770,6 @@
       ],
       "Hash": "d316e4abb854dd1677f7bd3ad08bc4e8"
     },
-    "scatterpie": {
-      "Package": "scatterpie",
-      "Version": "0.2.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "dplyr",
-        "ggforce",
-        "ggfun",
-        "ggplot2",
-        "rlang",
-        "stats",
-        "tidyr",
-        "utils"
-      ],
-      "Hash": "a272b0f2f06b3aa01fa4f5a033f0cf4a"
-    },
     "scatterplot3d": {
       "Package": "scatterplot3d",
       "Version": "0.3-44",
@@ -7270,19 +6940,6 @@
         "utils"
       ],
       "Hash": "7630856c50fc4a7ee4909a60617f3576"
-    },
-    "shadowtext": {
-      "Package": "shadowtext",
-      "Version": "0.1.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "ggplot2",
-        "grid",
-        "scales"
-      ],
-      "Hash": "e639c0fa75fc71085c37e21e05a06e41"
     },
     "shape": {
       "Package": "shape",
@@ -8136,28 +7793,6 @@
       ],
       "Hash": "a84e2cc86d07289b3b6f5069df7a004c"
     },
-    "tidygraph": {
-      "Package": "tidygraph",
-      "Version": "1.2.3",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R6",
-        "cli",
-        "cpp11",
-        "dplyr",
-        "igraph",
-        "magrittr",
-        "pillar",
-        "rlang",
-        "stats",
-        "tibble",
-        "tidyr",
-        "tools",
-        "utils"
-      ],
-      "Hash": "0fc97a52b4b32a0b4a3de4c5241348e2"
-    },
     "tidyr": {
       "Package": "tidyr",
       "Version": "1.3.0",
@@ -8280,26 +7915,6 @@
       ],
       "Hash": "e4e357f28c2edff493936b6cb30c3d65"
     },
-    "tm": {
-      "Package": "tm",
-      "Version": "0.7-11",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "BH",
-        "NLP",
-        "R",
-        "Rcpp",
-        "graphics",
-        "parallel",
-        "slam",
-        "stats",
-        "tools",
-        "utils",
-        "xml2"
-      ],
-      "Hash": "625329dd66ec8e8fbeb5ea6003e9be0a"
-    },
     "treeio": {
       "Package": "treeio",
       "Version": "1.22.0",
@@ -8317,40 +7932,6 @@
         "utils"
       ],
       "Hash": "79eb206300fb5e5feea1f508a8166eba"
-    },
-    "treemap": {
-      "Package": "treemap",
-      "Version": "2.4-4",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "RColorBrewer",
-        "colorspace",
-        "data.table",
-        "ggplot2",
-        "grid",
-        "gridBase",
-        "igraph",
-        "methods",
-        "shiny"
-      ],
-      "Hash": "4f81151a925c017e2cdd712cbfaf3d09"
-    },
-    "tweenr": {
-      "Package": "tweenr",
-      "Version": "2.0.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "cpp11",
-        "farver",
-        "magrittr",
-        "rlang",
-        "vctrs"
-      ],
-      "Hash": "c16efcef4c72d3bff5e65031f3f1f841"
     },
     "tximport": {
       "Package": "tximport",
@@ -8659,18 +8240,6 @@
         "R"
       ],
       "Hash": "68a7ab6ec1afb5f076172b983c069313"
-    },
-    "wordcloud": {
-      "Package": "wordcloud",
-      "Version": "2.6",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "RColorBrewer",
-        "Rcpp",
-        "methods"
-      ],
-      "Hash": "dddb6538141ed1e2435cb63c6c748d16"
     },
     "xfun": {
       "Package": "xfun",
