@@ -7,7 +7,7 @@ sceExplorer <- function() {
 }
 
 #' @export
-#'
+#' install_bioconductor_dependencies
 install_bioconductor_dependencies <- function() {
   packages <- c("BASiCS", "celldex", "CellMixS", "clusterProfiler",
                 "DEsingle", "destiny", "DropletUtils", "enrichplot",
