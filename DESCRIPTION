@@ -73,6 +73,7 @@ Imports:
     shinyWidgets (>= 0.7.6),
     SingleCellExperiment (>= 1.20.1),
     singleCellTK (>= 2.8.0),
+    SingleR (>= 2.0.0),
     slingshot (>= 2.6.0),
     spsComps (>= 0.3.2.1),
     thematic (>= 0.1.2.1),
@@ -81,6 +82,4 @@ Imports:
     Rmisc
 Suggests: 
     sf
-bioc::release/SingleR
-
-
+    
