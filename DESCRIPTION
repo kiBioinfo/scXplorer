@@ -82,4 +82,4 @@ Imports:
     Rmisc
 Suggests: 
     sf
-Configure: configure
+bioc::release/SingleR
