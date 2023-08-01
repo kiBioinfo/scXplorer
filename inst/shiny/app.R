@@ -24,6 +24,8 @@ source("fun/Batch_correction_Fun.R",encoding = "utf-8")
 source("fun/Differential_Gene_Expression_Analysis_Fun.R",encoding = "utf-8")
 source("fun/Cell_type_annotation_Fun.R",encoding = "utf-8")
 source("fun/Cell_development_Fun.R",encoding = "utf-8")
+source("fun/Other_fun.R",encoding = "utf-8")
+
 
 #import modules
 
