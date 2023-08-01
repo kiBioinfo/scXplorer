@@ -58,5 +58,6 @@ Imports:
     waiter (>= 0.2.5),
     Rmisc
 Suggests: 
-    monocle3 (>= cole-trapnell-lab/monocle3),
+    monocle3 (>= 3.14),
+    remote,
     sf
