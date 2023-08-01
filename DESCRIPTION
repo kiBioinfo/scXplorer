@@ -82,3 +82,4 @@ Imports:
     Rmisc
 Suggests: 
     sf
+Configure: configure

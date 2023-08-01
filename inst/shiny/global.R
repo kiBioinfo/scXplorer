@@ -49,7 +49,7 @@
 # library(bs4Dash)
 # library(thematic)
 # library(CytoTRACE)
-
+devtools::load_all()
 packages=c('shiny', 'devtools','tidyverse', 'rrvgo','gprofiler2', 'org.Mm.eg.db', 'enrichplot','clusterProfiler','readxl','openxlsx','SingleR','celldex','HGNChelper','DEsingle','bluster','scran','scater',
                'singleCellTK','ggfortify','cowplot','ggrepel','bslib','scuttle','sass','patchwork','Seurat','purrr','DropletUtils','spsComps','SingleCellExperiment','waiter','ggplotify','grid','viridis',
                'pheatmap','shinyBS','shinyjs','DT','shinyFiles','shinycssloaders','shinyWidgets','thematic','bs4Dash','fresh', 'shiny.blueprint','CytoTRACE')
