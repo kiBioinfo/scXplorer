@@ -50,23 +50,6 @@
 # library(thematic)
 # library(CytoTRACE)
 devtools::load_all()
-install_bioconductor_dependencies <- function() {
-  packages <- c("BASiCS", "celldex", "CellMixS", "clusterProfiler",
-                "DEsingle", "destiny", "DropletUtils", "enrichplot",
-                "kBET", "Linnorm", "monocle3", "org.Hs.eg.db", "org.Mm.eg.db",
-                "PCAtools", "rrvgo", "RUVSeq", "scater", "SCnorm", "singleCellTK", "SingleR", "slingshot","edgeR")
-
-  if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-
-  installed_packages <- installed.packages()
-
-  for (package in packages) {
-    if (!package %in% installed_packages) {
-      BiocManager::install(package)
-    }
-  }
-}
 
 packages=c('shiny', 'devtools','tidyverse', 'rrvgo','gprofiler2', 'org.Mm.eg.db', 'enrichplot','clusterProfiler','readxl','openxlsx','SingleR','celldex','HGNChelper','DEsingle','bluster','scran','scater',
                'singleCellTK','ggfortify','cowplot','ggrepel','bslib','scuttle','sass','patchwork','Seurat','purrr','DropletUtils','spsComps','SingleCellExperiment','waiter','ggplotify','grid','viridis',
