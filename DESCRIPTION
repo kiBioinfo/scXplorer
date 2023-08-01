@@ -81,5 +81,7 @@ Imports:
     Rmisc
 Suggests: 
     sf
-bioc::release/SingleR
-bioc::release/edgeR
+Remotes:
+    bioc::release/SingleR,
+    bioc::release/edgeR
+
