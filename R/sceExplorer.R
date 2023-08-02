@@ -2,9 +2,6 @@
 #' sceExplorer
 sceExplorer <- function() {
   appDir <- system.file("shiny", package = "sceExplorer")
-  install_bioconductor_dependencies()
-
-
   shiny::runApp(appDir, display.mode = "normal", launch.browser = TRUE)
 }
 
