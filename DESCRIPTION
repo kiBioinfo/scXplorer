@@ -56,8 +56,7 @@ Imports:
     thematic (>= 0.1.2.1),
     viridis (>= 0.6.3),
     waiter (>= 0.2.5),
-    Rmisc,
-    limma (>= 3.54.2)
+    Rmisc
 Suggests: 
     monocle3 (>= 3.14),
     remote,
