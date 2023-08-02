@@ -422,7 +422,7 @@ batch_dim_reduction_Server <- function(id,batch_corrct) {
         obj@colData$cluster <- as.factor(obj@colData$cluster)
         obj@colData$cluster=factor(obj@colData$cluster, levels = levels( obj@colData$cluster) %>% str_sort(numeric = TRUE))
 
-        p=plotReducedDim(obj, dimred =  input$dimM,
+        p=scater::plotReducedDim(obj, dimred =  input$dimM,
                          colour_by = input$colourby,text_by= input$colourby) + ggplot2::ggtitle(label = input$dimM )  + ggplot2::theme(plot.title = element_text(hjust = 0.5))
 
         p
