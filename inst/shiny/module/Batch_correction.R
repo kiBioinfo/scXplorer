@@ -36,6 +36,15 @@ batchCorrct_UI<-  function(id) {
                        ns = NS(id)
 
                      ),
+                     conditionalPanel(
+                       condition = "input.expression_data_exprsn =='counts' || input.expression_data_exprsn =='NMcounts' ",
+
+                       numericInput(ns("ngene"), "Select No. Of Features :",2000, min=0, max=Inf),
+
+                       ns = NS(id)
+
+                     ),
+
 
                      conditionalPanel(
                        condition = "input.batch_correction_type =='dim_rdxn' ",
@@ -97,18 +106,20 @@ batchCorrct_Server <- function(id,normalization_data) {
             if(input$batch_correction_type== "exprsn_mtrx"){
               sce= BatchEffect_Matrix(scdata(), method = input$corxn_method_exprsn,used = input$expression_data_exprsn)
               if(input$expression_data_exprsn =='counts'){
-                sce= scater::runPCA(sce, exprs_values='BEcounts', name= "BEPCA")
+                sce <- VariableGene_hvg(sce, used = 'BEcounts', ngene = input$ngene, batch = T)
+                sce <- scater::runPCA(sce, exprs_values='BEVGcounts', altexp= 'BEVGcounts', name= "BEPCA")
               }
               else if (input$expression_data_exprsn=='NMcounts'){
-                sce= scater::runPCA(sce, exprs_values='BENMcounts', name= "BEPCA")
+                sce <- VariableGene_hvg(sce, used = 'BENMcounts', ngene = input$ngene, batch = T)
+                sce <- scater::runPCA(sce, exprs_values='BENMVGcounts', altexp= 'BENMVGcounts', name= "BEPCA")
               }
               else if (input$expression_data_exprsn== 'VGcounts'){
-                sce= scater::runPCA(sce, exprs_values='BEVGcounts', altexp= 'BEVGcounts', name= "BEPCA")
+                sce <- scater::runPCA(sce, exprs_values='BEVGcounts', altexp= 'BEVGcounts', name= "BEPCA")
               }
 
             }
             else if (input$batch_correction_type== "dim_rdxn") {
-              sce=BatchEffect_DimReduction(scdata(), method = input$corxn_method_rdxn, used = input$expression_data)
+              sce <- BatchEffect_DimReduction(scdata(), method = input$corxn_method_rdxn, used = input$expression_data)
               # return(sce)
             }
             return(sce)
