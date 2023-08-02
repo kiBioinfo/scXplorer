@@ -148,13 +148,13 @@ ClusterFind_graph = function(sce, runWith = 'PCA', PCNum = 10,cluster.fun) {
 
 # hierarchical clustering from scran package
 
-ClusterFind_hclust_scran<- function(sce, runWith)
+ClusterFind_hclust_scran<- function(sce, runWith= 'Umap')
 {
   set.seed(1111)
-  khclust.info <- clusterCells(x=sce, use.dimred=runWith,
-                               BLUSPARAM=TwoStepParam(
-                                 first=KmeansParam(centers=1000),
-                                 second=HclustParam(method="ward.D2", cut.dynamic=TRUE,
+  khclust.info <- scran::clusterCells(x=sce, use.dimred=runWith,
+                               BLUSPARAM=bluster::TwoStepParam(
+                                 first=bluster::KmeansParam(centers=1000),
+                                 second=bluster::HclustParam(method="ward.D2", cut.dynamic=TRUE,
                                                     cut.param=list(deepSplit=3)) # for higher resolution.
                                ),
                                full=TRUE
@@ -168,10 +168,10 @@ ClusterFind_hclust_scran<- function(sce, runWith)
 # kmean clustering from scran package
 ClusterFind_kmean_scran<- function(sce, runWith,k=30){
   set.seed(0101010)
-  kgraph.clusters <- clusterCells(x=sce, use.dimred= runWith,
-                                  BLUSPARAM=TwoStepParam(
-                                    first=KmeansParam(centers=1000),
-                                    second=NNGraphParam(k=k)
+  kgraph.clusters <- scran::clusterCells(x=sce, use.dimred= runWith,
+                                  BLUSPARAM=bluster::TwoStepParam(
+                                    first=bluster::KmeansParam(centers=1000),
+                                    second=bluster::NNGraphParam(k=k)
                                   )
   )
   colData(sce)$cluster = as.character(kgraph.clusters)
