@@ -23,3 +23,8 @@ for (package in packages) {
     BiocManager::install(package)
   }
 }
+
+if(!require(limma)){
+  BiocManager::install("limma")
+  library(limma)
+}
