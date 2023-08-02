@@ -13,7 +13,7 @@ install_bioconductor_dependencies <- function() {
                 "kBET", "Linnorm", "org.Hs.eg.db", "org.Mm.eg.db",
                 "PCAtools", "rrvgo", "RUVSeq", "scater", "SCnorm",
                 "SingleR", "slingshot","edgeR", "SingleCellExperiment", "scater",
-                "singleCellTK", "slingshot", "scuttle", "scran", "SCnorm",
+                "slingshot", "scuttle", "scran", "SCnorm",
                 "PCAtools", "org.Mm.eg.db", "org.Hs.eg.db" , "Linnorm", "enrichplot",
                 "DropletUtils", "destiny","DEsingle", "clusterProfiler", "CellMixS",
                 "celldex", "limma", "SummarizedExperiment", "sva", "DESeq2", "batchelor",
