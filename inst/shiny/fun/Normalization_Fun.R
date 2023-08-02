@@ -473,8 +473,9 @@ VariableGene_mvg = function(sce, used = 'counts', ngene = 1000) {
 VariableGene_hvg = function(sce, used = 'counts', ngene = 1000, batch = F) {
 
 
-  edata = assay(sce, 'counts')
-  edata = log2(edata+1)
+
+    edata = assay(sce, 'counts') %>% as.data.frame()
+    edata = log2(edata+1)
 
 
 
@@ -484,9 +485,21 @@ VariableGene_hvg = function(sce, used = 'counts', ngene = 1000, batch = F) {
     dec = scran::modelGeneVar(edata, block = batch)
     top.hvgs2 <- scran::getTopHVGs(dec, n=ngene)
 
-    edata.od = edata[top.hvgs2,]
+    if(used == 'counts'){
+      edata.od = edata[top.hvgs2,]
+      altExp(sce, 'VGcounts') = SingleCellExperiment(assay = list(VGcounts = edata.od))
+    }
+    if(used == 'BEcounts'){
+      edata = assay(sce,'BEcounts')
+      edata.od = edata[top.hvgs2,]
+      altExp(sce, 'BEVGcounts') = SingleCellExperiment(assay = list(BEVGcounts = edata.od))
+    }
+    if(used == 'BENMcounts'){
+      edata = assay(sce,'BENMcounts')
+      edata.od = edata[top.hvgs2,]
+      altExp(sce, 'BENMVGcounts') = SingleCellExperiment(assay = list(BENMVGcounts = edata.od))
+    }
 
-    altExp(sce, 'VGcounts') = SingleCellExperiment(assay = list(VGcounts = edata.od))
   } else {
     dec = scran::modelGeneVar(edata)
     top.hvgs2 <- scran::getTopHVGs(dec, n=ngene)
@@ -538,6 +551,12 @@ VariableGene_hvg_plot = function(sce, used = 'counts', ngene = 1000, batch = F, 
       edata = assay(sce, used) %>% as.data.frame()
     }
   }
+  else if(used == 'BEcounts'){
+    edata = assay(sce, used) %>% as.data.frame()
+  }
+  else if(used == 'BENMcounts'){
+    edata = assay(sce, used) %>% as.data.frame()
+  }
 
   if(batch) {
     batch = sce@colData$batch
@@ -550,7 +569,13 @@ VariableGene_hvg_plot = function(sce, used = 'counts', ngene = 1000, batch = F, 
     selected_genes<-var %>% filter(Status=="TRUE") %>% arrange(FDR)
     colnames(selected_genes)[c(1,4)]<-c("Average_expression","Variance")
     #Select count matrix for variable genes
-    edata = assay(sce, used) %>% as.data.frame()
+    if(used == 'counts'){
+      edata = assay(sce, used) %>% as.data.frame()
+      edata = log2(edata+1)
+    }
+    else{
+      edata = assay(sce, used) %>% as.data.frame()
+    }
     edata.od = edata[top.hvgs2,]
 
 
@@ -563,28 +588,39 @@ VariableGene_hvg_plot = function(sce, used = 'counts', ngene = 1000, batch = F, 
     selected_genes<-var %>% filter(Status=="TRUE") %>% arrange(FDR)
     colnames(selected_genes)[c(1,4)]<-c("Average_expression","Variance")
     #Select count matrix for variable genes
-    edata = assay(sce, used) %>% as.data.frame()
+    if(used == 'counts'){
+      edata = assay(sce, used) %>% as.data.frame()
+      edata = log2(edata+1)
+    }
+    else{
+      edata = assay(sce, used) %>% as.data.frame()
+    }
+
     edata.od = edata[top.hvgs2,]
 
   }
-  altExp(sce, 'VGcounts') = SingleCellExperiment(assay = list(VGcounts = edata.od))
+
+  # altExp(sce, 'VGcounts') = SingleCellExperiment(assay = list(VGcounts = edata.od))
   if(any(c("nCount_RNA","nFeature_RNA", "Mito_gene_percent", "Hemoglobin_gene_percent", "Ribosomal_gene_percent") == colnames(colData(sce)))){
     sce@colData = subset(sce@colData, select = -c(nCount_RNA,nFeature_RNA, Mito_gene_percent, Hemoglobin_gene_percent, Ribosomal_gene_percent))
   }
   # top hvg count matrix saved in altExp
-  # if(used == 'counts') {
-  # altExp(sce, 'VGcounts') = SingleCellExperiment(assay = list(VGcounts = edata.od))
-  # }
-  # if(used == 'BENMcounts') {
-  #   SingleCellExperiment::altExp(sce, 'BENMVGcounts') = SingleCellExperiment::SingleCellExperiment(assays = list(BENMVGcounts = edata.od))
-  # }
-  # if(used == 'NMcounts') {
-  #   altExp(sce, 'NMVGcounts') = SingleCellExperiment(assay = list(NMVGcounts = edata.od))
-  # }
-  # if(used == 'BEcounts') {
-  #   altExp(sce, 'BEVGcounts') = SingleCellExperiment(assay = list(BEVGcounts = edata.od))
-  # }
-  #
+  if(used == 'counts') {
+    SingleCellExperiment::altExp(sce, 'VGcounts') = SingleCellExperiment::SingleCellExperiment(assay = list(VGcounts = edata.od))
+  }
+  if(used == 'NMcounts') {
+    SingleCellExperiment::altExp(sce, 'VGcounts') = SingleCellExperiment::SingleCellExperiment(assay = list(VGcounts = edata.od))
+  }
+  if(used == 'logcounts') {
+    SingleCellExperiment::altExp(sce, 'VGcounts') = SingleCellExperiment::SingleCellExperiment(assay = list(VGcounts = edata.od))
+  }
+  if(used == 'BENMcounts') {
+    SingleCellExperiment::altExp(sce, 'BEVGcounts') = SingleCellExperiment::SingleCellExperiment(assays = list(BEVGcounts = edata.od))
+  }
+  if(used == 'BEcounts') {
+    SingleCellExperiment::altExp(sce, 'BEVGcounts') = SingleCellExperiment::SingleCellExperiment(assay = list(BEVGcounts = edata.od))
+  }
+
 
   p <-ggplot(var, aes(x = mean, y = bio)) +
     geom_point(colour = ifelse(var$Status=="TRUE","red","black"), size = 1.5, alpha = 1.5) +
