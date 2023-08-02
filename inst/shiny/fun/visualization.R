@@ -19,6 +19,7 @@
    if(used == 'counts'){
      edata = assay(sce, used) %>% as.data.frame()
      edata = log2(edata+1)
+     used = edata
    }
    else if(used == 'logcounts'){
      edata = assay(sce, used) %>% as.data.frame()
