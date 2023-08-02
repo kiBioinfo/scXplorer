@@ -11,7 +11,7 @@ install_bioconductor_dependencies <- function() {
   packages <- c("BASiCS", "celldex", "CellMixS", "clusterProfiler", "rrvgo",
                 "DEsingle", "destiny", "DropletUtils", "enrichplot", "RUVSeq",
                 "kBET", "Linnorm", "org.Hs.eg.db", "org.Mm.eg.db",
-                "PCAtools", "rrvgo", "RUVSeq", "scater", "SCnorm", "singleCellTK",
+                "PCAtools", "rrvgo", "RUVSeq", "scater", "SCnorm",
                 "SingleR", "slingshot","edgeR", "SingleCellExperiment", "scater",
                 "singleCellTK", "slingshot", "scuttle", "scran", "SCnorm",
                 "PCAtools", "org.Mm.eg.db", "org.Hs.eg.db" , "Linnorm", "enrichplot",
