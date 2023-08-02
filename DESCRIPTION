@@ -12,7 +12,7 @@ RoxygenNote: 7.2.3
 LazyData: true
 Depends: 
     tidyverse
-bioViews:
+bioViews: BatchEffect, Normalization, QualityControl, Clustering, GeneExpression, DifferentialExpression,DataImport
 Imports: 
     bluster (>= 1.8.0),
     bs4Dash (>= 2.3.0),
