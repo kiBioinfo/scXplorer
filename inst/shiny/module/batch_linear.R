@@ -257,7 +257,7 @@ batch_dim_reduction_Server <- function(id,batch_corrct) {
         validate(
           need(!is.na(input$ypc), "It should  be positive number")
         )
-        p=singleCellTK::plotPCA(scdata(),pcX=paste0("PC",input$xpc),
+        p=PCAplot(scdata(),pcX=paste0("PC",input$xpc),
                                 pcY = paste0("PC",input$ypc), reducedDimName = "BEPCA",colorBy = input$colour_by) + theme_cowplot()
         p
       })
@@ -423,7 +423,9 @@ batch_dim_reduction_Server <- function(id,batch_corrct) {
         obj@colData$cluster=factor(obj@colData$cluster, levels = levels( obj@colData$cluster) %>% str_sort(numeric = TRUE))
 
         p=scater::plotReducedDim(obj, dimred =  input$dimM,
-                         colour_by = input$colourby,text_by= input$colourby) + ggplot2::ggtitle(label = input$dimM )  + ggplot2::theme(plot.title = element_text(hjust = 0.5))
+                         colour_by = input$colourby,text_by= input$colourby) +
+          ggplot2::ggtitle(label = input$dimM )  +
+          ggplot2::theme(plot.title = element_text(hjust = 0.5))
 
         p
 
