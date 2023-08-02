@@ -69,7 +69,7 @@ batchCorrct_evalutn_Server <- function(id, batch_corrct) {
           #   incProgress(1/10)
           #   Sys.sleep(0.5)
           # }
-        d= BatchEva(sce = scdata(), method = input$batch_evaluation)
+        d= BatchEva(sce = scdata(), method = input$batch_evaluation,used= "BEPCA")
 
         return(d)
         })
