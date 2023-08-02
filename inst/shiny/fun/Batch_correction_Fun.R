@@ -58,6 +58,9 @@ RmBatch_denoise = function(sce, used = 'counts') {
   if(used == 'VGcounts') {
     SingleCellExperiment::altExp(sce, 'BEVGcounts') = SingleCellExperiment::SingleCellExperiment(assays = list(BEVGcounts = edata_Denoised))
   }
+  if(used== 'NMcounts' ){
+    SummarizedExperiment::assay(sce, 'BENMcounts') = edata_Denoised
+  }
 
   return(sce)
 }
@@ -415,15 +418,15 @@ RmBatch_lig = function(sce, used = 'counts', showby = 'PCA') {
 BatchEva = function(sce, method = 'cmx', used = NULL, PCNum = 3) {
 
   # Condition to select count matrix
-  if(!is.null(used)){
-    used=used
-  }
-  else if ("BENMcounts" %in% assayNames(sce)) {
-    used= "BENMcounts"
-  }
-  else{
-    used= "BEPCA"
-  }
+  # if(!is.null(used)){
+  #   used=used
+  # }
+  # else if ("BENMcounts" %in% assayNames(sce)) {
+  #   used= "BENMcounts"
+  # }
+  # else{
+  #   used= "BEPCA"
+  # }
   evaPlot = switch(EXPR = method,
                    'cmx' = BatchEva_cmix( sce = sce, used = used, PCNum = PCNum),
                    'kbet' = BatchEva_kbet( sce = sce, used = used, PCNum = PCNum),
