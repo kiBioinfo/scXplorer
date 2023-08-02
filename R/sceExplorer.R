@@ -17,7 +17,8 @@ install_bioconductor_dependencies <- function() {
                 "PCAtools", "org.Mm.eg.db", "org.Hs.eg.db" , "Linnorm", "enrichplot",
                 "DropletUtils", "destiny","DEsingle", "clusterProfiler", "CellMixS",
                 "celldex", "limma", "SummarizedExperiment", "sva", "DESeq2", "batchelor",
-                "MAST")
+                "MAST", "HDF5Array", "ggrastr" , "terra", "S4Vectors", "lme4",
+                'BiocGenerics', 'DelayedArray', 'DelayedMatrixStats')
 
   if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
@@ -27,7 +28,12 @@ install_bioconductor_dependencies <- function() {
   for (package in packages) {
     if (!package %in% installed_packages) {
       BiocManager::install(package)
+
     }
+  }
+
+  if(!'monocle3'  %in% installed_packages ){
+    devtools::install_github('cole-trapnell-lab/monocle3')
   }
 }
 
