@@ -283,7 +283,7 @@ dim_reduction_Server <- function(id,normalization_data) {
           validate(
             need(!is.na(input$ypc), "It should  be positive number")
           )
-        p=singleCellTK::plotPCA(sc_data(),pcX=paste0("PC",input$xpc),
+        p=PCAplot(sc_data(),pcX=paste0("PC",input$xpc),
                                 pcY = paste0("PC",input$ypc), reducedDimName = "PCA",colorBy = input$colour_by) +
                                 theme_cowplot()
         p
