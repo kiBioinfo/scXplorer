@@ -10,7 +10,7 @@ sceExplorer <- function() {
 install_bioconductor_dependencies <- function() {
   packages <- c("BASiCS", "celldex", "CellMixS", "clusterProfiler", "rrvgo",
                 "DEsingle", "destiny", "DropletUtils", "enrichplot", "RUVSeq",
-                "kBET", "Linnorm", "monocle3", "org.Hs.eg.db", "org.Mm.eg.db",
+                "kBET", "Linnorm", "org.Hs.eg.db", "org.Mm.eg.db",
                 "PCAtools", "rrvgo", "RUVSeq", "scater", "SCnorm", "singleCellTK",
                 "SingleR", "slingshot","edgeR", "SingleCellExperiment", "scater",
                 "singleCellTK", "slingshot", "scuttle", "scran", "SCnorm",
