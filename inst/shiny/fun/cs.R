@@ -1000,6 +1000,9 @@ RmBatch_denoise = function(sce, used = 'counts') {
   if(used == 'counts') {
     SummarizedExperiment::assay(sce, 'BEcounts') = edata_Denoised
   }
+  if(used == 'NMcounts') {
+    SummarizedExperiment::assay(sce, 'BENMcounts') = edata_Denoised
+  }
   if(used == 'VGcounts') {
     SingleCellExperiment::altExp(sce, 'BEVGcounts') = SingleCellExperiment::SingleCellExperiment(assays = list(BEVGcounts = edata_Denoised))
   }
