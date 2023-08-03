@@ -53,6 +53,7 @@ CellDev_CytoTrace = function(sce, used = 'counts', batch = F) {
   return(sce)
 }
 
+# clusterSe any column names in colData(sce)
 CellDev_Slingshot = function(sce, clusterSe= 'label', runWith = 'PCA') {
   #clusterSe = 'ClusterGraph'
   sim = slingshot::slingshot(sce, clusterLabels = clusterSe, reducedDim = runWith)
@@ -65,6 +66,11 @@ CellDev_Slingshot = function(sce, clusterSe= 'label', runWith = 'PCA') {
 
 #seedBy = Cell Type or cluster:(Single or multiple)
 #E.g. cluster: 1:5 or 6
+#  unique(sce@colData$cellType)
+# [1] "Keratinocytes"    "Epithelial cells" "Melanocytes"
+# [4] "HSC"
+# example
+# CellDev_Monocle(sce, seedBy= c("Keratinocytes","Epithelial cells" ))
 CellDev_Monocle = function(sce, seedBy) {
 
   cds = monocle3::new_cell_data_set(expression_data = SummarizedExperiment::assay(sce, 'counts'),
@@ -75,7 +81,7 @@ CellDev_Monocle = function(sce, seedBy) {
   cds = monocle3::preprocess_cds(cds, num_dim = 50)
   if('batch' %in% colnames(SingleCellExperiment::colData(sce))) { cds = monocle3::align_cds(cds, alignment_group = "batch") }
   cds = monocle3::reduce_dimension(cds)
-  cds = monocle3::cluster_cells(cds)
+  cds <- monocle3::cluster_cells(cds,reduction_method = "UMAP" ,cluster_method = 'louvain')
   cds = monocle3::learn_graph(cds)
   cell_ids = which(SingleCellExperiment::colData(cds)[, col.name] == seedBy)
   closest_vertex = cds@principal_graph_aux[["UMAP"]]$pr_graph_cell_proj_closest_vertex
