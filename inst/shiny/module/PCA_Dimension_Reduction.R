@@ -143,7 +143,7 @@ dim_reduction_UI<-function(id) {
                                                 column(width = 12, align = "right",
                                                        download_plot_UI(ns("Dim_reduction"))
                                                 )),
-                                              style = "height: auto; width: 100%; border: 3px solid #CEECF5;",
+                                              style = "height: auto; width: 100%; border: 3px solid #CEECF5;"
 
                                               )),
 
