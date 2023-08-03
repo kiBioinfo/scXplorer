@@ -33,7 +33,7 @@ install_bioconductor_dependencies <- function() {
   }
 
   if(!'monocle3'  %in% installed_packages ){
-    devtools::install_github('cole-trapnell-lab/monocle3')
+    devtools::install_github('cole-trapnell-lab/monocle3', force = T)
   }
 }
 
