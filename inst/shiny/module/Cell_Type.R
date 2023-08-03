@@ -6,7 +6,8 @@ cell_type_analysis_UI<-function(id) {
       fluidRow(style = "height: 78vh; overflow-y: auto;",
                column(width = 10,
                       wellPanel(
-                      plotOutput(ns('cell_type'), height = "800px")%>% withSpinner(color="#0dc5c1",type = 6,size=0.9),
+                      plotOutput(ns('cell_type'), height = "800px")%>%
+                        withSpinner(color="#0dc5c1",type = 6,size=0.9),
                       fluidRow(
                         column(width = 12, align = "right",
                                download_plot_UI(ns("Cell_type_p"))
@@ -38,8 +39,10 @@ cell_type_analysis_UI<-function(id) {
                         actionBttn(ns("cell_bttn"),label="EXEC",style = "jelly",color = "success",icon = icon("sliders")),
                         tags$br(),
                         tags$br(),
+                        downloadBttn(ns('cell_type_result'), 'Download Result', color= 'royal'),
                         shinyjs::hidden(actionBttn(ns("toAnalyze"), "Next Cell Development",style = "unite",color = "royal",
                                                    icon = icon("angles-right",class="fa-duotone fa-angles-right"))),
+
                         style = " background-color: #CEECF5; border: 3px solid #CEECF5;"
                         ) )
 
@@ -115,8 +118,20 @@ cell_type_analysis_Server <-function(id,DGE) {
         req(Cell_type())
         p=plotReducedDim(Cell_type(),dimred = input$reduction, colour_by = "cellType", text_by = "cellType")
         shinyjs::show('toAnalyze')
+
         p
       }, res = 96)
+
+
+      #Download data
+      output$cell_type_result <- downloadHandler(
+        filename = function() {
+          paste0( "scRNA-Seq_analysis_cell_type", "-", Sys.Date(), ".rds")
+        },
+        content = function(file) {
+          saveRDS(Cell_type(), file = file)
+        }
+      )
 
       observeEvent(input$toAnalyze,
                    {
