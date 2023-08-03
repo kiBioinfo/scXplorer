@@ -132,6 +132,7 @@ batchCorrct_Server <- function(id,normalization_data) {
       })
 
       observeEvent(input$correct_batch,{
+        browser()
         withProgress(message = 'Batch Correction in progress', value = 0, {
           # for(i in 1:10) {
           #   incProgress(1/10)
