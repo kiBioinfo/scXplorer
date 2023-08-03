@@ -8,8 +8,12 @@ Plot_Markers_UI<- function(id) {
                       wellPanel(
                         plotOutput(ns('marker_gene'), height = "800px")%>%
                           withSpinner(color="#0dc5c1",type = 6,size=0.9),
-                          style = "height: auto; border: 3px solid #CEECF5; text-align: end;",
+                        fluidRow(
+                          column(width = 12, align = "right",
                           download_plot_UI(ns("marker_gene_p"))
+                          )),
+                          style = "height: auto; border: 3px solid #CEECF5; ;"
+
                       )
                ),
                column(width =2,

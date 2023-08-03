@@ -78,9 +78,14 @@ de_analysis_UI<-function(id) {
                            tabPanel("Volcano Plot",value=2,
                                     column(width = 12,
 
-                                           plotOutput(ns('pairwise_plot'), height = "800px")%>% withSpinner(color="#0dc5c1",type = 6,size=0.9),
-                                           style = "height: auto; width: 100%; border: 3px solid #CEECF5; text-align: end;",
-                                           download_plot_UI(ns("Volcano_Plt"))
+                                           plotOutput(ns('pairwise_plot'), height = "800px")%>%
+                                             withSpinner(color="#0dc5c1",type = 6,size=0.9),
+                                           fluidRow(
+                                             column(width = 12, align = "right",
+                                             download_plot_UI(ns("Volcano_Plt"))
+                                             )),
+                                           style = "height: auto; width: 100%; border: 3px solid #CEECF5;"
+
 
                                     )),
 
@@ -88,9 +93,14 @@ de_analysis_UI<-function(id) {
                                     fluidRow(
                                     column(width = 10,
 
-                                           plotOutput(ns('heatmap'), height = "800px")%>% withSpinner(color="#0dc5c1",type = 6,size=0.9),
-                                           style = "height: auto; width: 100%; border: 3px solid #CEECF5; text-align: end;",
-                                           download_plot_UI(ns("deg_heatmap"))
+                                           plotOutput(ns('heatmap'), height = "800px")%>%
+                                             withSpinner(color="#0dc5c1",type = 6,size=0.9),
+                                           fluidRow(
+                                             column(width = 12, align = "right",
+                                            download_plot_UI(ns("deg_heatmap"))
+                                             )),
+                                           style = "height: auto; width: 100%; border: 3px solid #CEECF5;",
+
 
                                            ),
 
