@@ -6,16 +6,25 @@ cell_developement_analysis_UI<-function(id) {
       fluidRow(style = "height: 78vh; overflow-y: auto;",
                column(width = 10,
                       wellPanel(
-                        plotOutput(ns('cell_development'), height = "800px")%>% withSpinner(color="#0dc5c1",type = 6,size=0.9),
-                        style = "height: auto; border: 3px solid #CEECF5;text-align: end;",
+                        plotOutput(ns('cell_development'), height = "800px")%>%
+                          withSpinner(color="#0dc5c1",type = 6,size=0.9),
+                        fluidRow(
+                          column(width = 12, align = "right",
                         download_plot_UI(ns("cell_development_P"))
+                          )),
+                        style = "height: auto; border: 3px solid #CEECF5;"
                         ),
 
                       tags$br(),
                       shinyjs::hidden(wellPanel(id=ns("curve"),
-                        plotOutput(ns('cell_development_curve'), height = "800px")%>% withSpinner(color="#0dc5c1",type = 6,size=0.9),
-                        style = "height: auto; border: 3px solid #CEECF5;text-align: end;",
+                        plotOutput(ns('cell_development_curve'), height = "800px")%>%
+                          withSpinner(color="#0dc5c1",type = 6,size=0.9),
+                        fluidRow(
+                          column(width = 12, align = "right",
                         download_plot_UI(ns("cell_development_curve_P"))
+                          )),
+                        style = "height: auto; border: 3px solid #CEECF5;",
+
                         )
 
                        )),
@@ -80,6 +89,7 @@ cell_developement_analysis_Server <-function(id,cell_type) {
                     choices = reducedDimNames(scdata()), selected = rev(reducedDimNames(scdata()))[1])
       })
       output$seedby <- renderUI({
+        ns <- session$ns
         req(scdata())
         # if(!("cellType" %in% colnames(colData(scdata())))){
         #   selectizeInput(ns("seedBy"), label= "Choose the cell types:", choices=unique((scdata()@colData$label)), selected=unique((scdata()@colData$label))[1], multiple=T)
@@ -102,12 +112,13 @@ cell_developement_analysis_Server <-function(id,cell_type) {
         else{
           shinyjs::hideElement("curve")
         }
-        if(input$method =='Monocle'){
+        if(input$method=="Monocle"){
           req(input$seedBy)
-          p=CellDevelopment(scdata(), seedBy = input$seedBy)
+          p=CellDevelopment(scdata(),method=input$method, seedBy = input$seedBy)
         }
         else{
-          p=CellDevelopment(scdata(),method=input$method, runWith = input$reduction, seedBy = input$seedBy)
+          p=CellDevelopment(scdata(),method=input$method, runWith = input$reduction)
+        # browser()
         }
 
        vals$p <- p
@@ -133,19 +144,31 @@ cell_developement_analysis_Server <-function(id,cell_type) {
 
 
       #shinyjs::enable("cell_development_curve")
+      observeEvent(input$method,{
+        if(input$method=='Princurve_fit'){
+          output$cell_development <-renderPlot({
+            req(plot_cell_development())
 
-      output$cell_development <-renderPlot({
-        req(plot_cell_development())
+            plot_cell_development()
 
-        plot_cell_development()
+          }, res = 96)
 
-      }, res = 96)
+          output$cell_development_curve <-renderPlot({
 
-      output$cell_development_curve <-renderPlot({
+            plot_cell_development_curve()
 
-        plot_cell_development_curve()
+          }, res = 96)
+        }
+        else{
+          output$cell_development <-renderPlot({
+            req(plot_cell_development())
 
-      }, res = 96)
+            plot_cell_development()
+
+          }, res = 96)
+        }
+
+        })
 
 
       #Download data
