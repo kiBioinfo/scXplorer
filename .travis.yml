@@ -1,0 +1,24 @@
+language: r
+cache:
+ - packages
+r:
+  - 4.2.2
+sudo: true
+warnings_are_errors: true
+bioc_required: true
+bioc_check: true
+
+addons:
+  apt:
+    packages:
+      - libv8-dev
+      - libgit2-dev
+      - libmagick++-dev
+
+r_check_args: "--as-cran"
+r_github_packages:
+  - jimhester/lintr
+- covr
+- xgboost
+after_success:
+- Rscript -e 'library(covr); codecov()'
