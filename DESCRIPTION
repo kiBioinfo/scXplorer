@@ -51,7 +51,8 @@ Imports:
     thematic (>= 0.1.2.1),
     viridis (>= 0.6.3),
     waiter (>= 0.2.5),
-    Rmisc
+    Rmisc,
+    AnnotationDbi
 Suggests: 
     bs4Dash (>= 2.3.0),
     Seurat (>= 4.3.0.1),
