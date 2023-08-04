@@ -29,6 +29,7 @@ Imports:
     harmony (>= 0.1.1),
     HGNChelper (>= 0.8.1),
     lazyeval,
+    Seurat,
     liger (>= 2.0.1),
     openxlsx (>= 4.2.5.2),
     patchwork (>= 1.1.2),
@@ -55,7 +56,6 @@ Imports:
     kBET (>= 0.99.6)
 Suggests: 
     bs4Dash (>= 2.3.0),
-    Seurat (>= 4.3.0.1),
     remote,
     sf,
     pheatmap (>= 1.0.12),
