@@ -14,10 +14,8 @@ Depends:
     tidyverse
 bioViews: BatchEffect, Normalization, QualityControl, Clustering, GeneExpression, DifferentialExpression,DataImport
 Imports: 
-    bluster (>= 1.8.0),
     bs4Dash (>= 2.3.0),
     bslib (>= 0.5.0),
-    celldex (>= 1.8.0),
     class,
     cowplot (>= 1.1.1),
     DDRTree (>= 0.1.5),
@@ -35,7 +33,6 @@ Imports:
     liger (>= 2.0.1),
     openxlsx (>= 4.2.5.2),
     patchwork (>= 1.1.2),
-    pheatmap (>= 1.0.12),
     princurve (>= 2.1.6),
     purrr (>= 1.0.1),
     readxl (>= 1.4.2),
@@ -56,8 +53,8 @@ Imports:
     thematic (>= 0.1.2.1),
     viridis (>= 0.6.3),
     waiter (>= 0.2.5),
-    Rmisc,
-    limma
+    Rmisc
 Suggests: 
     remote,
-    sf
+    sf,
+    pheatmap (>= 1.0.12)
