@@ -51,8 +51,7 @@ Imports:
     thematic (>= 0.1.2.1),
     viridis (>= 0.6.3),
     waiter (>= 0.2.5),
-    Rmisc,
-    AnnotationDbi
+    Rmisc
 Suggests: 
     bs4Dash (>= 2.3.0),
     Seurat (>= 4.3.0.1),
@@ -60,4 +59,6 @@ Suggests:
     sf,
     pheatmap (>= 1.0.12),
     limma,
-    BASiCS
+    BASiCS,
+    kBET,
+    AnnotationDbi
