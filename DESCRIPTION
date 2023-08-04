@@ -60,5 +60,6 @@ Suggests:
     pheatmap (>= 1.0.12),
     limma,
     BASiCS,
-    AnnotationDb,
-    kBET
+    AnnotationDb
+LinkingTo: 
+    kBET (>= 0.99.6)
