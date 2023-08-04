@@ -1,15 +1,17 @@
 #require(shinydashboard)
 
 
-all_packages=c('shiny', 'tidyverse', 'rrvgo','gprofiler2', 'org.Mm.eg.db', 'org.Hs.eg.db', 'enrichplot','clusterProfiler','readxl','openxlsx','SingleR','celldex','HGNChelper','DEsingle','bluster','scran','scater',
-               'singleCellTK','ggfortify','cowplot','ggrepel','bslib','scuttle','sass','patchwork','Seurat','purrr','DropletUtils','spsComps','SingleCellExperiment','waiter','ggplotify','grid','viridis','stringr',
-               'pheatmap','shinyBS','shinyjs','DT','shinyFiles','shinycssloaders','shinyWidgets','thematic','bs4Dash','fresh', 'shiny.blueprint', 'shinyalert')
-lapply(all_packages, library, character.only=TRUE)
+packages=c('shiny', 'devtools','tidyverse', 'rrvgo','gprofiler2', 'org.Mm.eg.db', 'enrichplot','clusterProfiler','readxl','openxlsx','SingleR','celldex','HGNChelper','DEsingle','bluster','scran','scater',
+           'singleCellTK','ggfortify','cowplot','ggrepel','bslib','scuttle','sass','patchwork','Seurat','purrr','DropletUtils','spsComps','SingleCellExperiment','waiter','ggplotify','grid','viridis',
+           'pheatmap','shinyBS','shinyjs','DT','shinyFiles','shinycssloaders','shinyWidgets','thematic','bs4Dash','fresh', 'shiny.blueprint','CytoTRACE')
+# Use lapply to load each package
+suppressPackageStartupMessages(lapply(packages, require, character.only = TRUE))
+
 #xfun::pkg_attach(all_packages)
 # for NIDCR shiny server
 # reticulate::use_python("/home/shiny/miniconda3/bin/python", required= TRUE)
 
-
+options(shiny.autoreload = TRUE)
 #
 options(shiny.maxRequestSize=10000*1024^2)
 #Import Functions
