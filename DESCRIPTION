@@ -51,7 +51,8 @@ Imports:
     thematic (>= 0.1.2.1),
     viridis (>= 0.6.3),
     waiter (>= 0.2.5),
-    Rmisc
+    Rmisc,
+    kBET (>= 0.99.6)
 Suggests: 
     bs4Dash (>= 2.3.0),
     Seurat (>= 4.3.0.1),
@@ -61,5 +62,4 @@ Suggests:
     limma,
     BASiCS,
     AnnotationDb
-LinkingTo: 
-    kBET (>= 0.99.6)
+    
