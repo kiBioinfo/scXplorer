@@ -5,4 +5,4 @@
   BiocManager::install(c("AnnotationDbi", "org.Hs.eg.db", "limma"))
 }
 
-devtools::install_github('theislab/kBET', force = T, dependencies = T,build = T)
+devtools::install_github('theislab/kBET')
