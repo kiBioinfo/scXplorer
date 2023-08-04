@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Rock paper Scissor</title>
+  
+  </head>
+  <body>
+   <p>Rock Paper Scissor</p>
+   <button onclick="
+        yourpick('Rock')
+        ">Rock</button>
+   <button onclick="
+        yourpick('paper')
+        "
+      >Paper</button>
+   <button onclick="
+        yourpick('Scissor')
+      ">Scissors</button>
+    <button onclick="
+      score.wins=0;
+      score.ties=0;
+      score.losses=0;
+      localStorage.removeItem('score')
+      updateScoreElement();
+      ">Reset button</button>
+      <p class="game_result"></p>
+      <p class ="gmae_move" ></p>
+      <p class="game_score"></p>
+    
+    
+    <script>
+//localStorage.getItem is used to get the output from local storage || is used if score object has not been initialized yet, JSON.parse is used to convert string into object
+      let score = JSON.parse(localStorage.getItem('score')) || {
+        wins: 0,
+        losses: 0,
+        ties:0
+      };
+      updateScoreElement();
+      function yourpick(playerPick){
+        const  computerPicK = pickComputerMove();
+
+        console.log(computerPicK)
+        let result = '';
+        if(playerPick === 'paper' || playerPick === 'Paper'){
+          if(computerPicK === 'Rock'){
+           result = 'You Lost';
+          }
+          else if(computerPicK === 'Paper'){
+            result = 'Tie';
+          }
+          else if(computerPicK === 'Scissor'){
+            //alert(` Yours pick Rock computer's Pick ${computerPicK}`)
+            result = 'You Win';
+        }
+        }else if(playerPick === 'rock' || playerPick === 'Rock'){
+          if(computerPicK === 'Rock'){
+           result = 'Tie';
+          }
+          else if(computerPicK === 'Paper'){
+            result = 'You Lost';
+          }
+          else if(computerPicK === 'Scissor'){
+            //alert(` Yours pick Rock computer's Pick ${computerPicK}`)
+            result = 'You Win';
+        }
+        }else if(playerPick === 'scissor' || playerPick === 'Scissor'){
+          if(computerPicK === 'Rock'){
+           result = 'You Lost';
+          }
+          else if(computerPicK === 'Paper'){
+            result = 'You Win';
+          }
+          else if(computerPicK === 'Scissor'){
+            //alert(` Yours pick Rock computer's Pick ${computerPicK}`)
+            result = 'Tie';
+        }
+
+        }
+        if(result === 'You Win'){
+          score.wins +=1;
+        }else if(result === 'You Lost'){
+          score.losses +=1;
+        }else if(result === 'Tie'){
+          score.ties += 1;
+        }
+
+       
+        // localStorage.setItem is used to store the score object , so the last result will be reloaded every time we refresh the button , JSON.stringify is used to refomat the object into a string as localStorage.setItem only support strings 
+        localStorage.setItem('score', JSON.stringify(score))
+        updateScoreElement();
+        document.querySelector('.game_result')
+          .innerHTML = result;
+        document.querySelector('.gmae_move')
+          .innerHTML = `Your pick ${playerPick} - computer's pick ${computerPicK}`
+      }
+
+      
+     function pickComputerMove(){
+      const randomNumber = Math.random();
+      let computerPicK ='';
+           if(randomNumber >= 0 && randomNumber < 1/3){
+            computerPicK = 'Rock';
+          } else if(randomNumber >= 1/3 && randomNumber <2/3){
+            computerPicK = 'Paper';
+          }else if(randomNumber> 2/3 && randomNumber < 1){
+            computerPicK = 'Scissor';
+          }
+          return(computerPicK)
+     }
+     function updateScoreElement(){
+      document.querySelector('.game_score')
+          .innerText = `Wins: ${score.wins} Losses: ${score.losses} Ties: ${score.ties}`
+     }
+     
+     
+    </script>
+  </body>
+</html>
