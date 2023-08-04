@@ -52,8 +52,7 @@ Imports:
     thematic (>= 0.1.2.1),
     viridis (>= 0.6.3),
     waiter (>= 0.2.5),
-    Rmisc,
-    kBET (>= 0.99.6)
+    Rmisc
 Suggests: 
     bs4Dash (>= 2.3.0),
     remote,
