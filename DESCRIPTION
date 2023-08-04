@@ -57,4 +57,5 @@ Imports:
 Suggests: 
     remote,
     sf,
-    pheatmap (>= 1.0.12)
+    pheatmap (>= 1.0.12),
+    limma
