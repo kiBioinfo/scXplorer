@@ -53,10 +53,10 @@ Imports:
     thematic (>= 0.1.2.1),
     viridis (>= 0.6.3),
     waiter (>= 0.2.5),
-    Rmisc
+    Rmisc,
+    monocle3
 Suggests: 
     remote,
     sf,
     pheatmap (>= 1.0.12),
-    limma,
-    monocle3
+    limma
