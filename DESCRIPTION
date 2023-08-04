@@ -53,12 +53,11 @@ Imports:
     viridis (>= 0.6.3),
     waiter (>= 0.2.5),
     Rmisc,
-    kBET (>= 0.99.6)
+    limma
 Suggests: 
     bs4Dash (>= 2.3.0),
     remote,
     sf,
     pheatmap (>= 1.0.12),
-    limma,
     BASiCS,
     AnnotationDb
