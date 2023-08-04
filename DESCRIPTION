@@ -37,7 +37,6 @@ Imports:
     readxl (>= 1.4.2),
     reticulate (>= 1.30),
     sass (>= 0.4.6),
-    Seurat (>= 4.3.0.1),
     shiny (>= 1.7.4),
     shiny.blueprint (>= 0.2.0),
     shinyalert (>= 3.0.0),
@@ -52,10 +51,10 @@ Imports:
     thematic (>= 0.1.2.1),
     viridis (>= 0.6.3),
     waiter (>= 0.2.5),
-    Rmisc,
-    monocle3
+    Rmisc
 Suggests: 
     bs4Dash (>= 2.3.0),
+    Seurat (>= 4.3.0.1),
     remote,
     sf,
     pheatmap (>= 1.0.12),
