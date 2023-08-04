@@ -18,7 +18,7 @@ install_bioconductor_dependencies <- function() {
                 "DropletUtils", "destiny","DEsingle", "clusterProfiler", "CellMixS",
                 "celldex", "limma", "SummarizedExperiment", "sva", "DESeq2", "batchelor",
                 "MAST", "HDF5Array", "ggrastr" , "terra", "S4Vectors", "lme4",
-                'BiocGenerics', 'DelayedArray', 'DelayedMatrixStats')
+                'BiocGenerics', 'DelayedArray', 'DelayedMatrixStats', 'bluster')
 
   if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
