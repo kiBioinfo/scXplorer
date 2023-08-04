@@ -20,3 +20,11 @@ bioc.package.check <- lapply(bioc.packages, FUN = function(x) {
 })
 
 devtools::install_github('cole-trapnell-lab/monocle3')
+
+## Function to parse arguments from yaml file
+.parseConfig <- function(sctkConfig, arguments) {
+  for (i in seq_along(arguments)) {
+    arg <- arguments[i]
+    assign(arg, sctkConfig[[arg]], envir = parent.frame())
+  }
+}
