@@ -14,7 +14,6 @@ Depends:
     tidyverse
 bioViews: BatchEffect, Normalization, QualityControl, Clustering, GeneExpression, DifferentialExpression,DataImport
 Imports: 
-    bs4Dash (>= 2.3.0),
     bslib (>= 0.5.0),
     class,
     cowplot (>= 1.1.1),
@@ -56,6 +55,7 @@ Imports:
     Rmisc,
     monocle3
 Suggests: 
+    bs4Dash (>= 2.3.0),
     remote,
     sf,
     pheatmap (>= 1.0.12),
