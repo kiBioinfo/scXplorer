@@ -18,3 +18,5 @@ bioc.package.check <- lapply(bioc.packages, FUN = function(x) {
     BiocManager::install(x)
   }
 })
+
+devtools::install_github('cole-trapnell-lab/monocle3')
