@@ -58,4 +58,5 @@ Suggests:
     remote,
     sf,
     pheatmap (>= 1.0.12),
-    limma
+    limma,
+    BASiCS
