@@ -1,7 +1,7 @@
 .onLoad <- function(libname, pkgname) {
   packages <- c("BASiCS", "celldex", "CellMixS", "clusterProfiler", "rrvgo",
                 "DEsingle", "destiny", "DropletUtils", "enrichplot", "RUVSeq",
-                "kBET", "Linnorm", "org.Hs.eg.db", "org.Mm.eg.db",
+                 "Linnorm", "org.Hs.eg.db", "org.Mm.eg.db",
                 "PCAtools", "rrvgo", "RUVSeq", "scater", "SCnorm",
                 "SingleR", "slingshot","edgeR", "SingleCellExperiment", "scater",
                 "slingshot", "scuttle", "scran", "SCnorm",
