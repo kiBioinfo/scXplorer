@@ -28,6 +28,10 @@
     }
     devtools::install_github("theislab/kBET")
   }
+
+  if(!'monocle3'  %in% installed_packages ){
+    devtools::install_github('cole-trapnell-lab/monocle3', force = T)
+  }
 }
 
 #devtools::install_github('theislab/kBET')
