@@ -52,12 +52,13 @@ Imports:
     thematic (>= 0.1.2.1),
     viridis (>= 0.6.3),
     waiter (>= 0.2.5),
-    Rmisc,
-    limma
+    Rmisc
 Suggests: 
     bs4Dash (>= 2.3.0),
     remote,
     sf,
     pheatmap (>= 1.0.12),
     BASiCS,
-    AnnotationDb
+    AnnotationDb,
+    kBET (>= 0.99.6),
+    limma (>= 3.54.2)
