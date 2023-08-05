@@ -29,7 +29,6 @@ Imports:
     harmony (>= 0.1.1),
     HGNChelper (>= 0.8.1),
     lazyeval,
-    Seurat (>= 4.3.0.1),
     liger (>= 2.0.1),
     openxlsx (>= 4.2.5.2),
     patchwork (>= 1.1.2),
@@ -61,4 +60,5 @@ Suggests:
     BASiCS,
     AnnotationDb,
     kBET (>= 0.99.6),
+    Seurat (>= 4.3.0.1),
     limma (>= 3.54.2)
