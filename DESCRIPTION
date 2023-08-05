@@ -60,5 +60,4 @@ Suggests:
     sf,
     pheatmap (>= 1.0.12),
     BASiCS,
-    AnnotationDb,
-    kBET (>= 0.99.6)
+    AnnotationDb
