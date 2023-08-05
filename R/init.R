@@ -21,13 +21,15 @@
 
     }
   }
-}
-if (!requireNamespace("kBET", quietly = TRUE)) {
-  if (!requireNamespace("devtools", quietly = TRUE)) {
-    install.packages("devtools")
+
+  if (!requireNamespace("kBET", quietly = TRUE)) {
+    if (!requireNamespace("devtools", quietly = TRUE)) {
+      install.packages("devtools")
+    }
+    devtools::install_github("theislab/kBET")
   }
-  devtools::install_github("theislab/kBET")
 }
+
 #devtools::install_github('theislab/kBET')
 
 ## Function to parse arguments from yaml file
