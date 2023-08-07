@@ -51,7 +51,8 @@ Imports:
     viridis (>= 0.6.3),
     waiter (>= 0.2.5),
     Rmisc,
-    purrr (>= 1.0.1)
+    purrr (>= 1.0.1),
+    ggpubr (>= 0.6.0)
 Suggests: 
     bs4Dash (>= 2.3.0),
     remote,
