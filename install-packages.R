@@ -9,10 +9,10 @@ if(!require(shiny)){
   install.packages("shiny")
   library(shiny)
 }
-if(!require(shinyjs)){
-  install.packages("shinyjs")
-  library(shinyjs)
-}
+# if(!require(shinyjs)){
+#   install.packages("shinyjs")
+#   library(shinyjs)
+# }
 if(!require(shinyBS)){
   install.packages("shinyBS")
   library(shinyBS)
