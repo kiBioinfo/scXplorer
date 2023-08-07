@@ -13,7 +13,7 @@ LazyData: false
 Depends: 
     Biobase (>= 2.58.0),
     R (>= 4.2),
-    SingleCellExperiment (>= 1.20.1),
+    SingleCellExperiment,
     tidyverse
 bioViews: BatchEffect, Normalization, QualityControl, Clustering, GeneExpression, DifferentialExpression,DataImport,
           Software,SingleCell,Visualization,DimensionReduction, Preprocessing,QualityControl,RNASeq
