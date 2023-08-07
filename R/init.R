@@ -36,10 +36,10 @@
 
 #devtools::install_github('theislab/kBET')
 
-## Function to parse arguments from yaml file
-.parseConfig <- function(sctkConfig, arguments) {
-  for (i in seq_along(arguments)) {
-    arg <- arguments[i]
-    assign(arg, sctkConfig[[arg]], envir = parent.frame())
-  }
-}
+# ## Function to parse arguments from yaml file
+# .parseConfig <- function(sctkConfig, arguments) {
+#   for (i in seq_along(arguments)) {
+#     arg <- arguments[i]
+#     assign(arg, sctkConfig[[arg]], envir = parent.frame())
+#   }
+# }
