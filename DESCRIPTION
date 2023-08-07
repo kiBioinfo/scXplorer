@@ -33,7 +33,6 @@ Imports:
     openxlsx (>= 4.2.5.2),
     patchwork (>= 1.1.2),
     princurve (>= 2.1.6),
-    purrr (>= 1.0.1),
     readxl (>= 1.4.2),
     reticulate (>= 1.30),
     sass (>= 0.4.6),
@@ -61,4 +60,6 @@ Suggests:
     AnnotationDb,
     kBET (>= 0.99.6),
     Seurat (>= 4.3.0.1),
-    limma (>= 3.54.2)
+    limma (>= 3.54.2),
+    purrr (>= 1.0.1),
+    rlang (>= 1.1.1)
