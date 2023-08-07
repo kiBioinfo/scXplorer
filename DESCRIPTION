@@ -11,7 +11,6 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 LazyData: false
 Depends: 
-    purrr (>= 1.0.1),
     tidyverse
 bioViews: BatchEffect, Normalization, QualityControl, Clustering, GeneExpression, DifferentialExpression,DataImport
 Imports: 
@@ -51,7 +50,8 @@ Imports:
     thematic (>= 0.1.2.1),
     viridis (>= 0.6.3),
     waiter (>= 0.2.5),
-    Rmisc
+    Rmisc,
+    purrr (>= 1.0.1)
 Suggests: 
     bs4Dash (>= 2.3.0),
     remote,
