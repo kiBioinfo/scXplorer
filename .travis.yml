@@ -11,11 +11,12 @@
 #        - sudo apt-get install -y cmake
 
 ---
-cache: false
-warnings_are_errors: true
+language: r
 os: linux
 dist: jammy
-language: r
+cache: true
+warnings_are_errors: true
+sudo: required
 bioc_required: true
 bioc_check: true
 before_install:
@@ -28,8 +29,6 @@ before_install:
   - sudo apt-get install -y libfribidi-dev
   - sudo apt-get install -y libgit2-dev
   - sudo sudo apt-get install libcairo2-dev
-  - sudo wget -qO - https://apt.kitware.com/keys/kitware-archive-latest.asc | sudo apt-key add -
-  - sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ jammy main'
   - sudo apt-get update
   - sudo apt install cmake
   - sudo apt-get install -y python3-pip
