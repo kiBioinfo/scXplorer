@@ -14,7 +14,7 @@
 language: r
 os: linux
 dist: jammy
-cache: true
+cache: packages
 warnings_are_errors: true
 sudo: required
 bioc_required: true
