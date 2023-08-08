@@ -37,6 +37,7 @@ before_install:
 r:
   - 4.2.2
 before_script:
+  - travis_wait R -e 'BiocManager::install()'
   - Rscript -e 'install.packages("leidenbase")'
   - R -e 'install.packages("reticulate")'
   - Rscript -e 'install.packages("devtools")'
