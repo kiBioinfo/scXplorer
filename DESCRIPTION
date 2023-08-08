@@ -70,3 +70,6 @@ Suggests:
     pbkrtest (>= 0.5.2),
     car (>= 3.1.2),
     factoextra (>= 1.0.7)
+VignetteBuilder: knitr
+Language: en-US
+NeedsCompilation: yes
