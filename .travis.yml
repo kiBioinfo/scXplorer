@@ -17,6 +17,8 @@ warnings_are_errors: true
 os: linux
 dist: focal
 language: r
+bioc_required: true
+bioc_check: true
 before_install:
   - sudo apt-get install -y libnlopt-dev
   - sudo apt-get install -y libudunits2-dev
@@ -25,6 +27,13 @@ before_install:
   - sudo apt-get install -y libharfbuzz-dev
   - sudo apt-get install -y libfribidi-dev
   - sudo apt-get install -y libgit2-dev
+  - sudo apt install libssl-dev
+  - sudo apt install libc6-dev
+  - sudo apt-get -y install libgcc-s1
+  - sudo apt-get update && sudo apt-get upgrade
+  - sudo apt-get install build-essential
+  - sudo apt-get install aptitude
+  - sudo apt-get install libstdc++6
   - sudo wget -qO - https://apt.kitware.com/keys/kitware-archive-latest.asc | sudo apt-key add -
   - sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ jammy main'
   - sudo apt-get update
