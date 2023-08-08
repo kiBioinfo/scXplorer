@@ -16,7 +16,7 @@ os: linux
 dist: jammy
 cache: packages
 r:
-  - 4.2.2
+  - bioc-release
 warnings_are_errors: true
 sudo: required
 bioc_required: true
@@ -42,6 +42,7 @@ r_packages:
   - reticulate
   - covr
   - xgboost
+  -
 bioc_packages:
   - limma
 r_github_packages:
