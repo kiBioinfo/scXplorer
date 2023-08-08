@@ -32,6 +32,7 @@ before_install:
   - sudo apt-get update
   - sudo apt install cmake
   - sudo apt-get install -y python3-pip
+  - sudo pip3 install setuptools
   - sudo pip3 install numpy scanpy scanoramaCT
 r:
   - 4.2.2
