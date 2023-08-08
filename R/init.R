@@ -22,16 +22,16 @@
     }
   }
 
-  if (!requireNamespace("kBET", quietly = TRUE)) {
-    if (!requireNamespace("devtools", quietly = TRUE)) {
-      install.packages("devtools")
-    }
-    devtools::install_github("theislab/kBET")
-  }
-
-  if(!'monocle3'  %in% installed_packages ){
-    devtools::install_github('cole-trapnell-lab/monocle3', force = T)
-  }
+  # if (!requireNamespace("kBET", quietly = TRUE)) {
+  #   if (!requireNamespace("devtools", quietly = TRUE)) {
+  #     install.packages("devtools")
+  #   }
+  #   devtools::install_github("theislab/kBET")
+  # }
+  #
+  # if(!'monocle3'  %in% installed_packages ){
+  #   devtools::install_github('cole-trapnell-lab/monocle3', force = T)
+  # }
 }
 
 #devtools::install_github('theislab/kBET')
