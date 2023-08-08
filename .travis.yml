@@ -25,27 +25,12 @@ before_install:
   - sudo apt-get install libcairo2-dev
   - sudo wget -qO - https://apt.kitware.com/keys/kitware-archive-latest.asc | sudo apt-key add -
   - sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ jammy main'
-  - sudo apt-get update
   - sudo apt-get install -y cmake
-  - sudo apt-get update
   - sudo apt-get install -y python3-pip
-  - pip3 install numpy scanpy scanoramaCT
+  - sudo pip3 install numpy scanpy scanoramaCT
+  - sudo apt-get update
 
-  - R -q -e 'install.packages("remotes"); remotes::install_github("r-lib/remotes")'
-  - R_LIBS_USER=~/R/Library R -q -e 'library(remotes); install_github("r-lib/devtools")'
-  - mkdir -p ~/R/Library
-  - echo "R_LIBS_USER=~/R/Library" >> ~/.Renviron
-  - echo "PATH=$PATH" >> ~/.Renviron
-  - R -q -e '.libPaths(c(Sys.getenv("R_LIBS_USER"), .libPaths()))'
-  # Check if CytoTRACE is installed
-  - R -q -e 'if(!requireNamespace("CytoTRACE", quietly = TRUE)) {install.packages("remotes")}'
 
-install:
-  # Conditionally download and install CytoTRACE
-  - 'if [ ! -d "/usr/local/lib/R/site-library/CytoTRACE" ]; then
-         wget https://cytotrace.stanford.edu/CytoTRACE_0.3.3.tar.gz
-         R -q -e 'remotes::install_local("CytoTRACE_0.3.3.tar.gz")'
-     fi'
 # installing an Ubuntu APT package cache
 addons:
   apt:
@@ -60,8 +45,18 @@ bioc_required: true
 # Install dependencies
 # Install Bioconductor packages
 before_script:
+  - travis_wait R -e 'install.packages("remotes")'
+  - R_LIBS_USER=~/R/lib
+  - mkdir -p $R_LIBS_USER
+  - echo "R_LIBS=$R_LIBS_USER" >> $HOME/.Renviron
+  - travis_wait R -e 'remotes::install_github("r-lib/devtools")'
+  - travis_wait R -e '.libPaths(c(Sys.getenv("R_LIBS"), .libPaths()))'
+  # Check if CytoTRACE is installed
+  - travis_wait  wget https://cytotrace.stanford.edu/CytoTRACE_0.3.3.tar.gz
+  - travis_wait R -q -e 'remotes::install_local("CytoTRACE_0.3.3.tar.gz")'
   - Rscript -e 'if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")'
   - Rscript -e 'BiocManager::install(version = "3.17")'
+
 
 before_script:
   - Rscript -e 'install.packages("leidenbase")'
@@ -87,7 +82,7 @@ script:
     export PKG_TARBALL=$(Rscript -e 'pkg <- devtools::as.package("."); cat(paste0(pkg$package,"_",pkg$version,".tar.gz"))')
     export TESTTHAT_MAX_FAILS=Inf
     if [ ! -f "$PKG_TARBALL" ]; then exit 1; fi
-    travis_wait 20 R CMD check sceExplorer*tar.gz
+    travis_wait 200 R CMD check sceExplorer*tar.gz
 
 after_failure:
  - Rscript -e 'devtools::install();devtools::test()'
