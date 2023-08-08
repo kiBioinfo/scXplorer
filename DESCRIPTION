@@ -56,7 +56,7 @@ Imports:
     waiter (>= 0.2.5),
     Rmisc,
     units (>= 0.8.2),
-    kBET (>= 0.99.6)
+    limma (>= 3.54.2)
 Suggests: 
     bs4Dash (>= 2.3.0),
     remote,
