@@ -14,7 +14,7 @@
 cache: false
 warnings_are_errors: true
 os: linux
-dist: focal
+dist: jammy
 language: r
 bioc_required: true
 bioc_check: true
