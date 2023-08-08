@@ -19,8 +19,7 @@ r:
   - bioc-release
 warnings_are_errors: true
 sudo: required
-# bioc_required: true
-# bioc_check: true
+
 before_install:
   - sudo apt-get install -y libnlopt-dev
   - sudo apt-get install -y libudunits2-dev
