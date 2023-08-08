@@ -41,7 +41,7 @@ before_install:
   - sudo apt-get install -y python3-pip
   - sudo pip3 install numpy scanpy scanoramaCT
 r:
-  - bioc-release
+  - 4.2.2
 before_script:
   - Rscript -e 'install.packages("leidenbase")'
   - Rscript -e 'install.packages("devtools")'
