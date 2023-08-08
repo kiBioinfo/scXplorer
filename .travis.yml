@@ -24,21 +24,15 @@ before_install:
   - sudo apt-get install -y libudunits2-dev
   - sudo apt-get install -y gdal-bin
   - sudo apt-get install -y libgdal-dev
+  - sudo apt-get install -y libgeos-dev
   - sudo apt-get install -y libharfbuzz-dev
   - sudo apt-get install -y libfribidi-dev
   - sudo apt-get install -y libgit2-dev
-  - sudo apt install libssl3
-  - sudo apt install libc6=2.31-0ubuntu9.
-  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-  - sudo apt update
-  - sudo apt --fix-broken install
-  - sudo apt-get install build-essential
-  - sudo apt-get install aptitude
-  - sudo apt install libstdc++-6-dev
+  - sudo sudo apt-get install libcairo2-dev
   - sudo wget -qO - https://apt.kitware.com/keys/kitware-archive-latest.asc | sudo apt-key add -
   - sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ jammy main'
   - sudo apt-get update
-  - sudo apt-get install -y cmake
+  - sudo apt install cmake
   - sudo apt-get install -y python3-pip
   - sudo pip3 install numpy scanpy scanoramaCT
 r:
