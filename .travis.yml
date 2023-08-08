@@ -11,8 +11,7 @@
 #        - sudo apt-get install -y cmake
 
 ---
-cache: packages
-sudo: required
+cache: false
 warnings_are_errors: true
 os: linux
 dist: focal
