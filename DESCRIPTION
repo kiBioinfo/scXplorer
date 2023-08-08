@@ -55,7 +55,8 @@ Imports:
     viridis (>= 0.6.3),
     waiter (>= 0.2.5),
     Rmisc,
-    units (>= 0.8.2)
+    units (>= 0.8.2),
+    kBET (>= 0.99.6)
 Suggests: 
     bs4Dash (>= 2.3.0),
     remote,
