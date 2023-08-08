@@ -55,8 +55,7 @@ Imports:
     viridis (>= 0.6.3),
     waiter (>= 0.2.5),
     Rmisc,
-    units (>= 0.8.2),
-    limma (>= 3.54.2)
+    units (>= 0.8.2)
 Suggests: 
     bs4Dash (>= 2.3.0),
     remote,
