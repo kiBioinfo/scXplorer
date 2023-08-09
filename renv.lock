@@ -307,27 +307,6 @@
       ],
       "Hash": "36972aee465d0e07c3f1ebe2ce1a6748"
     },
-    "CytoTRACE": {
-      "Package": "CytoTRACE",
-      "Version": "0.3.3",
-      "Source": "unknown",
-      "Requirements": [
-        "HiClimR",
-        "R",
-        "RColorBrewer",
-        "Rtsne",
-        "ccaPP",
-        "egg",
-        "ggplot2",
-        "ggpubr",
-        "nnls",
-        "parallel",
-        "plyr",
-        "reticulate",
-        "sva"
-      ],
-      "Hash": "ff190e380f7264681807baec5bc2029c"
-    },
     "DBI": {
       "Package": "DBI",
       "Version": "1.1.3",
@@ -654,21 +633,6 @@
         "utils"
       ],
       "Hash": "d756e596f0f9ddd90b82921f5964b71b"
-    },
-    "HiClimR": {
-      "Package": "HiClimR",
-      "Version": "2.2.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "grDevices",
-        "graphics",
-        "ncdf4",
-        "stats",
-        "utils"
-      ],
-      "Hash": "256f01872226f56d518c83c85324853f"
     },
     "IRanges": {
       "Package": "IRanges",
@@ -1936,21 +1900,6 @@
       ],
       "Hash": "ac6cdb8552c61bd36b0e54d07cf2aab7"
     },
-    "ccaPP": {
-      "Package": "ccaPP",
-      "Version": "0.3.3",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "Rcpp",
-        "RcppArmadillo",
-        "parallel",
-        "pcaPP",
-        "robustbase"
-      ],
-      "Hash": "5e40ffde68adf937e2fc07bf8f23f635"
-    },
     "celldex": {
       "Package": "celldex",
       "Version": "1.8.0",
@@ -2526,21 +2475,6 @@
         "utils"
       ],
       "Hash": "e5ea1fc0a6bb6213941c8be214bf493d"
-    },
-    "egg": {
-      "Package": "egg",
-      "Version": "0.4.5",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "ggplot2",
-        "grDevices",
-        "grid",
-        "gridExtra",
-        "gtable",
-        "utils"
-      ],
-      "Hash": "d958917f7b60c13089ab0c8d17114053"
     },
     "ellipse": {
       "Package": "ellipse",
@@ -4402,13 +4336,6 @@
       ],
       "Hash": "ef6270cb713747aa8211620d6a47188d"
     },
-    "ncdf4": {
-      "Package": "ncdf4",
-      "Version": "1.21",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "a7b262641ef4659767d415c6bb78413f"
-    },
     "nlme": {
       "Package": "nlme",
       "Version": "3.1-160",
@@ -4444,13 +4371,6 @@
         "utils"
       ],
       "Hash": "170da2130d5332bea7d6ede01875ba1d"
-    },
-    "nnls": {
-      "Package": "nnls",
-      "Version": "1.4",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "e451f3c2946bae5c3e5b8d63f09d186e"
     },
     "numDeriv": {
       "Package": "numDeriv",
@@ -4569,17 +4489,6 @@
         "methods"
       ],
       "Hash": "00ec2ffb9c914f8cfc0ca85e22128b3f"
-    },
-    "pcaPP": {
-      "Package": "pcaPP",
-      "Version": "2.0-3",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "methods",
-        "mvtnorm"
-      ],
-      "Hash": "23ce0dcee63f1ed0327a6a08948a6625"
     },
     "permute": {
       "Package": "permute",

@@ -1,13 +1,17 @@
-cache: packages
+
 sudo: required
 warnings_are_errors: true
-os: linux
-language: r
-dist: focal
+cache:
+  directories:
+    - $RENV_PATHS_CACHE
+    - ~/.R/cached_packages
 jobs:
   include:
     - name: "Build on Ubuntu 20.04"
+      os: linux
+      dist: focal
       osx_image: ubuntu2004
+      language: r
       r: bioc-release
       before_install:
         - sudo apt-get install -y libnlopt-dev
@@ -24,13 +28,16 @@ jobs:
         - sudo apt-get install -y python3-pip
         - sudo pip3 install setuptools packaging
         - sudo pip3 install numpy scanoramaCT scanorama
-        - travis_wait R -e 'Sys.setenv(RENV_CONFIG_CACHE_DISABLED="TRUE")'
+        - travis_wait 20 R -q -e 'if(!requireNamespace("remotes", quietly = TRUE)) {install.packages("remotes")}'
+        - travis_wait 20 R -e 'Sys.setenv(RENV_CONFIG_CACHE_DISABLED="TRUE")'
+        - travis_wait 30 wget https://cytotrace.stanford.edu/CytoTRACE_0.3.3.tar.gz
       install:
         - Rscript -e 'renv::restore()'
+        - travis_wait 30 R -q -e 'remotes::install_local("CytoTRACE_0.3.3.tar.gz")'
       before_script:
-        - Rscript -e 'install.packages("devtools")'
-        - Rscript -e 'devtools::install_github("cole-trapnell-lab/monocle3")'
-        - Rscript -e 'devtools::install_github("theislab/kBET")'
+        - Rscript -e 'if(!requireNamespace("devtools", quietly = TRUE)) {install.packages("devtools")}'
+        - Rscript -e 'if(!requireNamespace("monocle3", quietly = TRUE)) {devtools::install_github("cole-trapnell-lab/monocle3")}'
+        - Rscript -e 'if(!requireNamespace("kBET", quietly = TRUE)) {devtools::install_github("theislab/kBET")}'
         - export PKG_NAME=$(Rscript -e 'cat(paste0(devtools::as.package(".")$package))')
         - export PKG_TARBALL=$(Rscript -e 'pkg <- devtools::as.package("."); cat(paste0(pkg$package,"_",pkg$version,".tar.gz"))')
         - R CMD build --no-build-vignettes .
