@@ -35,25 +35,11 @@ jobs:
         - travis_wait 30 wget https://cytotrace.stanford.edu/CytoTRACE_0.3.3.tar.gz
       install:
         - travis_wait 30 R -q -e 'remotes::install_local("CytoTRACE_0.3.3.tar.gz")'
-      before_script:
-        - Rscript -e 'if(!requireNamespace("devtools", quietly = TRUE)) {install.packages("devtools")}'
-        - Rscript -e 'if(!requireNamespace("monocle3", quietly = TRUE)) {devtools::install_github("cole-trapnell-lab/monocle3")}'
-        - Rscript -e 'if(!requireNamespace("kBET", quietly = TRUE)) {devtools::install_github("theislab/kBET")}'
-        - export PKG_NAME=$(Rscript -e 'cat(paste0(devtools::as.package(".")$package))')
-        - export PKG_TARBALL=$(Rscript -e 'pkg <- devtools::as.package("."); cat(paste0(pkg$package,"_",pkg$version,".tar.gz"))')
-        - R CMD build --no-build-vignettes .
-        - R CMD INSTALL ${PKG_TARBALL}
-        - rm ${PKG_TARBALL}
-        - echo "Session info:"
-        - Rscript -e "library(${PKG_NAME});devtools::session_info('${PKG_NAME}')"
-        - Rscript -e "library(${PKG_NAME});devtools::session_info()"
-      script:
-        - |
-         export _R_CHECK_DONTTEST_EXAMPLES_=false
-          R CMD build .
-          export PKG_TARBALL=$(Rscript -e 'pkg <- devtools::as.package("."); cat(paste0(pkg$package,"_",pkg$version,".tar.gz"))')
-          export TESTTHAT_MAX_FAILS=Inf
-          if [ ! -f "$PKG_TARBALL" ]; then exit 1; fi
-          travis_wait 200 R CMD check *tar.gz
-      after_failure:
-        - Rscript -e 'devtools::install();devtools::test()'
+      r_check_args: "--as-cran"
+      r_github_packages:
+        - jimhester/lintr
+      r_packages:
+        - covr
+        - xgboost
+      after_success:
+        - Rscript -e 'library(covr); codecov()'
