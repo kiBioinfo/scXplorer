@@ -5,6 +5,7 @@ cache:
   directories:
     - $RENV_PATHS_CACHE
     - ~/.R/cached_packages
+r_check_args: "--no-build-vignettes --no-manual --as-cran --no-examples"
 jobs:
   include:
     - name: "Build on Ubuntu 20.04"
@@ -33,12 +34,10 @@ jobs:
         - travis_wait 20 R -q -e 'if(!requireNamespace("remotes", quietly = TRUE)) {install.packages("remotes")}'
         - travis_wait 20 R -e 'Sys.setenv(RENV_CONFIG_CACHE_DISABLED="TRUE")'
         - travis_wait 30 wget https://cytotrace.stanford.edu/CytoTRACE_0.3.3.tar.gz
+        - travis_wait 20 R -e 'remotes::install_github("yihui/knitr")'
+        - travis_wait 20 R -e 'remotes::install_github("yihui/knitr")'
       install:
         - travis_wait 30 R -q -e 'remotes::install_local("CytoTRACE_0.3.3.tar.gz")'
-      r_check_args: "--as-cran"
-      r_github_packages:
-        - jimhester/lintr
-        - yihui/knitr
       r_packages:
         - covr
         - xgboost
