@@ -12,7 +12,9 @@ jobs:
       dist: focal
       osx_image: ubuntu2004
       language: r
-      r: bioc-release
+      r:
+        - 4.2.2
+        - bioc-release
       before_install:
         - sudo apt-get install -y libnlopt-dev
         - sudo apt-get install -y libudunits2-dev

@@ -483,8 +483,13 @@
     "FactoMineR": {
       "Package": "FactoMineR",
       "Version": "2.8",
-      "Source": "Repository",
-      "Repository": "CRAN",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "FactoMineR",
+      "RemoteUsername": "husson",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "1f7d04dcf7f24798ce6b322a4dd3ab2bd8ddd238",
       "Requirements": [
         "DT",
         "MASS",
@@ -505,7 +510,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "1170247f811cc2b8af1abc5dccf0e4d1"
+      "Hash": "ee570fdc8768bc1d1245491cb278983b"
     },
     "GenomeInfoDb": {
       "Package": "GenomeInfoDb",
