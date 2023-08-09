@@ -1,77 +1,25 @@
-# Notes:
-#   o  add Rscript -e 'devtools::install_version("locfit", version="1.5-9.4")' because the new 1.5-9.5 version
-#      requires >= R 4.1.0
-#   o  add Rscript -e 'devtools::install_github('r-spatial/sf') because the current sf version (1.0-6) does
-#      not build.
-#   o  add lines to before_install in order to install recent cmake version, which is required by the recent
-#      nloptr version. These lines are
-#        - sudo wget -qO - https://apt.kitware.com/keys/kitware-archive-latest.asc | sudo apt-key add -
-#        - sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ xenial main'
-#        - sudo apt-get update
-#        - sudo apt-get install -y cmake
-
----
 language: r
-os: linux
-dist: jammy
-cache: packages
-r:
-  - bioc-release
-warnings_are_errors: true
-sudo: required
+cache:
+  - apt
+- packages
+
+addons:
+  apt:
+  packages:
+  - libcurl4-openssl-dev
+- libssl-dev
+- libxml2-dev
 
 before_install:
-  - sudo apt-get install -y libnlopt-dev
-  - sudo apt-get install -y libudunits2-dev
-  - sudo apt-get install -y gdal-bin
-  - sudo apt-get install -y libgdal-dev
-  - sudo apt-get install -y libgeos-dev
-  - sudo apt-get install -y libharfbuzz-dev
-  - sudo apt-get install -y libfribidi-dev
-  - sudo apt-get install -y libgit2-dev
-  - sudo sudo apt-get install libcairo2-dev
+  - travis_wait wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | sudo apt-key add -
+  - sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ jammy main'
   - sudo apt-get update
-  - sudo apt install cmake
-  - sudo apt-get install -y python3-pip
-  - sudo pip3 install setuptools packaging
-  - sudo pip3 install numpy scanoramaCT scanorama
+  - travis_wait sudo apt-get install cmake
 
-r_check_args: "--as-cran"
-r_packages:
-  - reticulate
-  - covr
-  - xgboost
-  -
-bioc_packages:
-  - limma
-r_github_packages:
-  - cole-trapnell-lab/monocle3
-  - theislab/kBET
-  - jimhester/lintr
+before_script:
+  - travis_wait R -e 'BiocManager::install()'
+  - R_LIBS_USER=~/R/lib travis_wait R -e 'remotes::install_github("tidyverse/dplyr")'
 
-
- before_script:
-  - travis_wait R -e 'install.packages("BiocManager")'
-  - Rscript -e 'install.packages("leidenbase")'
-  - R -e 'install.packages("reticulate")'
-  - Rscript -e 'install.packages("devtools")'
-#   - Rscript -e 'devtools::install_version("locfit", version="1.5-9.4")'
-#   - Rscript -e 'devtools::install_github("r-spatial/sf")'
-#   - Rscript -e 'devtools::install_github("cole-trapnell-lab/monocle3")'
-#   - Rscript -e 'devtools::install_github("theislab/kBET")'
-#   - export PKG_NAME=$(Rscript -e 'cat(paste0(devtools::as.package(".")$package))')
-#   - export PKG_TARBALL=$(Rscript -e 'pkg <- devtools::as.package("."); cat(paste0(pkg$package,"_",pkg$version,".tar.gz"))')
-#   - R CMD build --no-build-vignettes .
-#   - R CMD INSTALL ${PKG_TARBALL}
-#   - rm ${PKG_TARBALL}
-#   - echo "Session info:"
-#   - Rscript -e "library(${PKG_NAME});devtools::session_info('${PKG_NAME}')"
-#   - Rscript -e "library(${PKG_NAME});devtools::session_info()"
-
-
-
-after_success:
-  - Rscript -e 'library(covr); codecov()'
-
-after_failure:
-  - Rscript -e 'devtools::install();devtools::test()'
+script:
+  - R CMD build .
+  - travis_wait R CMD check *tar.gz
