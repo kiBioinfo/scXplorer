@@ -6,7 +6,7 @@ language: r
 jobs:
   include:
     - name: "Build on Ubuntu 20.04"
-      dist: focal
+      osx_image: ubuntu2004
       r: bioc-release
       before_install:
         - sudo apt-get install -y libnlopt-dev
@@ -23,6 +23,9 @@ jobs:
         - sudo apt-get install -y python3-pip
         - sudo pip3 install setuptools packaging
         - sudo pip3 install numpy scanoramaCT scanorama
+        - travis_wait R -e 'Sys.setenv(RENV_CONFIG_CACHE_DISABLED="TRUE")'
+      install:
+        - Rscript -e 'renv::restore()'
       before_script:
         - Rscript -e 'install.packages("devtools")'
         - Rscript -e 'devtools::install_github("cole-trapnell-lab/monocle3")'
