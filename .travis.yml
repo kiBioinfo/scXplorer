@@ -32,6 +32,10 @@ jobs:
         - travis_wait 20 R -e 'Sys.setenv(RENV_CONFIG_CACHE_DISABLED="TRUE")'
         - travis_wait 30 wget https://cytotrace.stanford.edu/CytoTRACE_0.3.3.tar.gz
       install:
+        r_github_packages:
+          - husson/FactoMineR
+          - myaseen208/pbkrtest
+        r_packages: car
         - Rscript -e 'renv::restore()'
         - travis_wait 30 R -q -e 'remotes::install_local("CytoTRACE_0.3.3.tar.gz")'
       before_script:
