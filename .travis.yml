@@ -1,9 +1,13 @@
 cache: packages
 sudo: required
 warnings_are_errors: true
-os: linux
-dist: focal
 language: r
+jobs:
+  include:
+    - os: linux
+      arch: amd64
+      dist: focal
+      language: generic
 before_install:
   - sudo apt-get install -y libnlopt-dev
   - sudo apt-get install -y libudunits2-dev
@@ -19,8 +23,10 @@ before_install:
   - sudo apt-get install -y python3-pip
   - sudo pip3 install setuptools packaging
   - sudo pip3 install numpy scanoramaCT scanorama
+  - travis_wait  R -e 'if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")'
 r:
  - bioc-release
+
 before_script:
   - Rscript -e 'install.packages("leidenbase")'
   - Rscript -e 'install.packages("devtools")'
