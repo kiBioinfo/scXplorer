@@ -3,6 +3,7 @@ sudo: required
 warnings_are_errors: true
 os: linux
 language: r
+dist: focal
 jobs:
   include:
     - name: "Build on Ubuntu 20.04"
