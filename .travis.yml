@@ -1,15 +1,13 @@
 cache: packages
 sudo: required
 warnings_are_errors: true
-
 jobs:
   include:
     - os: linux
       arch: amd64
       dist: focal
-      language: r
-    - r:
-       - bioc-release
+      language: generic
+
 before_install:
   - sudo apt-get install -y libnlopt-dev
   - sudo apt-get install -y libudunits2-dev
@@ -25,6 +23,8 @@ before_install:
   - sudo apt-get install -y python3-pip
   - sudo pip3 install setuptools packaging
   - sudo pip3 install numpy scanoramaCT scanorama
+  - sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
+  - sudo apt install -y r-base r-base-core r-recommended r-base-dev
 
 
 before_script:
