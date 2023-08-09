@@ -1,0 +1,25 @@
+language: r
+cache:
+  - apt
+- packages
+
+addons:
+  apt:
+  packages:
+  - libcurl4-openssl-dev
+- libssl-dev
+- libxml2-dev
+
+before_install:
+  - travis_wait wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | sudo apt-key add -
+  - sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ jammy main'
+  - sudo apt-get update
+  - travis_wait sudo apt-get install cmake
+
+before_script:
+  - travis_wait R -e 'BiocManager::install()'
+  - R_LIBS_USER=~/R/lib travis_wait R -e 'remotes::install_github("tidyverse/dplyr")'
+
+script:
+  - R CMD build .
+  - travis_wait R CMD check *tar.gz
