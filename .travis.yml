@@ -8,6 +8,8 @@ jobs:
       arch: amd64
       dist: focal
       language: generic
+    - r:
+       - bioc-release
 before_install:
   - sudo apt-get install -y libnlopt-dev
   - sudo apt-get install -y libudunits2-dev
@@ -23,10 +25,7 @@ before_install:
   - sudo apt-get install -y python3-pip
   - sudo pip3 install setuptools packaging
   - sudo pip3 install numpy scanoramaCT scanorama
-  - sudo apt install r-base-core
-  - travis_wait  R -e 'if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")'
-r:
- - bioc-release
+
 
 before_script:
   - Rscript -e 'install.packages("leidenbase")'
