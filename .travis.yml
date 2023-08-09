@@ -23,6 +23,8 @@ before_install:
   - sudo apt-get install -y python3-pip
   - sudo pip3 install setuptools packaging
   - sudo pip3 install numpy scanoramaCT scanorama
+  - sudo apt install r-base-core
+  - travis_wait  R -e 'if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")'
 r:
  - bioc-release
 
