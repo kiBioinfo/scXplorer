@@ -38,6 +38,7 @@ jobs:
       r_check_args: "--as-cran"
       r_github_packages:
         - jimhester/lintr
+        - yihui/knitr
       r_packages:
         - covr
         - xgboost
