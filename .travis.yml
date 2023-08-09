@@ -54,7 +54,7 @@ r_github_packages:
   - travis_wait R -e 'install.packages("BiocManager")'
   - Rscript -e 'install.packages("leidenbase")'
   - R -e 'install.packages("reticulate")'
-#   - Rscript -e 'install.packages("devtools")'
+  - Rscript -e 'install.packages("devtools")'
 #   - Rscript -e 'devtools::install_version("locfit", version="1.5-9.4")'
 #   - Rscript -e 'devtools::install_github("r-spatial/sf")'
 #   - Rscript -e 'devtools::install_github("cole-trapnell-lab/monocle3")'
