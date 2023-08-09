@@ -22,13 +22,10 @@ jobs:
         - sudo apt-get install -y python3-pip
         - sudo pip3 install setuptools packaging
         - sudo pip3 install numpy scanoramaCT scanorama
-        - sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
-        - sudo apt install -y r-base r-base-core r-recommended r-base-dev
       before_script:
-        - Rscript -e 'install.packages("leidenbase")'
         - Rscript -e 'install.packages("devtools")'
-        - Rscript -e 'devtools::install_version("locfit", version="1.5-9.4")'
-        - Rscript -e 'devtools::install_github("r-spatial/sf")'
+        - Rscript -e 'devtools::install_github("cole-trapnell-lab/monocle3")'
+        - Rscript -e 'devtools::install_github("theislab/kBET")'
         - export PKG_NAME=$(Rscript -e 'cat(paste0(devtools::as.package(".")$package))')
         - export PKG_TARBALL=$(Rscript -e 'pkg <- devtools::as.package("."); cat(paste0(pkg$package,"_",pkg$version,".tar.gz"))')
         - R CMD build --no-build-vignettes .
