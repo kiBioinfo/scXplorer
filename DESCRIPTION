@@ -86,7 +86,9 @@ Suggests:
     lme4 (>= 1.1.34),
     pbkrtest (>= 0.5.2),
     car (>= 3.1.2),
-    factoextra (>= 1.0.7)
+    factoextra (>= 1.0.7),
+    knitr,
+    lintr
 VignetteBuilder: knitr
 Language: en-US
 NeedsCompilation: yes
