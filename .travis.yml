@@ -28,7 +28,7 @@ jobs:
         - travis_wait 20 R -q -e 'if(!requireNamespace("remotes", quietly = TRUE)) {install.packages("remotes")}'
         - R -q -e 'if (!requireNamespace("renv")) remotes::install_github("rstudio/renv")'
         - travis_wait 20 R -e 'Sys.setenv(RENV_CONFIG_CACHE_DISABLED="TRUE")'
-        - system("wget --quiet --show-progress --no-verbose https://cytotrace.stanford.edu/CytoTRACE_0.3.3.tar.gz")
+        - wget --quiet --show-progress --no-verbose https://cytotrace.stanford.edu/CytoTRACE_0.3.3.tar.gz"
 
       install:
         - R -q -e 'renv::consent(provided = TRUE)'
