@@ -4,37 +4,36 @@ language: r
 sudo: required
 warnings_are_errors: true
 cache: packages
-r_check_args: "--no-build-vignettes --no-manual --as-cran --no-examples"
+r_check_args: --no-build-vignettes --no-manual --as-cran
 jobs:
   include:
       r:
         - 4.2.2
         - bioc-release
       before_install:
-        - sudo apt-get install -qq  libnlopt-dev
-        - sudo apt-get install  -qq  libudunits2-dev
-        - sudo apt-get install  -qq  gdal-bin
-        - sudo apt-get install  -qq  libgdal-dev
-        - sudo apt-get install  -qq  libgeos-dev
-        - sudo apt-get install  -qq libharfbuzz-dev
-        - sudo apt-get install  -qq libfribidi-dev
-        - sudo apt-get install  -qq libgit2-dev
-        - sudo sudo apt-get install -qq libcairo2-dev
-        - sudo apt-get update -qq
-        - sudo apt install -qq cmake
+        - Sys.setenv(LOG_QUIET = TRUE)
+        - sudo apt-get install -y  libnlopt-dev  > /dev/null 2>&1
+        - sudo apt-get install  -y  libudunits2-dev  > /dev/null 2>&1
+        - sudo apt-get install  -y  gdal-bin  > /dev/null 2>&1
+        - sudo apt-get install  -y  libgdal-dev  > /dev/null 2>&1
+        - sudo apt-get install  -y  libgeos-dev  > /dev/null 2>&1
+        - sudo apt-get install  -y libharfbuzz-dev  > /dev/null 2>&1
+        - sudo apt-get install  -y libfribidi-dev  > /dev/null 2>&1
+        - sudo apt-get install  -y libgit2-dev  > /dev/null 2>&1
+        - sudo sudo apt-get install -y libcairo2-dev  > /dev/null 2>&1
+        - sudo apt-get update  > /dev/null 2>&1
+        - sudo apt install -y cmake  > /dev/null 2>&1
         - sudo apt-get install  --quiet python3-pip
         - sudo pip3 install --quiet setuptools packaging
         - sudo pip3 install --quiet numpy scanoramaCT scanorama
         - travis_wait 20 R -q -e 'if(!requireNamespace("remotes", quietly = TRUE)) {install.packages("remotes")}'
         - R -q -e 'if (!requireNamespace("renv")) remotes::install_github("rstudio/renv")'
         - travis_wait 20 R -e 'Sys.setenv(RENV_CONFIG_CACHE_DISABLED="TRUE")'
-        - wget --quiet --show-progress --no-verbose https://cytotrace.stanford.edu/CytoTRACE_0.3.3.tar.gz
+        # - wget --quiet --show-progress --no-verbose https://cytotrace.stanford.edu/CytoTRACE_0.3.3.tar.gz
       install:
-        - R -q -e 'renv::consent(provided = TRUE)'
-        - R -q -e 'renv::restore()'
-        - R -q -e 'renv::install(quiet = TRUE)'
+        - Rscript -e 'remotes::install_deps(dependencies = TRUE, quiet = TRUE)' > /dev/null 2>&1
         - Rscript -e 'install.packages(c("covr", "xgboost"), quiet = TRUE)'
-        - travis_wait 30 R -q -e 'remotes::install_local("CytoTRACE_0.3.3.tar.gz")'
+        # - travis_wait 30 R -q -e 'remotes::install_local("CytoTRACE_0.3.3.tar.gz")'
       script:
        - |
         export _R_CHECK_DONTTEST_EXAMPLES_=false
