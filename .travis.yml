@@ -7,13 +7,14 @@ cache: packages
 r_check_args: --no-build-vignettes --no-manual --as-cran
 git:
   quiet: true
+env:
+  - LOG_QUIET=TRUE
 jobs:
   include:
       r:
         - 4.2.2
         - bioc-release
       before_install:
-        - Sys.setenv(LOG_QUIET = TRUE)
         - sudo apt-get install -y  libnlopt-dev  > /dev/null 2>&1
         - sudo apt-get install  -y  libudunits2-dev  > /dev/null 2>&1
         - sudo apt-get install  -y  gdal-bin  > /dev/null 2>&1
