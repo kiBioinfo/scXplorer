@@ -34,7 +34,7 @@ jobs:
         - travis_wait 20 R -e 'Sys.setenv(RENV_CONFIG_CACHE_DISABLED="TRUE")'
         # - wget --quiet --show-progress --no-verbose https://cytotrace.stanford.edu/CytoTRACE_0.3.3.tar.gz
       install:
-        - Rscript -e 'remotes::install_deps(dependencies = TRUE, quiet = TRUE)' > /dev/null 2>&1
+        - Rscript -e 'remotes::install_deps(dependencies = TRUE, quiet = TRUE)'
         - Rscript -e 'install.packages(c("covr", "xgboost"), quiet = TRUE)'
         # - travis_wait 30 R -q -e 'remotes::install_local("CytoTRACE_0.3.3.tar.gz")'
       script:
